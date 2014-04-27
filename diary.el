@@ -74,6 +74,16 @@
 )
 
 ;;; ---------------------------------------------------------------
+;;; dt-mdy
+;;; 2005-08-01 - created
+;;; ---------------------------------------------------------------
+(defun dt-mdy ()
+  "Insert today's date (mm/dd/yy) into the current buffer"
+  (interactive)
+  (insert (format-time-string "%m/%d/%y" (current-time)))
+)
+
+;;; ---------------------------------------------------------------
 ;;; dt-datetime
 ;;; 2001-11-23 - insert the time string directly rather than using
 ;;;              a variable

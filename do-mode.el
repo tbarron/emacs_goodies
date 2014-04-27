@@ -25,7 +25,7 @@
   (define-key do-mode-map "\ei" 'do-into)
   (define-key do-mode-map "\es" 'do-sub-entry)
   (define-key do-mode-map "\ee" 'do-new-entry)
-  (define-key do-mode-map "\ex" 'do-cut-entry)
+;  (define-key do-mode-map "\ex" 'do-cut-entry)
   (define-key do-mode-map "\ea" 'do-copy-entry)
   (define-key do-mode-map "\ep" 'do-yank-entry)
   (define-key do-mode-map "\e^" 'do-entry-to-top)
@@ -62,11 +62,60 @@ if that value is non-nil."
 ;;; dodo
 ;;; ---------------------------------------------------------------
 (defun dodo ()
-  "Access file do-DODO-FILE-NAME"
+  "Access diary files"
   (interactive)
-  (find-file do-DODO-FILE-NAME)
-  (re-search-forward "^-")
-  (forward-char -1)
+
+  (let ((diary_jpy (format-time-string "~/diary/journal/personal/%Y"))
+        (diary_jw "~/diary/journal/work")
+        (diary_jy (format-time-string "/journal/%Y"))
+        (diary_jwy (format-time-string "~/diary/journal/work/%Y"))
+        (diary_jwym (format-time-string "~/diary/journal/work/%Y/%m"))
+        (prj_worktime "~/prj/worktime")
+        (jnl_year (format-time-string "~/Dropbox/journal/%Y"))
+        (thumb "/Volumes/ZAPHOD")
+
+        (daily (format-time-string "%d.dodo"))
+        (journal (format-time-string "%m.txt"))
+        (queue "queue.dodo")
+        (stats "FX.txt")
+        (projects "PROJECTS.txt")
+        (workfile (format-time-string "%Y.txt"))
+        (worklog (format-time-string "%Y.txt"))
+        (worklog "WORKLOG")
+        )
+
+;    (if (file-exists-p "~/bin/makedodo")
+;        (call-process "~/bin/makedodo" nil "*Messages*" 't "-c" "30"))
+
+    ; (do-findfile diary_jpy stats)
+    ; (do-findfile diary_jw projects)
+    ; (do-findfile diary_jpy journal)
+    ; (do-findfile diary_jwym daily)
+    ; (do-findfile diary_jw queue)
+    (do-findfile "~/Dropbox/journal" "work.do")
+    (do-findfile "~/Dropbox/journal" "personal.do")
+    (do-findfile jnl_year journal)
+    (do-findfile jnl_year "WORKLOG")
+    (goto-char (point-max))
+;;     (if (file-exists-p thumb) 
+;;         (progn
+;;           ; (do-findfile (concat thumb "/prj") "ROOT.do")
+;;           ; (do-findfile (concat thumb diary_jy) journal)
+;;           ; (do-findfile (concat thumb diary_jy) worklog)
+;;           ; (goto-char (point-max))
+;;         )
+;;     )
+  )
+)
+
+;;; ---------------------------------------------------------------
+;;; do-findfile
+;;; ---------------------------------------------------------------
+(defun do-findfile (path name)
+  (if (not (file-directory-p path))
+      (make-directory path)
+      )
+  (find-file (concat path "/" name))
 )
 
 ;;; ---------------------------------------------------------------
@@ -175,84 +224,26 @@ if that value is non-nil."
 
   ; remove the entry from the current file
   (delete-region start (point))
+  (setq back-to (point))
 
-  ; insert the entry into the done log file
-  (setq xchr (substring entry 3 4))
-  (if (and (string-lessp "/" xchr) (string-lessp xchr ":")) ; is a digit
+  ; insert the entry after the "=== DONE ===" line
+  (if (search-forward "=== DONE ===" (point-max) 't)
       (progn
-        (delete-other-windows)
-        (split-window-vertically)
-        (other-window 1)
-        (find-file (do-done-name))                 ; in the done log
-        (goto-char (point-max))
-        (if (not (equal (point) 1))
-            (progn (setq pchrs (char-to-string (char-after (- (point) 1))))
-                   (if (not (string= pchrs "\n"))
-                       (insert "\n\n")
-                     )
-                   )
+        (end-of-line)
+        (if (eq (point) (point-max))
+            (insert "\n")
+          (forward-char 1)
           )
-        ; (insert "--- ")
-        ; (call-process "date" nil 't nil "+%A %y/%m/%d %H:%M:%S ---")
-        (insert (format-time-string "--- %A %Y/%m/%d %H:%M:%S ---\n"))
-        (insert entry)
-        (save-buffer)
-        (other-window 1)                       ; back to .do file
-        ))
+        )
+    (progn
+      (goto-char (point-max))
+      (insert "\n\n- === DONE ===============================================\n")
+      )
+    )
+  (insert entry)
   (save-buffer)
+  (goto-char back-to)
 )
-
-;;;  ; find the beginning of the task entry being completed
-;;;  (if (not (equal (point) (point-max)))
-;;;      (forward-char 1))                  ; mark beginning of entry
-;;;  (setq search-exp "^[-x><+]")
-;;;  (re-search-backward search-exp)
-;;;  (setq start (point-marker))
-;;;
-;;;  ; start now points to the beginning of the entry
-;;;  (setq pchrs (char-to-string (char-after (point))))
-;;;  (if (or (string= pchrs "-")
-;;;	  (string= pchrs ">"))
-;;;      (progn (delete-char 1) (insert "x"))
-;;;      (forward-char 1)
-;;;  )
-;;;
-;;;  ; go to the end of the entry
-;;;  (if (re-search-forward search-exp nil 'x)
-;;;      (backward-char 1)
-;;;  )
-;;;
-;;;  ; save the entry text as variable 'entry'
-;;;  (setq entry (buffer-substring start (point)))
-;;;
-;;;  ; remove the entry from the current file
-;;;  (delete-region start (point))
-;;;
-;;;  ; insert the entry into the done log file
-;;;  (setq xchr (substring entry 3 4))
-;;;  (if (and (string-lessp "/" xchr) (string-lessp xchr ":")) ; is a digit
-;;;      (progn
-;;;        (delete-other-windows)
-;;;        (split-window-vertically)
-;;;        (other-window 1)
-;;;        (find-file (do-done-name))                 ; in the diary file
-;;;        (end-of-buffer)
-;;;        (if (not (equal (point) 1))
-;;;            (progn (setq pchrs (char-to-string (char-after (- (point) 1))))
-;;;                   (if (not (string= pchrs "\n"))
-;;;                       (insert "\n\n")
-;;;                     )
-;;;                   )
-;;;          )
-;;;        ; (insert "--- ")
-;;;        ; (call-process "date" nil 't nil "+%A %y/%m/%d %H:%M:%S ---")
-;;;        (insert (format-time-string "--- %A %Y/%m/%d %H:%M:%S ---\n"))
-;;;        (insert entry)
-;;;        (save-buffer)
-;;;        (other-window 1)                       ; back to .do file
-;;;        ))
-;;;  (save-buffer)
-;;;)
 
 ;;; ---------------------------------------------------------------
 ;;; do-today - obsolete - no longer used
@@ -375,9 +366,9 @@ do-dated ()
 )
 
 (defun do-create-entry ()
-  (insert "- [")
-  (dt-date)
-  (insert "] ")
+  (insert "- [" (format-time-string "%Y.%m%d") "] ")
+  ; (dt-date)
+  ; (insert "] ")
   (setq fill-prefix "   ")
 )
 
@@ -392,13 +383,14 @@ do-dated ()
   (if (re-search-forward search-exp nil 'x)
       (backward-char 1)
     )
-  (re-search-backward "[]a-zA-Z.;,:0-9?()\"]")
+  (re-search-backward "[^ 	\n]")
   (forward-char 1)
   (newline)
   (insert "   > ")
-  (dt-time)
-  (forward-char -3)
-  (kill-line)
+  (insert (format-time-string "%Y.%m%d.%H%M" (current-time)))
+  ; (dt-datetime)
+  ; (forward-char -3)
+  ; (kill-line)
   (insert ": ")
   (setq fill-prefix "      ")
 )
@@ -545,3 +537,59 @@ do-dated ()
 
 (global-set-key "\M-^" 'do-entry-to-top)
 (global-set-key "\M-$" 'do-entry-to-end)
+
+;;; ---------------------------------------------------------------
+;;; if date has changed, call add-reminders function
+;;; ---------------------------------------------------------------
+(defun do-remind ()
+  "Check the update time of the DODO file and add appropriate reminders"
+  (interactive)
+  (setq mtime (nth 5 (file-attributes "~/Dropbox/DODO")))
+  (setq mdays (time-to-days mtime))
+  (setq ndays (time-to-days (current-time)))
+  (message "mdays = %d; ndays = %d" mdays ndays)
+
+  (if (not (= mdays ndays))
+      (add-reminders)
+    )
+)
+
+;;; ---------------------------------------------------------------
+;;; add reminders
+;;; ---------------------------------------------------------------
+(defun add-reminders ()
+  "Copy appropriate reminders from reminder file to DODO"
+  (interactive)
+
+  
+)
+
+; ---------------------------------------------------------------------------
+; ~/Dropbox/journal/thisyear should be a symlink pointing at the
+; current year directory in ~/Dropbox/journal (e.g.,
+; ~/Dropbox/journal/2014). If this is the case, do nothing. If the
+; symlink does not exist, create it pointing to the correct year
+; directory. If the symlink points to a past year, delete it and
+; recreate it pointing at the current year. This routine assumes that
+; the current year directory exists.
+; ---------------------------------------------------------------------------
+(defun dropbox-update-year-symlink ()
+  (let ((fn  "~/Dropbox/journal/thisyear")
+        (cyr (format-time-string "%Y"))
+        (tn))
+      
+    (if (file-symlink-p fn)
+        (progn
+          (setq tn (file-name-nondirectory (file-truename fn)))
+          (if (not (equal tn cyr))
+              (progn
+                (delete-file fn)
+                (make-symbolic-link (format-time-string "%Y") fn)
+              )
+          )
+        )
+        (make-symbolic-link (format-time-string "%Y") fn)
+    )
+  )
+)
+(debug-on-entry 'dropbox-update-year-symlink)
