@@ -89,13 +89,14 @@
 (setq lisp-indent-offset '-2)
 (setq auto-mode-alist (cons (quote (".p$" . c-mode)) auto-mode-alist))
 ; (setq auto-mode-alist (cons (quote ("README$" . do-mode)) auto-mode-alist))
-(setq auto-mode-alist (cons (quote ("[dD][oO]$" . do-mode)) auto-mode-alist))
+; (setq auto-mode-alist (cons (quote (".done$" . org-mode)) auto-mode-alist))
+; (setq auto-mode-alist (cons (quote ("[dD][oO]$" . org-mode)) auto-mode-alist))
 (setq auto-mode-alist (cons (quote (".ol$" . outline-mode)) auto-mode-alist))
 (setq auto-mode-alist (cons (quote (".doc$" . text-mode)) auto-mode-alist))
 (setq auto-mode-alist (cons (quote (".msg$" . text-mode)) auto-mode-alist))
 (setq auto-mode-alist (cons (quote (".b$" . text-mode)) auto-mode-alist))
 (setq auto-mode-alist (cons (quote (".e$" . text-mode)) auto-mode-alist))
-(setq auto-mode-alist (cons (quote (".md$" . text-mode)) auto-mode-alist))
+(setq auto-mode-alist (cons (quote (".ul$" . text-mode)) auto-mode-alist))
 (setq auto-mode-alist (cons (quote ("cvs......" . text-mode)) auto-mode-alist))
 (setq auto-mode-alist (cons (quote ("log.[0-9]+" . text-mode)) auto-mode-alist))
 (setq auto-mode-alist (cons (quote ("sscr.[0-9]+" . text-mode)) auto-mode-alist))
@@ -159,7 +160,6 @@
 (global-set-key "\C-x]" 'forward-paragraph)
 (global-set-key "\C-x>" 'do-search-forward)
 (global-set-key "\C-x<" 'do-search-backward)
-(global-set-key "\C-x?" 'dodo)
 (global-set-key "\C-x\C-b" 'electric-buffer-list)
 (global-set-key "\C-x\C-d" 'do-visit-done)
 (global-set-key "\C-x\C-e" 'dt-mdy)
@@ -197,10 +197,9 @@
 (global-set-key "\M-]" 'forward-page)
 (global-set-key "\M-(" 'start-kbd-macro)
 (global-set-key "\M-)" 'end-kbd-macro)
-(global-set-key "\M-?" 'dodo)
 (global-set-key "\M-`" 'compilation-next-error)
-(global-set-key "\M-d" 'global-word-downcase)
-(global-set-key "\M-e" 'append-entry-interactive)
+;(global-set-key "\M-d" 'global-word-downcase)
+;(global-set-key "\M-e" 'append-entry-interactive)
 (global-set-key "\M-g" 'goto-line)
 (global-set-key "\M-h" 'help-command)
 (global-set-key "\M-j" 'diary-append-entry)
@@ -245,3 +244,32 @@
 
 
 (put 'downcase-region 'disabled nil)
+
+;; org mode stuff
+(add-to-list 'load-path "~/Dropbox/prj/org-mode/lisp")
+(add-to-list 'load-path "~/Dropbox/prj/org-mode/contrib/lisp")
+(require 'org)
+
+(add-to-list 'load-path "~/Dropbox/el")
+(require 'org-journal)
+
+(custom-set-variables
+  ;; custom-set-variables was added by Custom.
+  ;; If you edit it by hand, you could mess it up, so be careful.
+  ;; Your init file should contain only one such instance.
+  ;; If there is more than one, they won't work right.
+ '(gud-gdb-command-name "gdb --annotate=1")
+ '(large-file-warning-threshold nil)
+ '(org-agenda-files (quote ("~/Dropbox/journal/personal.do" 
+                            "~/Dropbox/journal/work.do")))
+ '(org-ellipsis " >>>")
+ '(org-log-done t)
+ '(org-startup-folded 'nil))
+(custom-set-faces
+  ;; custom-set-faces was added by Custom.
+  ;; If you edit it by hand, you could mess it up, so be careful.
+  ;; Your init file should contain only one such instance.
+  ;; If there is more than one, they won't work right.
+ )
+
+(require 'org-checklist)
