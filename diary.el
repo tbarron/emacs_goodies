@@ -63,23 +63,124 @@
 )
 
 ;;; ---------------------------------------------------------------
+;;; dt-format
+;;; 2008.1030 - prompt for and set dt-format
+;;; ---------------------------------------------------------------
+(defun dt-format (fmt)
+  "Prompt for and set dt-format"
+  (let ((prompt "date format > "))
+    (if (null fmt)
+        (progn 
+          (if (null dt-format-str)
+              (setq dt-format-str "%Y.%m%d"))
+          (setq dt-format-str (read-string prompt dt-format-str)))
+      (setq dt-format-str (read-string prompt fmt))))
+)
+
+;;; ---------------------------------------------------------------
 ;;; dt-date
 ;;; 97-08-17 - got rid of "date" call using current-time and 
 ;;;            format-time-string
+;;; 2008.1030 - make this a generalized time stamp function
+;;;             prompt for offset -- n(ow), y(esterday), t(omorrow)
+;;;             and format
+;;;
+;;;             format persists from one call to the next, defaults
+;;;             to %Y.%m%d if nil
 ;;; ---------------------------------------------------------------
 (defun dt-date ()
-  "Insert today's date into the current buffer"
+  "Insert a timestamp into the current buffer"
   (interactive)
-  (insert (format-time-string "%Y-%m-%d" (current-time)))
+  (defvar dt-format-str "%Y.%m%d" "The persistent timestamp format")
+  (let (offset)
+    (setq offset 
+          (read-string "Offset [y(esterday), n(ow), t(omorrow)] > " "n"))
+    ; (message "offset = %s; format = %s" offset format)
+    (if (string-equal offset "n")
+        (setq when (current-time))
+      (if (string-equal offset "y")
+          (setq when (time-subtract (current-time) (days-to-time 1)))
+        (if (string-equal offset "t")
+            (setq when (time-add (current-time) (days-to-time 1)))
+          (message "invalid offset: %s" offset)
+          )))
+
+    (setq dt-format-str (read-string "Format > " dt-format-str))
+
+    (insert (format-time-string dt-format-str when))
+    )
+)
+
+;;; -----------------------------------------------------------------
+;;; insert a date/time stamp plus a dividing line
+;;; -----------------------------------------------------------------
+(defun dt-date-divline ()
+  "Insert a timestamp and divider line into the current buffer"
+  (interactive)
+  (goto-char (point-max))
+  (if (re-search-backward "^[0-9]+-" 0 't)
+      (progn (set 'd-bufday (substring (buffer-string) 
+                                (- (point) 1)
+                                (+ (point) 9)))
+             (set 'd-today (format-time-string "%Y-%m-%d"))
+             (if (string-equal d-bufday d-today)
+                 (setq d-div
+                       " --------------------------------------------------")
+               (setq d-div
+                     " =================================================="))
+             (goto-char (- (point-max) 2))
+             
+             (if (looking-at "\n\n")
+                 (goto-char (point-max))
+               (if (looking-at ".\n")
+                   (progn (goto-char (point-max))
+                          (insert "\n"))
+                 (progn (goto-char (point-max))
+                        (insert "\n\n"))
+                 ))
+  
+             (insert (format-time-string "%Y-%m-%d %H:%M:%S") d-div "\n\n   ")
+             )
+
+    (progn (goto-char 0)
+           (setq d-div " ==================================================")
+           (insert (format-time-string "%Y-%m-%d %H:%M:%S") d-div "\n\n   ")
+           )
+    )
+)
+(global-set-key "\C-x-" 'dt-date-divline)
+
+;;; -----------------------------------------------------------------
+(defun dt-check ()
+ (interactive)
+ (debug)
+ (if (boundp 'dt-format-str)
+   (message "dt-format-str = %s" dt-format-str)
+     (message "argh! gnash gnash"))
+)
+
+;;; ---------------------------------------------------------------
+;;; dt-yesterday
+;;; 2008.1030 - insert yesterday's date and time into the buffer
+;;; ---------------------------------------------------------------
+(defun dt-yesterday ()
+  "Insert yesterday's date into the current buffer using dt-format-str"
+  (interactive)
+  (insert (format-time-string 
+           (dt-format 'nil)
+           (time-subtract (current-time) (days-to-time 1))))
 )
 
 ;;; ---------------------------------------------------------------
 ;;; dt-mdy
 ;;; 2005-08-01 - created
 ;;; ---------------------------------------------------------------
-(defun dt-mdy ()
+(defun dt-mdy (&optional dt-ovr)
   "Insert today's date (mm/dd/yy) into the current buffer"
-  (interactive)
+  (interactive "P")
+  (message "dt-ovr = " dt-ovr)
+  (if (not (equal dt-ovr 'nil))
+      (delete-char 8))
   (insert (format-time-string "%m/%d/%y" (current-time)))
 )
 
@@ -104,7 +205,7 @@
 (defun dt-time ()
   "Insert a time and date stamp into the current buffer"
   (interactive)
-  (insert (format-time-string "%H:%M:%S"))
+  (insert (format-time-string (dt-format "%H:%M:%S")))
 )
 
 ;;; ---------------------------------------------------------------

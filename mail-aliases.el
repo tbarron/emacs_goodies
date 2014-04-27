@@ -1,0 +1,10 @@
+(define-mail-alias "richard" "alexar@ccs.ornl.gov")
+(define-mail-alias "don" "mii@ccs.ornl.gov")
+(define-mail-alias "trey" "7bw@ornl.gov")
+(define-mail-alias "DaleSmith" "dtsmith@peregrine.com")
+(define-mail-alias "karen" "karenturtle@mindspring.com")
+(define-mail-alias "KenApache" "kapache@peregrine.com")
+; (define-mail-alias "buddy" "aib@ccs.ornl.gov")
+(define-mail-alias "momndad" "thbarron@iname.com")
+
+(global-set-key "\M-\C-m" 'expand-mail-aliases)

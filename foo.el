@@ -1,10 +1,10 @@
-# ---------------------------------------------------------------------------
+; ---------------------------------------------------------------------------
 (defun sort-list ()
   "sort a list enclosed in parens"
   (interactive)
 
-;  (setq sl-origpoint (point))
-;  (setq sl-bs (buffer-substring (point) (+ (point) 1)))
+  (setq sl-origpoint (point))
+  (setq sl-bs (buffer-substring (point) (+ (point) 1)))
 
   ; if search-backward fails, what is returned, and is point moved?
   ; -> nil is returned, point is not moved if arg 3 is 't
@@ -20,14 +20,25 @@
   (if (not (numberp (setq sl-end (- (search-forward ")" (point-max) 't) 1))))
       (setq sl-end -1))
 
+  (if (or (< sl-end sl-origpoint) (< sl-origpoint (- sl-start 1)))
+      (setq sl-start -1))
+
   (setq sl-list "")
   (if (and (not (= sl-start -1)) (not (= sl-end -1)))
       (progn
         (setq sl-list (buffer-substring sl-start sl-end))
+        (setq sl-list (split-string sl-list " *, *"))
+        (setq sl-list (sort sl-list 'string-lessp))
+        (setq sl-list (mapconcat (function (lambda (a) (format "%s" a))) 
+                                 sl-list ", "))
+        (goto-char sl-start)
+        (kill-region sl-start sl-end)
+        (insert sl-list)
         )
     )
         
 ;  (message "s = %d; e = %d; l = '%s'" sl-start sl-end sl-list)
-;  (goto-char sl-origpoint)
+  (message "l = '%s'" sl-list)
+  (goto-char sl-origpoint)
 )
 

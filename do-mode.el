@@ -563,33 +563,3 @@ do-dated ()
 
   
 )
-
-; ---------------------------------------------------------------------------
-; ~/Dropbox/journal/thisyear should be a symlink pointing at the
-; current year directory in ~/Dropbox/journal (e.g.,
-; ~/Dropbox/journal/2014). If this is the case, do nothing. If the
-; symlink does not exist, create it pointing to the correct year
-; directory. If the symlink points to a past year, delete it and
-; recreate it pointing at the current year. This routine assumes that
-; the current year directory exists.
-; ---------------------------------------------------------------------------
-(defun dropbox-update-year-symlink ()
-  (let ((fn  "~/Dropbox/journal/thisyear")
-        (cyr (format-time-string "%Y"))
-        (tn))
-      
-    (if (file-symlink-p fn)
-        (progn
-          (setq tn (file-name-nondirectory (file-truename fn)))
-          (if (not (equal tn cyr))
-              (progn
-                (delete-file fn)
-                (make-symbolic-link (format-time-string "%Y") fn)
-              )
-          )
-        )
-        (make-symbolic-link (format-time-string "%Y") fn)
-    )
-  )
-)
-(debug-on-entry 'dropbox-update-year-symlink)
