@@ -743,3 +743,30 @@
     )
 )
 (global-set-key "\C-x\C-l" 'perl-localize)
+
+
+; ---------------------------------------------------------------------------
+(defun indent-to-here (column)
+  "With argument, indent to column. Without, remove whitespace to next non-whitespace, i.e., indent to current column"
+  (interactive "P")
+  (let (ccol)
+    (setq ccol (current-column))
+    (if (equal column nil) 
+        (progn
+          (just-one-space)
+          (indent-to-column ccol)
+        )
+      (if (< ccol column)
+          (indent-to-column column)
+        (progn
+          (move-to-column column)
+          (just-one-space)
+          (indent-to-column column)
+        )
+      )
+    )
+  )
+)
+(global-set-key "\C-x\C-i" 'indent-to-here)
+; (debug-on-entry 'indent-to-here)
+

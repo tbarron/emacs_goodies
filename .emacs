@@ -127,6 +127,8 @@
     (load-library "~/Dropbox/el/tools.el"))
 (if (file-exists-p "~/Dropbox/el/unix.el") 
     (load-library "~/Dropbox/el/unix.el"))
+(if (file-exists-p "~/Dropbox/el/mykeys.el") 
+    (load-library "~/Dropbox/el/mykeys.el"))
 
 (setq python-mode-hook
     '(lambda ()
@@ -163,7 +165,7 @@
 (global-set-key "\C-x\C-b" 'electric-buffer-list)
 (global-set-key "\C-x\C-d" 'do-visit-done)
 (global-set-key "\C-x\C-e" 'dt-mdy)
-(global-set-key "\C-x\C-i" 'indent-rigidly)
+;(global-set-key "\C-x\C-i" 'indent-rigidly)
 ;(global-set-key "\C-x!" 'new-issue)
 (global-set-key "\C-x\C-k" 'kill-all-user-buffers)
 (global-set-key "\C-x\C-n" 'repeat-complex-command)
@@ -215,7 +217,7 @@
 (global-set-key "\M-\C-f" 'find-file-read-only)
 (global-set-key "\M-\C-r" 'query-replace-regexp)
 (global-set-key "\M-\C-v" 'copy-preceding-line)
-
+(font-lock-mode -1)
 
 ; (define-key view-mode-map "\C-w" 'other-window)
 ; (View-scroll-lines-forward-set-scroll-size 1)
