@@ -224,6 +224,28 @@ headline in a .jnl file"
 )
 
 ; ---------------------------------------------------------------------------
+(defun org-jnl-insert-checkbox ()
+  "Insert a checkbox before the item where point is"
+  (interactive)
+  (if (org-at-item-checkbox-p)
+      (progn
+        (end-of-line)
+        (org-insert-item t)
+        ; (insert "\n")
+        (org-beginning-of-item)
+        (end-of-line)
+        )
+    (progn
+      (org-next-item)
+      (insert "- [ ] \n")
+      (org-indent-item)
+      (org-end-of-item)
+      )
+    )
+)
+; (debug-on-entry 'org-jnl-insert-checkbox)
+
+; ---------------------------------------------------------------------------
 (global-set-key "\C-x?" 'org-jnl-open)
 (global-set-key "\M-?" 'org-jnl-open)
 (global-set-key "\C-c." 'org-jnl-now)
@@ -245,7 +267,8 @@ headline in a .jnl file"
          (local-set-key "\M-e" 'org-jnl-new-entry)
          (local-set-key "\M-t" 'org-jnl-new-do-entry2)
          (local-set-key "\M-h" 'help-command)
-         (local-set-key "\M-." 'org-mark-element)
+         ; (local-set-key "\M-." 'org-mark-element)
+         (local-set-key "\M-." 'org-jnl-insert-checkbox)
          (local-set-key (kbd "<left>") 'org-timestamp-down)
          (local-set-key (kbd "<right>") 'org-timestamp-up)
          (setq fill-column 79)
