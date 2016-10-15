@@ -27,6 +27,96 @@
 (global-set-key "\M-f" 'goto-fileloc-at-point)
 
 ; ---------------------------------------------------------------------------
+(defun dquote ()
+  "If text is selected, add double quotes around it. Otherwise, if
+   we're in a quoted string, remove innermost quotes. Otherwise, do
+   nothing."
+  (interactive)
+  ; (debug)
+  (save-excursion
+    (if (use-region-p)
+        ; quote the region
+        (progn (insert "\"")
+             (exchange-point-and-mark)
+             (insert "\"")
+             (exchange-point-and-mark)
+        )
+        ; remove quotes if in a quoted string
+        (unquote)
+    )
+  )
+)
+(global-set-key "\M-\"" 'dquote)
+
+; ---------------------------------------------------------------------------
+(defun squote ()
+  "If text is selected, add single quotes around it. Otherwise, if
+   we're in a quoted string, remove innermost quotes. Otherwise, do
+   nothing."
+  (interactive)
+  ; (debug)
+  (save-excursion
+    (if (use-region-p)
+        ; quote the region
+        (progn (insert "'")
+             (exchange-point-and-mark)
+             (insert "'")
+             (exchange-point-and-mark)
+        )
+        ; remove quotes if in a quoted string
+        (unquote)
+    )
+  )
+)
+(global-set-key "\M-'" 'squote)
+
+; ---------------------------------------------------------------------------
+(defun unquote ()
+  "Remove a set of single or double quotes surrounding the current string"
+  (interactive)
+  (let (start
+        quote
+        fexp)
+    (progn
+      (re-search-backward "['\"\n]")
+      (if (equal (string (char-after)) "\'")
+          (progn (setq start (point))
+                 (setq quote "'")
+                 (setq fexp "['\n]")
+          )
+          (if (equal (string (char-after)) "\"")
+              (progn (setq start (point))
+                     (setq quote "\"")
+                     (setq fexp "[\"\n]")
+              )
+              (return)
+          )
+      )
+      (re-search-forward fexp)
+      (re-search-forward fexp)
+      (if (equal (string (char-before)) quote)
+          (progn (delete-char -1)
+                 (goto-char start)
+                 (delete-char 1)
+          )
+      )
+    )
+  )
+)
+(global-set-key "\C-X'" 'unquote)
+
+; ---------------------------------------------------------------------------
+(defun toggle-tab-width ()
+  "Toggle `tab-width' between 8 and 4."
+  (interactive)
+  (setq tab-width
+        (if (= tab-width 4)
+            8
+          4))
+  (message "Tab width set to %d" tab-width)
+)
+
+; ---------------------------------------------------------------------------
 (defun align-next-line ()
   "Attempt to align the nearest word on the next line"
   (interactive)

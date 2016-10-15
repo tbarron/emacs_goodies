@@ -43,7 +43,7 @@
 
 (setq java-mode-hook
    '(lambda ()
-      (setq tab-width 4)
+      (setq tab-width 8)
       ; (c-set-style "Ellemtel")
       ))
 ;; (setq c++-mode-hook
