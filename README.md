@@ -11,7 +11,7 @@
       completely away. Loaded by .emacs.
   * html.el
     * HTML mode editing programs. Loaded by .emacs.
-  * *mykeys.el*: Personal key bindings. Over time I want to pull most of
+  * **mykeys.el**: Personal key bindings. Over time I want to pull most of
     my key bindings out of .emacs and put them here. Loaded by .emacs.
   * foo.el
     * Routine to sort a paren-enclosed list. Not loaded by .emacs.
