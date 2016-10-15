@@ -5,29 +5,45 @@
     * Place to experiment with new ideas. Not loaded automatically.
 
   * diary.el
-    * This is mostly obsolete but I still use some of the date insert functions.
+
+    * This is mostly obsolete but I still use some of the date insert
+      functions. Loaded by .emacs.
 
   * do-mode.el
     * Not using emacs for todo lists so much anymore, but this has not quite gone 
-      completely away.
+      completely away. Loaded by .emacs.
 
 ## Sorting
-    * foo.el
-    * html.el
-    * mail-aliases.el
-    * mykeys.el
-    * org-journal.el
-    * python-mode.el
-    * sccs.el
-    * status.el
-    * support.el
-    * tools.el
-    * unix.el
-    * wc-mode.el
-    * word-count.el
+  * foo.el
+    * Not loaded by .emacs.
+  * html.el
+    * Loaded by .emacs.
+  * mail-aliases.el
+    * Not loaded by .emacs.
+  * mykeys.el
+    * Loaded by .emacs.
+  * org-journal.el
+    * Loaded by .emacs.
+  * python-mode.el
+    * Loaded by .emacs.
+  * sccs.el
+    * Loaded by .emacs.
+  * status.el
+    * Loaded by .emacs.
+  * support.el
+    * Loaded by .emacs.
+  * tools.el
+    * Loaded by .emacs.
+  * unix.el
+    * Loaded by .emacs.
+  * wc-mode.el
+    * Not loaded by .emacs.
+  * word-count.el
 
 ## Obsolete
-    * Makefile
+  * Makefile
+    * Target to create tarball for shipping this content somewhere
+      else. Now we use git and github for moving this stuff around.
 
 ## Notes
 
