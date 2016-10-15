@@ -5,6 +5,9 @@
       * Place to experiment with new ideas. Not loaded automatically.
 
     * diary.el
+      * This is mostly obsolete but I still use some of the date insert functions.
+
+  * Sorting
     * do-mode.el
     * foo.el
     * html.el
