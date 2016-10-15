@@ -11,6 +11,7 @@
       completely away. Loaded by .emacs.
   * html.el
     * HTML mode editing programs. Loaded by .emacs.
+
   * foo.el
     * Routine to sort a paren-enclosed list. Not loaded by .emacs.
 
