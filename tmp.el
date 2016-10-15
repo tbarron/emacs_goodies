@@ -150,3 +150,20 @@
   (goto-char sl-origpoint)
 )
 
+; ---------------------------------------------------------------------------
+(defun py-comment-function ()
+  ""
+  (interactive)
+
+  (re-search-forward "^ *def ")
+  (end-of-line)
+  (insert "\n\"\"\"")
+  (py-indent-line)
+  (insert "\n\"\"\"")
+  (py-indent-line)
+  (forward-line -1)
+  (end-of-line)
+  (insert "\n")
+  (py-indent-line)
+)
+(global-set-key "\M-f" 'py-comment-function)
