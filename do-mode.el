@@ -92,12 +92,12 @@ if that value is non-nil."
     ; (do-findfile diary_jpy journal)
     ; (do-findfile diary_jwym daily)
     ; (do-findfile diary_jw queue)
-    (do-findfile "~/Dropbox/journal" "work.do")
-    (do-findfile "~/Dropbox/journal" "personal.do")
-    (do-findfile jnl_year journal)
+    ; (do-findfile "~/Dropbox/journal" "work.do")
+    ; (do-findfile "~/Dropbox/journal" "personal.do")
+    ; (do-findfile jnl_year journal)
     (do-findfile jnl_year "WORKLOG")
     (goto-char (point-max))
-;;     (if (file-exists-p thumb) 
+;;     (if (file-exists-p thumb)
 ;;         (progn
 ;;           ; (do-findfile (concat thumb "/prj") "ROOT.do")
 ;;           ; (do-findfile (concat thumb diary_jy) journal)
@@ -107,6 +107,7 @@ if that value is non-nil."
 ;;     )
   )
 )
+(global-set-key "\M-?" 'dodo)
 
 ;;; ---------------------------------------------------------------
 ;;; do-findfile
@@ -321,7 +322,7 @@ if that value is non-nil."
 ;;; ---------------------------------------------------------------
 ;;; do-dated
 ;;; ---------------------------------------------------------------
-(defun 
+(defun
 do-dated ()
   "Create a dated reminder entry based on dt parameters"
   (interactive)
@@ -561,5 +562,5 @@ do-dated ()
   "Copy appropriate reminders from reminder file to DODO"
   (interactive)
 
-  
+
 )

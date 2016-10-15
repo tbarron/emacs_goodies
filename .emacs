@@ -2,7 +2,7 @@
 ;;;; Variable settings
 ;;;; ===============================================================
 (add-hook 'write-file-hooks 'time-stamp)
-(setq time-stamp-start "[Uu]pdated:[ 	]+\\\\?[\"<]+")
+(setq time-stamp-start "[Uu]pdated[:_= 	]+\\\\?[\"<]+")
 (setq time-stamp-format "%04y-%02m-%02d %02H:%02M:%02S")
 ; (setq time-stamp-format "%04y-%02m-%02d")
 (setq text-mode-hook
@@ -131,6 +131,8 @@
     (load-library "~/Dropbox/el/unix.el"))
 (if (file-exists-p "~/Dropbox/el/mykeys.el")
     (load-library "~/Dropbox/el/mykeys.el"))
+(if (file-exists-p "~/Dropbox/el/word-count.el")
+    (load-library "~/Dropbox/el/word-count.el"))
 
 (setq python-mode-hook
     '(lambda ()
@@ -277,7 +279,7 @@
 (require 'org-checklist)
 
 (add-to-list 'load-path "~/Dropbox/el")
-(require 'org-journal)
+; (require 'org-journal)
 
 (add-to-list 'load-path
              "/usr/local/Cellar/git/1.9.3/share/git-core/contrib/emacs")
@@ -287,3 +289,4 @@
 ; (require 'git-blame)
 
 (put 'upcase-region 'disabled nil)
+(transient-mark-mode)
