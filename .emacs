@@ -74,8 +74,8 @@
       (local-set-key "\C-t" 'View-scroll-lines-backward)
       (local-set-key "\C-w" 'other-window)))
 (setq support-mode-hook
-   '(lambda () 
-      (auto-fill-mode 1) 
+   '(lambda ()
+      (auto-fill-mode 1)
       (setq tab-width 3)))
 (setq visible-bell 't)
 (setq-default indent-tabs-mode 'nil)
@@ -107,27 +107,27 @@
 ;;;; ===============================================================
 ;;;; Files to load
 ;;;; ===============================================================
-(if (file-exists-p "~/Dropbox/el/diary.el") 
+(if (file-exists-p "~/Dropbox/el/diary.el")
     (load-library "~/Dropbox/el/diary.el"))
-(if (file-exists-p "~/Dropbox/el/do-mode.el") 
+(if (file-exists-p "~/Dropbox/el/do-mode.el")
     (load-library "~/Dropbox/el/do-mode.el"))
-(if (file-exists-p "~/Dropbox/el/html.el") 
+(if (file-exists-p "~/Dropbox/el/html.el")
     (load-library "~/Dropbox/el/html.el"))
-(if (file-exists-p "~/Dropbox/el/python-mode.el") 
+(if (file-exists-p "~/Dropbox/el/python-mode.el")
     (load-library "~/Dropbox/el/python-mode.el"))
-(if (file-exists-p "~/Dropbox/el/sccs.el") 
+(if (file-exists-p "~/Dropbox/el/sccs.el")
     (load-library "~/Dropbox/el/sccs.el"))
-(if (file-exists-p "~/Dropbox/el/status.el") 
+(if (file-exists-p "~/Dropbox/el/status.el")
     (load-library "~/Dropbox/el/status.el"))
-(if (file-exists-p "~/Dropbox/el/support.el") 
+(if (file-exists-p "~/Dropbox/el/support.el")
     (load-library "~/Dropbox/el/support.el"))
-(if (file-exists-p "~/Dropbox/el/tags.el") 
+(if (file-exists-p "~/Dropbox/el/tags.el")
     (load-library "~/Dropbox/el/tags.el"))
-(if (file-exists-p "~/Dropbox/el/tools.el") 
+(if (file-exists-p "~/Dropbox/el/tools.el")
     (load-library "~/Dropbox/el/tools.el"))
-(if (file-exists-p "~/Dropbox/el/unix.el") 
+(if (file-exists-p "~/Dropbox/el/unix.el")
     (load-library "~/Dropbox/el/unix.el"))
-(if (file-exists-p "~/Dropbox/el/mykeys.el") 
+(if (file-exists-p "~/Dropbox/el/mykeys.el")
     (load-library "~/Dropbox/el/mykeys.el"))
 
 (setq python-mode-hook
@@ -262,7 +262,7 @@
   ;; If there is more than one, they won't work right.
  '(gud-gdb-command-name "gdb --annotate=1")
  '(large-file-warning-threshold nil)
- '(org-agenda-files (quote ("~/Dropbox/journal/personal.do" 
+ '(org-agenda-files (quote ("~/Dropbox/journal/personal.do"
                             "~/Dropbox/journal/work.do")))
  '(org-ellipsis " >>>")
  '(org-log-done t)

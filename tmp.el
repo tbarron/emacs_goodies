@@ -9,7 +9,7 @@
         (forward-char anl-col)
         (setq anl-chr (buffer-substring (point) (- (point) 1)))
         (if (not (string-equal anl-chr " "))
-            (progn 
+            (progn
               (forward-word -1)
               (setq anl-diff (- anl-col (column)))
               (insert (substring "                      " 0 anl-diff))
@@ -74,7 +74,7 @@
   (newline)
   (tab-to-tab-stop)
 )
- 
+
 ; ---------------------------------------------------------------------------
 (defun findll ()
   "find the next line longer than 79 chars"
@@ -84,13 +84,13 @@
     )
   (end-of-line)
 )
- 
+
 ; ---------------------------------------------------------------------------
 (defun number-entries ()
   "Scan through a file, inserting a number into each entry"
   (interactive)
   (setq number 5)
-  (while 
+  (while
       (search-forward " ==")
     (setq s-num (format " %04d " number))
     (insert s-num)
