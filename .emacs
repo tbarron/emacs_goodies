@@ -131,6 +131,8 @@
     (load-library "~/Dropbox/el/unix.el"))
 (if (file-exists-p "~/Dropbox/el/mykeys.el")
     (load-library "~/Dropbox/el/mykeys.el"))
+(if (file-exists-p "~/Dropbox/el/word-count.el")
+    (load-library "~/Dropbox/el/word-count.el"))
 
 (setq python-mode-hook
     '(lambda ()
