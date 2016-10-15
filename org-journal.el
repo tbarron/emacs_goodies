@@ -33,7 +33,7 @@
             (message "'%s' => '%s'" fn tn)
             (if (not (equal tn cyr))
                 (progn
-                  (delete-file fn)
+                  ; (delete-file fn)
                   (make-symbolic-link (format-time-string "%Y") fn)
                   (message "'%s' ~= '%s' -- removed and remade symlink %s"
                            tn cyr fn)
@@ -75,13 +75,13 @@
         )
 
     ; (do-findfile "~/Dropbox/journal" "work.do")
-    (do-findfile org-journal-dir "work.do")
+    ; (do-findfile org-journal-dir "work.do")
     ; (do-findfile "~/Dropbox/journal" "personal.do")
-    (do-findfile org-journal-dir "personal.do")
-    (do-findfile jnl_year "work.jnl")
-    (goto-char (point-max))
-    (do-findfile jnl_year "personal.jnl")
-    (goto-char (point-max))
+    ; (do-findfile org-journal-dir "personal.do")
+    ; (do-findfile jnl_year "work.jnl")
+    ; (goto-char (point-max))
+    ; (do-findfile jnl_year "personal.jnl")
+    ; (goto-char (point-max))
     (do-findfile jnl_year "WORKLOG")
     (goto-char (point-max))
   )
@@ -284,4 +284,4 @@ headline in a .jnl file"
 
 ;; This routine checks the symlink thisyear against the current year
 ;; in org-journal-dir and updates it if it's out of date
-(org-jnl-dropbox-update-year-symlink)
+; (org-jnl-dropbox-update-year-symlink)

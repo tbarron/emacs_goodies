@@ -257,9 +257,6 @@
 (add-to-list 'load-path "~/Dropbox/prj/org-mode/contrib/lisp")
 (require 'org)
 
-(add-to-list 'load-path "~/Dropbox/el")
-(require 'org-journal)
-
 (custom-set-variables
   ;; custom-set-variables was added by Custom.
   ;; If you edit it by hand, you could mess it up, so be careful.
@@ -280,3 +277,16 @@
  )
 
 (require 'org-checklist)
+
+(add-to-list 'load-path "~/Dropbox/el")
+; (require 'org-journal)
+
+(add-to-list 'load-path
+             "/usr/local/Cellar/git/1.9.3/share/git-core/contrib/emacs")
+(add-to-list 'load-path
+             "/usr/share/doc/git-1.7.1/contrib/emacs")
+; (require 'git)
+; (require 'git-blame)
+
+(put 'upcase-region 'disabled nil)
+(transient-mark-mode)
