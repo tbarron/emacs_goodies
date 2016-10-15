@@ -1,31 +1,39 @@
 # My collection of emacs support files
 
 ## Actively in use
-  * tmp.el
-    * Place to experiment with new ideas. Not loaded automatically.
-  * diary.el
-    * This is mostly obsolete but I still use some of the date insert
-      functions. Loaded by .emacs.
-  * do-mode.el
-    * Not using emacs for todo lists so much anymore, but this has not quite gone 
-      completely away. Loaded by .emacs.
+
+### tmp.el
+  * Place to experiment with new ideas. Not loaded automatically.
+
+### diary.el
+  * This is mostly obsolete but I still use some of the date insert
+    functions. Loaded by .emacs.
+
+### do-mode.el
+  * Not using emacs for todo lists so much anymore, but this has not quite gone 
+    completely away. Loaded by .emacs.
 
 ### html.el
-HTML mode editing programs. Loaded by .emacs.
+  * HTML mode editing programs. Loaded by .emacs.
 
 ### mykeys.el
-Personal key bindings. Over time I want to pull most of
-my key bindings out of .emacs and put them here. Loaded by .emacs.
+  * Personal key bindings. Over time I want to pull most of
+    my key bindings out of .emacs and put them here. Loaded by .emacs.
 
-  * foo.el
-    * Routine to sort a paren-enclosed list. Not loaded by .emacs.
+### org-journal.el
+  * An organizational framework I tried out. Not using it anymore
+    but it's still loaded by .emacs.
+
+### python-mode.el
+  * Third party python mode which I have customized lightly. Once I
+    get py-comment-function working the way I want, it should go in
+    here. Loaded by .emacs.
+
+### foo.el
+  * Routine to sort a paren-enclosed list. Not loaded by .emacs.
 
 
 ## Sorting
-  * org-journal.el
-    * Loaded by .emacs.
-  * python-mode.el
-    * Loaded by .emacs.
   * sccs.el
     * Loaded by .emacs.
   * status.el
