@@ -1,3 +1,31 @@
+ ; ---------------------------------------------------------------------------
+(defun goto-fileloc-at-point ()
+  "Jump to the file location indicated at point"
+  (interactive)
+  (if (not (string-equal (buffer-name) "*compilation*"))
+      (switch-to-buffer-other-window "*compilation*"))
+  (if (equal (point) (point-min))
+      (goto-char (point-max)))
+  (save-match-data
+    ; (beginning-of-line)
+    (re-search-backward "^[^ \r\t\n:][^ \r\t\n:]*:[0-9][0-9]*:[0-9][0-9]*: .*")
+    ; (forward-line -1)
+    (let ((ms (match-string 0)))
+      (let ((filename (nth 0 (split-string ms ":")))
+            (line (nth 1  (split-string ms ":")))
+            (col (nth 2 (split-string ms ":")))
+            (why (nth 3 (split-string ms ":")))
+            )
+        (find-file-other-window filename)
+        (goto-line (string-to-number line))
+        (move-to-column (- (string-to-number col) 1))
+        (message why)
+        )
+      )
+    )
+  )
+(global-set-key "\M-f" 'goto-fileloc-at-point)
+
 ; ---------------------------------------------------------------------------
 (defun align-next-line ()
   "Attempt to align the nearest word on the next line"
