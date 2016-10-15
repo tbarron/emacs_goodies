@@ -11,15 +11,13 @@
       completely away. Loaded by .emacs.
   * html.el
     * HTML mode editing programs. Loaded by .emacs.
-
+  * mykeys.el: Personal key bindings. Over time I want to pull most of
+    my key bindings out of .emacs and put them here. Loaded by .emacs.
   * foo.el
     * Routine to sort a paren-enclosed list. Not loaded by .emacs.
 
+
 ## Sorting
-  * mail-aliases.el
-    * Not loaded by .emacs.
-  * mykeys.el
-    * Loaded by .emacs.
   * org-journal.el
     * Loaded by .emacs.
   * python-mode.el
@@ -39,6 +37,9 @@
   * word-count.el
 
 ## Obsolete
+  * mail-aliases.el
+    * Old mail aliases for when I was reading mail in emacs. Not
+      loaded by .emacs.
   * Makefile
     * Target to create tarball for shipping this content somewhere
       else. Now we use git and github for moving this stuff around.
