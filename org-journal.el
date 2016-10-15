@@ -153,7 +153,7 @@
 
 ; ---------------------------------------------------------------------------
 (defun org-jnl-new-entry ()
-  "Insert a new TODO entry in a .do file or a current level timestamped 
+  "Insert a new TODO entry in a .do file or a current level timestamped
 headline in a .jnl file"
   (interactive)
 
@@ -208,7 +208,7 @@ headline in a .jnl file"
       (if (org-at-item-p)
           (org-insert-item)  ; add the same kind of item as current one
         (progn
-          (org-forward-same-level 1)   ; add a TODO headline after the 
+          (org-forward-same-level 1)   ; add a TODO headline after the
           (org-insert-todo-heading t)  ; current one
         )
       )
@@ -271,7 +271,8 @@ headline in a .jnl file"
          (local-set-key "\M-." 'org-jnl-insert-checkbox)
          (local-set-key (kbd "<left>") 'org-timestamp-down)
          (local-set-key (kbd "<right>") 'org-timestamp-up)
-         (setq fill-column 79)
+         (local-set-key "\C-c\t" 'indent-rigidly)
+         (setq fill-column 75)
          ))
 
 
