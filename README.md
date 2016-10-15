@@ -3,21 +3,18 @@
 ## Actively in use
   * tmp.el
     * Place to experiment with new ideas. Not loaded automatically.
-
   * diary.el
-
     * This is mostly obsolete but I still use some of the date insert
       functions. Loaded by .emacs.
-
   * do-mode.el
     * Not using emacs for todo lists so much anymore, but this has not quite gone 
       completely away. Loaded by .emacs.
+  * html.el
+    * HTML mode editing programs. Loaded by .emacs.
+  * foo.el
+    * Routine to sort a paren-enclosed list. Not loaded by .emacs.
 
 ## Sorting
-  * foo.el
-    * Not loaded by .emacs.
-  * html.el
-    * Loaded by .emacs.
   * mail-aliases.el
     * Not loaded by .emacs.
   * mykeys.el
