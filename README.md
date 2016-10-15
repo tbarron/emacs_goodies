@@ -1,14 +1,17 @@
 # My collection of emacs support files
 
-  * Actively in use
-    * tmp.el
-      * Place to experiment with new ideas. Not loaded automatically.
+## Actively in use
+  * tmp.el
+    * Place to experiment with new ideas. Not loaded automatically.
 
-    * diary.el
-      * This is mostly obsolete but I still use some of the date insert functions.
+  * diary.el
+    * This is mostly obsolete but I still use some of the date insert functions.
 
-  * Sorting
-    * do-mode.el
+  * do-mode.el
+    * Not using emacs for todo lists so much anymore, but this has not quite gone 
+      completely away.
+
+## Sorting
     * foo.el
     * html.el
     * mail-aliases.el
@@ -23,8 +26,10 @@
     * wc-mode.el
     * word-count.el
 
-  * Obsolete
+## Obsolete
     * Makefile
+
+## Notes
 
 To load a file manually, visit the file in the editor and type "\M-v"
 (which is bound to the emacs command eval-current-buffer).
