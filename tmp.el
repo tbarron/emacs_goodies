@@ -1,4 +1,94 @@
 ; ---------------------------------------------------------------------------
+(defun dquote ()
+  "If text is selected, add double quotes around it. Otherwise, if
+   we're in a quoted string, remove innermost quotes. Otherwise, do
+   nothing."
+  (interactive)
+  ; (debug)
+  (save-excursion
+    (if (use-region-p)
+        ; quote the region
+        (progn (insert "\"")
+             (exchange-point-and-mark)
+             (insert "\"")
+             (exchange-point-and-mark)
+        )
+        ; remove quotes if in a quoted string
+        (unquote)
+    )
+  )
+)
+(global-set-key "\M-\"" 'dquote)
+
+; ---------------------------------------------------------------------------
+(defun squote ()
+  "If text is selected, add single quotes around it. Otherwise, if
+   we're in a quoted string, remove innermost quotes. Otherwise, do
+   nothing."
+  (interactive)
+  ; (debug)
+  (save-excursion
+    (if (use-region-p)
+        ; quote the region
+        (progn (insert "'")
+             (exchange-point-and-mark)
+             (insert "'")
+             (exchange-point-and-mark)
+        )
+        ; remove quotes if in a quoted string
+        (unquote)
+    )
+  )
+)
+(global-set-key "\M-'" 'squote)
+
+; ---------------------------------------------------------------------------
+(defun unquote ()
+  "Remove a set of single or double quotes surrounding the current string"
+  (interactive)
+  (let (start
+        quote
+        fexp)
+    (progn
+      (re-search-backward "['\"\n]")
+      (if (equal (string (char-after)) "\'")
+          (progn (setq start (point))
+                 (setq quote "'")
+                 (setq fexp "['\n]")
+          )
+          (if (equal (string (char-after)) "\"")
+              (progn (setq start (point))
+                     (setq quote "\"")
+                     (setq fexp "[\"\n]")
+              )
+              (return)
+          )
+      )
+      (re-search-forward fexp)
+      (re-search-forward fexp)
+      (if (equal (string (char-before)) quote)
+          (progn (delete-char -1)
+                 (goto-char start)
+                 (delete-char 1)
+          )
+      )
+    )
+  )
+)
+(global-set-key "\C-X'" 'unquote)
+
+; ---------------------------------------------------------------------------
+(defun toggle-tab-width ()
+  "Toggle `tab-width' between 8 and 4."
+  (interactive)
+  (setq tab-width
+        (if (= tab-width 4)
+            8
+          4))
+  (message "Tab width set to %d" tab-width)
+)
+
+; ---------------------------------------------------------------------------
 (defun align-next-line ()
   "Attempt to align the nearest word on the next line"
   (interactive)
@@ -9,7 +99,7 @@
         (forward-char anl-col)
         (setq anl-chr (buffer-substring (point) (- (point) 1)))
         (if (not (string-equal anl-chr " "))
-            (progn 
+            (progn
               (forward-word -1)
               (setq anl-diff (- anl-col (column)))
               (insert (substring "                      " 0 anl-diff))
@@ -74,7 +164,7 @@
   (newline)
   (tab-to-tab-stop)
 )
- 
+
 ; ---------------------------------------------------------------------------
 (defun findll ()
   "find the next line longer than 79 chars"
@@ -84,13 +174,13 @@
     )
   (end-of-line)
 )
- 
+
 ; ---------------------------------------------------------------------------
 (defun number-entries ()
   "Scan through a file, inserting a number into each entry"
   (interactive)
   (setq number 5)
-  (while 
+  (while
       (search-forward " ==")
     (setq s-num (format " %04d " number))
     (insert s-num)
@@ -137,16 +227,33 @@
         (setq sl-list (buffer-substring sl-start sl-end))
         (setq sl-list (split-string sl-list " *, *"))
         (setq sl-list (sort sl-list 'string-lessp))
-        (setq sl-list (mapconcat (function (lambda (a) (format "%s" a))) 
+        (setq sl-list (mapconcat (function (lambda (a) (format "%s" a)))
                                  sl-list ", "))
         (goto-char sl-start)
         (kill-region sl-start sl-end)
         (insert sl-list)
         )
     )
-        
+
 ;  (message "s = %d; e = %d; l = '%s'" sl-start sl-end sl-list)
   (message "l = '%s'" sl-list)
   (goto-char sl-origpoint)
 )
 
+; ---------------------------------------------------------------------------
+(defun py-comment-function ()
+  ""
+  (interactive)
+
+  (re-search-forward "^ *def ")
+  (end-of-line)
+  (insert "\n\"\"\"")
+  (py-indent-line)
+  (insert "\n\"\"\"")
+  (py-indent-line)
+  (forward-line -1)
+  (end-of-line)
+  (insert "\n")
+  (py-indent-line)
+)
+(global-set-key "\M-f" 'py-comment-function)
