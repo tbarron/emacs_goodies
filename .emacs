@@ -6,9 +6,11 @@
 (setq time-stamp-format "%04y-%02m-%02d %02H:%02M:%02S")
 ; (setq time-stamp-format "%04y-%02m-%02d")
 (setq text-mode-hook
-   '(lambda () 
-      (auto-fill-mode 1) 
-      (setq tab-width 4)))
+   '(lambda ()
+      (auto-fill-mode 1)
+      (setq tab-width 4)
+      (setq fill-column 75)
+))
 (setq sentence-end "[.?!][]\"')]*\\($\\|\t\\| \\)[ \t\n]*")
 (setq sentence-end-double-space 'nil)
 
@@ -41,7 +43,7 @@
 
 (setq java-mode-hook
    '(lambda ()
-      (setq tab-width 4)
+      (setq tab-width 8)
       ; (c-set-style "Ellemtel")
       ))
 ;; (setq c++-mode-hook
@@ -74,8 +76,8 @@
       (local-set-key "\C-t" 'View-scroll-lines-backward)
       (local-set-key "\C-w" 'other-window)))
 (setq support-mode-hook
-   '(lambda () 
-      (auto-fill-mode 1) 
+   '(lambda ()
+      (auto-fill-mode 1)
       (setq tab-width 3)))
 (setq visible-bell 't)
 (setq-default indent-tabs-mode 'nil)
@@ -107,27 +109,27 @@
 ;;;; ===============================================================
 ;;;; Files to load
 ;;;; ===============================================================
-(if (file-exists-p "~/Dropbox/el/diary.el") 
+(if (file-exists-p "~/Dropbox/el/diary.el")
     (load-library "~/Dropbox/el/diary.el"))
-(if (file-exists-p "~/Dropbox/el/do-mode.el") 
+(if (file-exists-p "~/Dropbox/el/do-mode.el")
     (load-library "~/Dropbox/el/do-mode.el"))
-(if (file-exists-p "~/Dropbox/el/html.el") 
+(if (file-exists-p "~/Dropbox/el/html.el")
     (load-library "~/Dropbox/el/html.el"))
-(if (file-exists-p "~/Dropbox/el/python-mode.el") 
+(if (file-exists-p "~/Dropbox/el/python-mode.el")
     (load-library "~/Dropbox/el/python-mode.el"))
-(if (file-exists-p "~/Dropbox/el/sccs.el") 
+(if (file-exists-p "~/Dropbox/el/sccs.el")
     (load-library "~/Dropbox/el/sccs.el"))
-(if (file-exists-p "~/Dropbox/el/status.el") 
+(if (file-exists-p "~/Dropbox/el/status.el")
     (load-library "~/Dropbox/el/status.el"))
-(if (file-exists-p "~/Dropbox/el/support.el") 
+(if (file-exists-p "~/Dropbox/el/support.el")
     (load-library "~/Dropbox/el/support.el"))
-(if (file-exists-p "~/Dropbox/el/tags.el") 
+(if (file-exists-p "~/Dropbox/el/tags.el")
     (load-library "~/Dropbox/el/tags.el"))
-(if (file-exists-p "~/Dropbox/el/tools.el") 
+(if (file-exists-p "~/Dropbox/el/tools.el")
     (load-library "~/Dropbox/el/tools.el"))
-(if (file-exists-p "~/Dropbox/el/unix.el") 
+(if (file-exists-p "~/Dropbox/el/unix.el")
     (load-library "~/Dropbox/el/unix.el"))
-(if (file-exists-p "~/Dropbox/el/mykeys.el") 
+(if (file-exists-p "~/Dropbox/el/mykeys.el")
     (load-library "~/Dropbox/el/mykeys.el"))
 
 (setq python-mode-hook
@@ -191,7 +193,6 @@
 
 (global-set-key "\M-#" 'compile)
 ; (global-set-key "\M-\t" 'tab-to-tab-stop)
-(global-set-key "\M-\t" 'c-indent-command)
 (global-set-key "\M- " 'set-mark-command)
 (global-set-key "\M--" 'copy-preceding-line)
 (global-set-key "\M-{" 'c-stub)
@@ -217,6 +218,8 @@
 (global-set-key "\M-\C-f" 'find-file-read-only)
 (global-set-key "\M-\C-r" 'query-replace-regexp)
 (global-set-key "\M-\C-v" 'copy-preceding-line)
+(global-set-key "\M-\t" 'indent-rigidly)
+(global-set-key "\C-c\t" 'indent-rigidly)
 (font-lock-mode -1)
 
 ; (define-key view-mode-map "\C-w" 'other-window)
@@ -252,9 +255,6 @@
 (add-to-list 'load-path "~/Dropbox/prj/org-mode/contrib/lisp")
 (require 'org)
 
-(add-to-list 'load-path "~/Dropbox/el")
-(require 'org-journal)
-
 (custom-set-variables
   ;; custom-set-variables was added by Custom.
   ;; If you edit it by hand, you could mess it up, so be careful.
@@ -262,7 +262,7 @@
   ;; If there is more than one, they won't work right.
  '(gud-gdb-command-name "gdb --annotate=1")
  '(large-file-warning-threshold nil)
- '(org-agenda-files (quote ("~/Dropbox/journal/personal.do" 
+ '(org-agenda-files (quote ("~/Dropbox/journal/personal.do"
                             "~/Dropbox/journal/work.do")))
  '(org-ellipsis " >>>")
  '(org-log-done t)
@@ -275,3 +275,15 @@
  )
 
 (require 'org-checklist)
+
+(add-to-list 'load-path "~/Dropbox/el")
+(require 'org-journal)
+
+(add-to-list 'load-path
+             "/usr/local/Cellar/git/1.9.3/share/git-core/contrib/emacs")
+(add-to-list 'load-path
+             "/usr/share/doc/git-1.7.1/contrib/emacs")
+; (require 'git)
+; (require 'git-blame)
+
+(put 'upcase-region 'disabled nil)
