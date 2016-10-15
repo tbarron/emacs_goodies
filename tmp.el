@@ -165,14 +165,14 @@
         (setq sl-list (buffer-substring sl-start sl-end))
         (setq sl-list (split-string sl-list " *, *"))
         (setq sl-list (sort sl-list 'string-lessp))
-        (setq sl-list (mapconcat (function (lambda (a) (format "%s" a))) 
+        (setq sl-list (mapconcat (function (lambda (a) (format "%s" a)))
                                  sl-list ", "))
         (goto-char sl-start)
         (kill-region sl-start sl-end)
         (insert sl-list)
         )
     )
-        
+
 ;  (message "s = %d; e = %d; l = '%s'" sl-start sl-end sl-list)
   (message "l = '%s'" sl-list)
   (goto-char sl-origpoint)
