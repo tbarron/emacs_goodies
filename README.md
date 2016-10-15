@@ -1,23 +1,27 @@
 # My collection of emacs support files
 
-  * Makefile
-  * diary.el
-  * do-mode.el
-  * foo.el
-  * html.el
-  * mail-aliases.el
-  * mykeys.el
-  * org-journal.el
-  * python-mode.el
-  * sccs.el
-  * status.el
-  * support.el
-  * tmp.el
-    * Place to experiment with new ideas. Not loaded automatically.
-  * tools.el
-  * unix.el
-  * wc-mode.el
-  * word-count.el
+  * Actively in use
+    * tmp.el
+      * Place to experiment with new ideas. Not loaded automatically.
+
+    * diary.el
+    * do-mode.el
+    * foo.el
+    * html.el
+    * mail-aliases.el
+    * mykeys.el
+    * org-journal.el
+    * python-mode.el
+    * sccs.el
+    * status.el
+    * support.el
+    * tools.el
+    * unix.el
+    * wc-mode.el
+    * word-count.el
+
+  * Obsolete
+    * Makefile
 
 To load a file manually, visit the file in the editor and type "\M-v"
 (which is bound to the emacs command eval-current-buffer).
