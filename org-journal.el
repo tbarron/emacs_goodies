@@ -271,7 +271,8 @@ headline in a .jnl file"
          (local-set-key "\M-." 'org-jnl-insert-checkbox)
          (local-set-key (kbd "<left>") 'org-timestamp-down)
          (local-set-key (kbd "<right>") 'org-timestamp-up)
-         (setq fill-column 79)
+         (local-set-key "\C-c\t" 'indent-rigidly)
+         (setq fill-column 75)
          ))
 
 

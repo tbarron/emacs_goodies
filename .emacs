@@ -193,7 +193,6 @@
 
 (global-set-key "\M-#" 'compile)
 ; (global-set-key "\M-\t" 'tab-to-tab-stop)
-(global-set-key "\M-\t" 'c-indent-command)
 (global-set-key "\M- " 'set-mark-command)
 (global-set-key "\M--" 'copy-preceding-line)
 (global-set-key "\M-{" 'c-stub)
@@ -219,6 +218,8 @@
 (global-set-key "\M-\C-f" 'find-file-read-only)
 (global-set-key "\M-\C-r" 'query-replace-regexp)
 (global-set-key "\M-\C-v" 'copy-preceding-line)
+(global-set-key "\M-\t" 'indent-rigidly)
+(global-set-key "\C-c\t" 'indent-rigidly)
 (font-lock-mode -1)
 
 ; (define-key view-mode-map "\C-w" 'other-window)
