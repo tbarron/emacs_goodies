@@ -68,7 +68,7 @@
 (defun reverse-last-search ()
   "reverse the last search"
   (interactive)
-  (if (string-equal rsf-direction "forward") 
+  (if (string-equal rsf-direction "forward")
       (setq rsf-direction "backward")
       (setq rsf-direction "forward"))
   (message "searching %s for '%s'" rsf-direction rsf-exp)
@@ -221,11 +221,11 @@
 (defun sum-column ()
   "Sum the column in the region"
   (interactive)
-  (let (end 
+  (let (end
         hicol
         hipnt
         locol
-        lopnt 
+        lopnt
         orig
         start
         sval
@@ -255,13 +255,13 @@
           (setq lopnt tmp)
           )
       )
-      
+
     (setq width (+ (- hicol locol) 1))
     (goto-char lopnt)
-    
+
     (while (< (point) hipnt)
       (progn
-        (setq ival (string-to-int 
+        (setq ival (string-to-int
                     (buffer-substring (point) (+ (point) width))))
         (setq total (+ total ival))
         (forward-line 1)
@@ -273,20 +273,20 @@
     (goto-char orig)
     )
 )
-  
+
 ; ===========================================================================
 ;
 (defun contact-make ()
   "Set up a contact file entry"
   (interactive)
-  (setq contact-name 
+  (setq contact-name
         (read-from-minibuffer "Contact Name? > "))
   (Info-edit)
   (search-forward "^^ add")
   (beginning-of-line)
   (forward-line -1)
   (insert "* " contact-name "::\n")
-  
+
   (widen)
   (end-of-buffer)
   (insert "\n   Node: " contact-name ",   Up: Contact_Top, Next:\n\n   ")
@@ -295,7 +295,7 @@
   (narrow-to-region (point) (point-max))
   (goto-char (point-max))
 )
-  
+
 ; ===========================================================================
 ;
 (defun contact-entry ()
@@ -332,7 +332,7 @@
   (re-search-forward ":")
   (forward-char -1)
   (setq name (buffer-substring 1 (point)))
-             
+
   (setq entry (buffer-string))
   (kill-buffer "*entry*")
   (find-file "~/info/contacts/contacts")
@@ -362,8 +362,8 @@
 (defun set-info-dir ()
   "Set the variable Info-directory"
   (interactive)
-  (setq Info-directory (read-from-minibuffer 
-                        "New Info directory? > " 
+  (setq Info-directory (read-from-minibuffer
+                        "New Info directory? > "
                         Info-directory))
   (setq Info-enable-edit 't)
 )
@@ -431,7 +431,7 @@
       (setq here (point))
       (end-of-line)
       (downcase-region here (point))
-      
+
                                         ; join the next line
       (delete-char 1)
       (indent-to-column 24)
@@ -444,23 +444,23 @@
       (setq istr (substring "        " 0 length))
       (goto-char here)
       (insert istr)
-      
+
                                         ; join and align the next item
       (end-of-line)
       (delete-char 1)
       (indent-for-tab-command)
-      
+
                                         ; join and align the next item
       (end-of-line)
       (delete-char 1)
       (indent-for-tab-command)
-      
+
                                         ; join and align the next item
       (end-of-line)
       (delete-char 1)
       (indent-for-tab-command)
       (indent-for-tab-command)
-      
+
                                         ; format the comment
       (end-of-line)
       (if (> (column) 79)
@@ -475,7 +475,7 @@
                  (forward-paragraph 1))
         (forward-line 1)
         )
-      
+
                                         ; position for the next one
       (kill-line 1)
       )
@@ -662,14 +662,14 @@
         (setq sl-list (buffer-substring sl-start sl-end))
         (setq sl-list (split-string sl-list " *, *"))
         (setq sl-list (sort sl-list 'string-lessp))
-        (setq sl-list (mapconcat (function (lambda (a) (format "%s" a))) 
+        (setq sl-list (mapconcat (function (lambda (a) (format "%s" a)))
                                  sl-list ", "))
         (goto-char sl-start)
         (kill-region sl-start sl-end)
         (insert sl-list)
         )
     )
-        
+
 ;  (message "s = %d; e = %d; l = '%s'" sl-start sl-end sl-list)
   (message "l = '%s'" sl-list)
   (goto-char sl-origpoint)
@@ -696,12 +696,12 @@
 
   (if (or (< original-point other-end) (< (- (point) 1) original-point))
       (progn
-        (message "cursor is not in a variable name (op=%d,oe=%d,p=%d)" 
+        (message "cursor is not in a variable name (op=%d,oe=%d,p=%d)"
                  original-point other-end (point))
         (goto-char original-point)
         )
       (progn
-        (message "varname: '%s' (op=%d,oe=%d,p=%d)" 
+        (message "varname: '%s' (op=%d,oe=%d,p=%d)"
                  varname original-point other-end (point))
         (goto-char original-point)
         )
@@ -751,7 +751,7 @@
   (interactive "P")
   (let (ccol)
     (setq ccol (current-column))
-    (if (equal column nil) 
+    (if (equal column nil)
         (progn
           (just-one-space)
           (indent-to-column ccol)
@@ -770,3 +770,108 @@
 (global-set-key "\C-x\C-i" 'indent-to-here)
 ; (debug-on-entry 'indent-to-here)
 
+; ---------------------------------------------------------------------------
+(defun dquote ()
+  "If text is selected, add double quotes around it. Otherwise, if
+   we're in a quoted string, remove innermost quotes. Otherwise, do
+   nothing."
+  (interactive)
+  ; (debug)
+  (save-excursion
+    (if (use-region-p)
+        ; quote the region
+        (progn (insert "\"")
+             (exchange-point-and-mark)
+             (insert "\"")
+             (exchange-point-and-mark)
+        )
+        ; remove quotes if in a quoted string
+        (unquote)
+    )
+  )
+)
+(global-set-key "\M-\"" 'dquote)
+
+; ---------------------------------------------------------------------------
+(defun squote ()
+  "If text is selected, add single quotes around it. Otherwise, if
+   we're in a quoted string, remove innermost quotes. Otherwise, do
+   nothing."
+  (interactive)
+  ; (debug)
+  (save-excursion
+    (if (use-region-p)
+        ; quote the region
+        (progn (insert "'")
+             (exchange-point-and-mark)
+             (insert "'")
+             (exchange-point-and-mark)
+        )
+        ; remove quotes if in a quoted string
+        (unquote)
+    )
+  )
+)
+(global-set-key "\M-'" 'squote)
+
+; ---------------------------------------------------------------------------
+(defun unquote ()
+  "Remove a set of single or double quotes surrounding the current string"
+  (interactive)
+  (let (start
+        quote
+        fexp)
+    (progn
+      (re-search-backward "['\"\n]")
+      (if (equal (string (char-after)) "\'")
+          (progn (setq start (point))
+                 (setq quote "'")
+                 (setq fexp "['\n]")
+          )
+          (if (equal (string (char-after)) "\"")
+              (progn (setq start (point))
+                     (setq quote "\"")
+                     (setq fexp "[\"\n]")
+              )
+              (return)
+          )
+      )
+      (re-search-forward fexp)
+      (re-search-forward fexp)
+      (if (equal (string (char-before)) quote)
+          (progn (delete-char -1)
+                 (goto-char start)
+                 (delete-char 1)
+          )
+      )
+    )
+  )
+)
+(global-set-key "\C-X'" 'unquote)
+
+; ---------------------------------------------------------------------------
+(defun fcomment ()
+  "Bracket the current function, then either comment it or uncomment it"
+  (interactive)
+  ; search back to "^(# )?def", set mark
+  (re-search-backward "^\\(# *\\)?def ")
+  (set-mark-command (point))
+  ; search forward to "^(# )?def"
+  ; search backward to an empty line
+  ; search back to a non-empty line
+  ; call comment-region (with an arg if already commented)
+  ;; ; (debug)
+  ;; (save-excursion
+  ;;   (if (use-region-p)
+  ;;       ; quote the region
+  ;;       (progn (insert "\"")
+  ;;            (exchange-point-and-mark)
+  ;;            (insert "\"")
+  ;;            (exchange-point-and-mark)
+  ;;       )
+  ;;       ; remove quotes if in a quoted string
+  ;;       (unquote)
+  ;;   )
+  ;; )
+)
+(global-set-key "\M-#" 'fcomment)
