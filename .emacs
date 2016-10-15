@@ -2,13 +2,15 @@
 ;;;; Variable settings
 ;;;; ===============================================================
 (add-hook 'write-file-hooks 'time-stamp)
-(setq time-stamp-start "[Uu]pdated:[ 	]+\\\\?[\"<]+")
+(setq time-stamp-start "[Uu]pdated[:_= 	]+\\\\?[\"<]+")
 (setq time-stamp-format "%04y-%02m-%02d %02H:%02M:%02S")
 ; (setq time-stamp-format "%04y-%02m-%02d")
 (setq text-mode-hook
-   '(lambda () 
-      (auto-fill-mode 1) 
-      (setq tab-width 4)))
+   '(lambda ()
+      (auto-fill-mode 1)
+      (setq tab-width 4)
+      (setq fill-column 75)
+))
 (setq sentence-end "[.?!][]\"')]*\\($\\|\t\\| \\)[ \t\n]*")
 (setq sentence-end-double-space 'nil)
 
