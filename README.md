@@ -1,9 +1,7 @@
 # My collection of emacs support files
-Updated: <2016-10-16 07:08:46>
+Updated: <2016-10-16 19:40:13>
 
 ## Action Items
-
-  * Rename tmp.el to experimental.el.
 
   * Figure out what bits of diary.el and do-mode.el to keep and ditch
     the rest of them.

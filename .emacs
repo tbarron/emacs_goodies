@@ -258,25 +258,27 @@
 (require 'org)
 
 (custom-set-variables
-  ;; custom-set-variables was added by Custom.
-  ;; If you edit it by hand, you could mess it up, so be careful.
-  ;; Your init file should contain only one such instance.
-  ;; If there is more than one, they won't work right.
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
  '(gud-gdb-command-name "gdb --annotate=1")
  '(large-file-warning-threshold nil)
- '(org-agenda-files (quote ("~/Dropbox/journal/personal.do"
-                            "~/Dropbox/journal/work.do")))
- '(org-ellipsis " >>>")
- '(org-log-done t)
- '(org-startup-folded 'nil))
+ ;; '(org-agenda-files
+ ;;   (quote
+ ;;    ("~/Dropbox/journal/personal.do" "~/Dropbox/journal/work.do")))
+ ;; '(org-ellipsis " >>>")
+ ;; '(org-log-done t)
+ ;; '(org-startup-folded (quote nil))
+ '(package-selected-packages (quote (markdown-mode))))
 (custom-set-faces
-  ;; custom-set-faces was added by Custom.
-  ;; If you edit it by hand, you could mess it up, so be careful.
-  ;; Your init file should contain only one such instance.
-  ;; If there is more than one, they won't work right.
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
  )
 
-(require 'org-checklist)
+; (require 'org-checklist)
 
 (add-to-list 'load-path "~/Dropbox/el")
 ; (require 'org-journal)
@@ -290,3 +292,8 @@
 
 (put 'upcase-region 'disabled nil)
 (transient-mark-mode)
+
+(require 'package)
+(add-to-list 'package-archives
+             '("melpa-stable" . "https://stable.melpa.org/packages/"))
+(package-initialize)
