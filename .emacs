@@ -109,30 +109,49 @@
 ;;;; ===============================================================
 ;;;; Files to load
 ;;;; ===============================================================
-(if (file-exists-p "~/el/diary.el")
-    (load-library "~/el/diary.el"))
-(if (file-exists-p "~/el/do-mode.el")
-    (load-library "~/el/do-mode.el"))
-(if (file-exists-p "~/el/html.el")
-    (load-library "~/el/html.el"))
-(if (file-exists-p "~/el/python-mode.el")
-    (load-library "~/el/python-mode.el"))
-(if (file-exists-p "~/el/sccs.el")
-    (load-library "~/el/sccs.el"))
-(if (file-exists-p "~/el/status.el")
-    (load-library "~/el/status.el"))
-(if (file-exists-p "~/el/support.el")
-    (load-library "~/el/support.el"))
-(if (file-exists-p "~/el/tags.el")
-    (load-library "~/el/tags.el"))
-(if (file-exists-p "~/el/tools.el")
-    (load-library "~/el/tools.el"))
-(if (file-exists-p "~/el/unix.el")
-    (load-library "~/el/unix.el"))
-(if (file-exists-p "~/el/mykeys.el")
-    (load-library "~/el/mykeys.el"))
-(if (file-exists-p "~/el/word-count.el")
-    (load-library "~/el/word-count.el"))
+(dolist (filename (list "diary.el"
+			"do-mode.el"
+			"html.el"
+			"python-mode.el"
+			"sccs.el"
+			"status.el"
+			"support.el"
+			"tags.el"
+			"tools.el"
+			"unix.el"
+			"mykeys.el"
+			"word-count.el"
+			))
+    (let ((xyz (format "~/el/%s" filename)))
+      (if (file-exists-p xyz)
+	  (load-library xyz)
+      )
+    )
+)
+;; (if (file-exists-p "~/el/diary.el")
+;;     (load-library "~/el/diary.el"))
+;; (if (file-exists-p "~/el/do-mode.el")
+;;     (load-library "~/el/do-mode.el"))
+;; (if (file-exists-p "~/el/html.el")
+;;     (load-library "~/el/html.el"))
+;; (if (file-exists-p "~/el/python-mode.el")
+;;     (load-library "~/el/python-mode.el"))
+;; (if (file-exists-p "~/el/sccs.el")
+;;     (load-library "~/el/sccs.el"))
+;; (if (file-exists-p "~/el/status.el")
+;;     (load-library "~/el/status.el"))
+;; (if (file-exists-p "~/el/support.el")
+;;     (load-library "~/el/support.el"))
+;; (if (file-exists-p "~/el/tags.el")
+;;     (load-library "~/el/tags.el"))
+;; (if (file-exists-p "~/el/tools.el")
+;;     (load-library "~/el/tools.el"))
+;; (if (file-exists-p "~/el/unix.el")
+;;     (load-library "~/el/unix.el"))
+;; (if (file-exists-p "~/el/mykeys.el")
+;;     (load-library "~/el/mykeys.el"))
+;; (if (file-exists-p "~/el/word-count.el")
+;;     (load-library "~/el/word-count.el"))
 
 (setq python-mode-hook
     '(lambda ()
@@ -211,7 +230,7 @@
 (global-set-key "\M-k" 'global-set-key)
 (global-set-key "\M-r" 'comment-region)
 (global-set-key "\M-s" 'save-some-buffers)
-(global-set-key "\M-v" 'eval-current-buffer)
+(global-set-key "\M-v" 'eval-buffer)
 (global-set-key "\M-w" 'kill-region)
 
 (global-set-key "\M-\C-?" 'delete-char)
@@ -253,9 +272,9 @@
 (put 'downcase-region 'disabled nil)
 
 ;; org mode stuff
-(add-to-list 'load-path "~/Dropbox/prj/org-mode/lisp")
-(add-to-list 'load-path "~/Dropbox/prj/org-mode/contrib/lisp")
-(require 'org)
+;; (add-to-list 'load-path "~/Dropbox/prj/org-mode/lisp")
+;; (add-to-list 'load-path "~/Dropbox/prj/org-mode/contrib/lisp")
+;; (require 'org)
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
