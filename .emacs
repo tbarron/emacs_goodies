@@ -251,6 +251,7 @@
 
 
 (put 'downcase-region 'disabled nil)
+(transient-mark-mode 1)
 
 ;; org mode stuff
 (add-to-list 'load-path "~/Dropbox/prj/org-mode/lisp")
@@ -289,4 +290,3 @@
 ; (require 'git-blame)
 
 (put 'upcase-region 'disabled nil)
-(transient-mark-mode)
