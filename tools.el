@@ -854,8 +854,11 @@
   "Bracket the current function, then either comment it or uncomment it"
   (interactive)
   ; search back to "^(# )?def", set mark
-  (re-search-backward "^\\(# *\\)?def ")
-  (set-mark-command (point))
+  (message "%d" (point))
+  (re-search-backward "^def ")
+  ; (set-mark-command (point))
+  ; (forward-line)
+  ; (re-search-forward "^\\(# *\\)?def ")
   ; search forward to "^(# )?def"
   ; search backward to an empty line
   ; search back to a non-empty line

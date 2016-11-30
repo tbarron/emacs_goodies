@@ -2,3 +2,4 @@
 ;;;; Key bindings
 ;;;; ===============================================================
 (global-set-key "\M-\\" 'indent-region)
+(global-set-key "\C-y" 'clipboard-yank)
