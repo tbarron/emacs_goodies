@@ -1,6 +1,22 @@
 (setq rsf-exp "")
 
 ; ===========================================================================
+; Insert the abbreviate hash of the current git commit at point
+(defun githash ()
+  "Insert the abbreviated hash of the current git commit"
+  (interactive)
+  (let ((tbuf-name "*user-temp*") (cbuf (current-buffer)) (hash nil))
+    (shell-command "git log | head -1 | cut -c8-13" tbuf-name)
+    (set-buffer tbuf-name)
+    (setq hash (buffer-substring 1 (- (point-max) 1)))
+    (set-buffer cbuf)
+    (insert hash)
+    )
+  )
+
+(global-set-key "\C-xh" 'githash)
+
+; ===========================================================================
 ; set up a buffer for an inspection
 (defun inspect ()
   "Make the buffer read-only and set tab-width to 8"
@@ -193,6 +209,7 @@
     (setq foo (cdr foo))
     )
 )
+(global-set-key "\C-x\C-k" 'kill-all-user-buffers)
 
 ; ===========================================================================
 ;
@@ -213,6 +230,7 @@
   (goto-char here)
   (insert str)
 )
+(global-set-key "\M--" 'copy-preceding-line)
 
 ; ===========================================================================
 ;

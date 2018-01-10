@@ -4,7 +4,6 @@
 (add-hook 'write-file-hooks 'time-stamp)
 (setq time-stamp-start "[Uu]pdated[:_= 	]+\\\\?[\"<]+")
 (setq time-stamp-format "%04y-%02m-%02d %02H:%02M:%02S")
-; (setq time-stamp-format "%04y-%02m-%02d")
 (setq text-mode-hook
    '(lambda ()
       (auto-fill-mode 1)
@@ -46,6 +45,12 @@
       (setq tab-width 8)
       ; (c-set-style "Ellemtel")
       ))
+
+;; (setq python-mode-hook
+;;       '(lambda ()
+;;          ()
+;;          ))
+
 ;; (setq c++-mode-hook
 ;;    '(lambda ()
 ;;       (setq page-delimiter "^{")
@@ -90,9 +95,6 @@
 (setq c-indent-level 4)
 (setq lisp-indent-offset '-2)
 (setq auto-mode-alist (cons (quote (".p$" . c-mode)) auto-mode-alist))
-; (setq auto-mode-alist (cons (quote ("README$" . do-mode)) auto-mode-alist))
-; (setq auto-mode-alist (cons (quote (".done$" . org-mode)) auto-mode-alist))
-; (setq auto-mode-alist (cons (quote ("[dD][oO]$" . org-mode)) auto-mode-alist))
 (setq auto-mode-alist (cons (quote (".ol$" . outline-mode)) auto-mode-alist))
 (setq auto-mode-alist (cons (quote (".doc$" . text-mode)) auto-mode-alist))
 (setq auto-mode-alist (cons (quote (".msg$" . text-mode)) auto-mode-alist))
@@ -150,7 +152,6 @@
 (global-set-key "\C-t" 'scroll-down)
 (global-set-key "\C-^" 'scroll-down)
 (global-set-key "\C-w" 'other-window)
-;(global-set-key "\C-?" 'delete-char)
 
 (global-set-key "\C-c\C-c" 'keyboard-quit)
 (global-set-key "\C-c\C-l" 'add-change-log-entry)
@@ -164,17 +165,12 @@
 (global-set-key "\C-x\C-b" 'electric-buffer-list)
 (global-set-key "\C-x\C-d" 'do-visit-done)
 (global-set-key "\C-x\C-e" 'dt-mdy)
-;(global-set-key "\C-x\C-i" 'indent-rigidly)
-;(global-set-key "\C-x!" 'new-issue)
-(global-set-key "\C-x\C-k" 'kill-all-user-buffers)
 (global-set-key "\C-x\C-n" 'repeat-complex-command)
 (global-set-key "\C-x\C-r" 'insert-file)
 (global-set-key "\C-x\C-t" 'goto-today)
 (global-set-key "\C-x\C-y" 'copy-region-as-kill)
 (global-set-key "\C-x," 'tags-search)
 (global-set-key "\M-/" 'find-tag-other-window)
-;(global-set-key "\C-xt" 'dt-date)
-;(global-set-key "\M-n" 'dt-time)
 (global-set-key "\C-x\C-d" 'dt-date)
 (global-set-key "\C-x\C-t" 'dt-time)
 (global-set-key "\C-xD" 'dt-datetime)
@@ -184,29 +180,22 @@
 (global-set-key "\C-xi" 'diary-issues)
 (global-set-key "\C-xj" 'diary)
 (global-set-key "\C-xl" 'redraw-display)
-; (global-set-key "\C-xm" 'insert "\n M ")
 (global-set-key "\C-xo" 'overwrite-mode)
-; (global-set-key "\C-xx" 'insert "\n X ")
 
 (global-set-key "\M-#" 'compile)
-; (global-set-key "\M-\t" 'tab-to-tab-stop)
 (global-set-key "\M- " 'set-mark-command)
-(global-set-key "\M--" 'copy-preceding-line)
 (global-set-key "\M-{" 'c-stub)
 (global-set-key "\M-[" 'backward-page)
 (global-set-key "\M-]" 'forward-page)
 (global-set-key "\M-(" 'start-kbd-macro)
 (global-set-key "\M-)" 'end-kbd-macro)
 (global-set-key "\M-`" 'compilation-next-error)
-;(global-set-key "\M-d" 'global-word-downcase)
-;(global-set-key "\M-e" 'append-entry-interactive)
 (global-set-key "\M-g" 'goto-line)
 (global-set-key "\M-h" 'help-command)
 (global-set-key "\M-j" 'diary-append-entry)
 (global-set-key "\M-k" 'global-set-key)
 (global-set-key "\M-r" 'comment-region)
 (global-set-key "\M-s" 'save-some-buffers)
-(global-set-key "\M-v" 'eval-buffer)
 (global-set-key "\M-w" 'kill-region)
 
 (global-set-key "\M-\C-?" 'delete-char)
@@ -214,9 +203,10 @@
 (global-set-key "\M-\C-b" 'beginning-of-line)
 (global-set-key "\M-\C-f" 'find-file-read-only)
 (global-set-key "\M-\C-r" 'query-replace-regexp)
-(global-set-key "\M-\C-v" 'copy-preceding-line)
 (global-set-key "\M-\t" 'indent-rigidly)
 (global-set-key "\C-c\t" 'indent-rigidly)
+(global-set-key "\M-k"   'kill-matching-buffers)
+(global-set-key "\C-x\C-ms" 'magit-status)
 (font-lock-mode -1)
 
 ; (define-key view-mode-map "\C-w" 'other-window)
@@ -259,13 +249,7 @@
  ;; If there is more than one, they won't work right.
  '(gud-gdb-command-name "gdb --annotate=1")
  '(large-file-warning-threshold nil)
- ;; '(org-agenda-files
- ;;   (quote
- ;;    ("~/Dropbox/journal/personal.do" "~/Dropbox/journal/work.do")))
- ;; '(org-ellipsis " >>>")
- ;; '(org-log-done t)
- ;; '(org-startup-folded (quote nil))
- '(package-selected-packages (quote (markdown-mode))))
+ '(package-selected-packages (quote (magit markdown-mode))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -275,14 +259,19 @@
 
 ; (require 'org-checklist)
 
+;; (add-to-list 'load-path "~/prj/rust/emacs/")
+;; (require 'rust-mode)
+
 (add-to-list 'load-path "~/Dropbox/el")
 ; (require 'org-journal)
 
+(message "loading git")
 (add-to-list 'load-path
-             "/usr/local/Cellar/git/1.9.3/share/git-core/contrib/emacs")
-(add-to-list 'load-path
-             "/usr/share/doc/git-1.7.1/contrib/emacs")
-; (require 'git)
+             "/usr/local/Cellar/git/2.12.2/share/emacs/site-lisp/git")
+(require 'git)
+(global-set-key (kbd "C-x g") 'magit-status)
+;; (add-to-list 'load-path
+;;              "/usr/share/doc/git-1.7.1/contrib/emacs")
 ; (require 'git-blame)
 
 (put 'upcase-region 'disabled nil)
@@ -292,3 +281,4 @@
 (add-to-list 'package-archives
              '("melpa-stable" . "https://stable.melpa.org/packages/"))
 (package-initialize)
+
