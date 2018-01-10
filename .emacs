@@ -270,6 +270,8 @@
              "/usr/local/Cellar/git/2.12.2/share/emacs/site-lisp/git")
 (require 'git)
 (global-set-key (kbd "C-x g") 'magit-status)
+(add-hook 'magit-mode-hook
+          (lambda () (local-set-key "\C-w" 'other-window)))
 ;; (add-to-list 'load-path
 ;;              "/usr/share/doc/git-1.7.1/contrib/emacs")
 ; (require 'git-blame)
