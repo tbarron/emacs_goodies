@@ -3,7 +3,7 @@
 ;;;; ===============================================================
 (add-hook 'write-file-hooks 'time-stamp)
 (setq time-stamp-start "[Uu]pdated[:_= 	]+\\\\?[\"<]+")
-(setq time-stamp-format "%04y-%02m-%02d %02H:%02M:%02S")
+(setq time-stamp-format "%04y.%02m%02d %02H:%02M:%02S")
 (setq text-mode-hook
    '(lambda ()
       (auto-fill-mode 1)
