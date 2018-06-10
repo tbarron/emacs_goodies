@@ -271,7 +271,10 @@
 (require 'git)
 (global-set-key (kbd "C-x g") 'magit-status)
 (add-hook 'magit-mode-hook
-          (lambda () (local-set-key "\C-w" 'other-window)))
+          (lambda ()
+            (local-set-key "\C-w" 'other-window)
+            (local-set-key "\M-t" 'magit-tag)
+            ))
 ;; (add-to-list 'load-path
 ;;              "/usr/share/doc/git-1.7.1/contrib/emacs")
 ; (require 'git-blame)
