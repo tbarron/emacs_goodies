@@ -259,8 +259,18 @@
 
 ; (require 'org-checklist)
 
-;; (add-to-list 'load-path "~/prj/rust/emacs/")
-;; (require 'rust-mode)
+;; ------------------------------------------
+;; Set up rust mode
+(add-to-list 'load-path "~/el")
+(autoload 'rust-mode "rust-mode" nil t)
+(add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-mode))
+;; done setting up rust mode
+;; ------------------------------------------
+
+;(progn
+;  (byte-compile-file "/path/to/rust-mode/cm-mode.el" t)
+;  (byte-compile-file "/path/to/rust-mode/rust-mode.el" t))
+
 
 (add-to-list 'load-path "~/Dropbox/el")
 ; (require 'org-journal)
