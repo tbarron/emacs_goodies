@@ -200,6 +200,7 @@
 (defun kill-all-user-buffers ()
   "Kill all user-created buffers"
   (interactive)
+  (kill-matching-buffers "\*magit" 't)
   (setq foo (buffer-list))
   (while (not (equal nil foo))
     (setq bname (buffer-name (car foo)))
