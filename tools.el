@@ -812,6 +812,31 @@
 (global-set-key "\M-\"" 'dquote)
 
 ; ---------------------------------------------------------------------------
+(defun bracket ()
+  "If text is selected, add brackets around it. Otherwise, fail
+   with a message."
+  (interactive)
+  ; (debug)
+  (save-excursion
+    (if (use-region-p)
+        ; quote the region
+        (if (< (point) (mark))
+            (progn (insert "[")
+                   (exchange-point-and-mark)
+                   (insert "]")
+                   (exchange-point-and-mark))
+            (progn (exchange-point-and-mark)
+                   (insert "[")
+                   (exchange-point-and-mark)
+                   (insert "]"))
+            )
+      (message "select the text to be enclosed")
+    )
+  )
+)
+(global-set-key "\M-[" 'bracket)
+
+; ---------------------------------------------------------------------------
 (defun squote ()
   "If text is selected, add single quotes around it. Otherwise, if
    we're in a quoted string, remove innermost quotes. Otherwise, do
