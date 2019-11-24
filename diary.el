@@ -6,16 +6,16 @@
 ;;;              moved journal location
 ;;;              split journal into personal and work sections
 ;;; 2001-11-24 - replaced (call-process "mkdir") with (make-directory)
+;;; 2019-11-24 - Remove work/person bifurcation
 ;;; ---------------------------------------------------------------
-(defun diary-name (which)
-  (setq d_dir (concat (getenv "HOME")
-                      "/info/diary/journal/"
-                      which
+(defun diary-name ()
+  (setq d_dir (concat (getenv "JOURNAL_ROOT")
                       (format-time-string "/%Y")))
   (if (not (file-directory-p d_dir))
       (make-directory d_dir 't)
     )
-  (concat d_dir "/" (format-time-string "%m"))
+  (setq filename (format-time-string "%m%d.txt"))
+  (concat d_dir "/" filename)
 )
 
 ;;; ---------------------------------------------------------------
@@ -34,14 +34,11 @@
 ;;;              split journal into personal and work sections
 ;;; ---------------------------------------------------------------
 (defun diary ()
-  "Access today's personal or work diary file"
+  "Access today's diary/journal file"
   (interactive)
-  (setq which (read-string "work|personal? [w] > "))
-  (if (string= which "") (setq which "work") 
-    (if (string= which "w") (setq which "work")
-      (setq which "personal")))
-  (find-file (diary-name which))
+  (find-file (diary-name))
   (text-mode)
+  (goto-char (point-max))
 )
 (global-set-key "\C-xj" 'diary)
 
@@ -52,17 +49,23 @@
   "Add an entry to today's personal or work diary file"
   (interactive)
   (diary)
-  (append-entry "../../template")
-;  (if (equal (point-max) 1)
-;      (insert "                                  Updated: < >\n"))
-;  (goto-char (point-max))
-;  (insert "\n--- ")
-;  (dt-time)
-;  (insert " ---\n\n   ")
-;  (text-mode)
-;  (setq fill-prefix "   ")
-(global-set-key "\M-j" 'diary-append-entry)
+  (delete-trailing-whitespace)
+  (goto-char (point-max))
+  (insert (format-time-string "\n\n--- %Y-%m-%d %H:%M:%S ---\n\n"))
 )
+(global-set-key "\M-j" 'diary-append-entry)
+
+
+;;; ---------------------------------------------------------------
+;;; mydoc - open a buffer looking at $MYDOC_ROOT
+;;; ---------------------------------------------------------------
+(defun mydoc ()
+  "Open a dired buffer on $MYDOC_ROOT"
+  (interactive)
+  (setq mdir (getenv "MYDOC_ROOT"))
+  (find-file mdir)
+)
+(cancel-debug-on-entry 'mydoc)
 
 ;;; ---------------------------------------------------------------
 ;;; dt-format
