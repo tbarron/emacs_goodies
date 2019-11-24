@@ -1,22 +1,7 @@
 # My collection of emacs support files
-Updated: <2016-10-16 19:40:13>
+Updated: <2019.1124 12:48:40>
 
-## Action Items
-
-  * Figure out what bits of diary.el and do-mode.el to keep and ditch
-    the rest of them.
-
-  * Move key bindings from .emacs to mykeys.el.
-
-  * See if there's anything worth keeping in org-journal.el and ditch
-    the rest of it.
-
-  * Once py-comment-function is working, move it to python-mode.el.
-
-  * Move the contents of foo.el to experimental.el and get rid of foo.el.
-
-  * See if there's anything worth keeping out of sccs.el and ditch the
-    rest of it.
+This repository houses my collection of emacs Lisp scripts. 
 
 ## Actively in use
 
