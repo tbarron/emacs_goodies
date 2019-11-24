@@ -62,10 +62,9 @@
 (defun mydoc ()
   "Open a dired buffer on $MYDOC_ROOT"
   (interactive)
-  (setq mdir (getenv "MYDOC_ROOT"))
-  (find-file mdir)
+  (find-file (getenv "MYDOC_ROOT"))
 )
-(cancel-debug-on-entry 'mydoc)
+(global-set-key "\C-xm" 'mydoc)
 
 ;;; ---------------------------------------------------------------
 ;;; dt-format
