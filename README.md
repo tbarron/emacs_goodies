@@ -1,5 +1,5 @@
 # My collection of emacs support files
-Updated: <2019.1124 12:48:40>
+Updated: <2019.1124 15:24:35>
 
 This repository houses my collection of emacs Lisp scripts. 
 
@@ -11,8 +11,8 @@ This repository houses my collection of emacs Lisp scripts.
 
 #### diary.el
 
-  * This is mostly obsolete but I still use some of the date insert
-    functions. Loaded by .emacs.
+  * This is mostly obsolete but I still use some of the functions. Loaded
+    by .emacs.
 
 #### do-mode.el
 
