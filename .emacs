@@ -123,6 +123,7 @@
 			"unix.el"
 			"mykeys.el"
 			"word-count.el"
+            "version.el"
 			))
     (let ((xyz (format "~/el/%s" filename)))
       (if (file-exists-p xyz)
