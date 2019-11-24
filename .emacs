@@ -178,7 +178,6 @@
 
 (global-set-key "\C-xe" 'diary-visit-defects)
 (global-set-key "\C-xi" 'diary-issues)
-(global-set-key "\C-xj" 'diary)
 (global-set-key "\C-xl" 'redraw-display)
 (global-set-key "\C-xo" 'overwrite-mode)
 
@@ -192,7 +191,6 @@
 (global-set-key "\M-`" 'compilation-next-error)
 (global-set-key "\M-g" 'goto-line)
 (global-set-key "\M-h" 'help-command)
-(global-set-key "\M-j" 'diary-append-entry)
 (global-set-key "\M-k" 'global-set-key)
 (global-set-key "\M-r" 'comment-region)
 (global-set-key "\M-s" 'save-some-buffers)

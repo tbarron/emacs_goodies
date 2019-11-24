@@ -43,6 +43,7 @@
   (find-file (diary-name which))
   (text-mode)
 )
+(global-set-key "\C-xj" 'diary)
 
 ;;; ---------------------------------------------------------------
 ;;; diary-append-entry
@@ -60,6 +61,7 @@
 ;  (insert " ---\n\n   ")
 ;  (text-mode)
 ;  (setq fill-prefix "   ")
+(global-set-key "\M-j" 'diary-append-entry)
 )
 
 ;;; ---------------------------------------------------------------
