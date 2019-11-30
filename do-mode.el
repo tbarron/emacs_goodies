@@ -19,9 +19,9 @@
     ()
   (setq do-mode-map (make-sparse-keymap))
   (define-key do-mode-map "\t" 'tab-to-tab-stop)
-  (define-key do-mode-map "\ed" 'do-done)
+  (define-key do-mode-map "\ed" 'do-pdone)
   (define-key do-mode-map "\ez" 'do-xdone)
-  (define-key do-mode-map "\eo" 'do-odone)
+  (define-key do-mode-map "\e<" 'do-odone)
   (define-key do-mode-map "\ei" 'do-into)
   (define-key do-mode-map "\es" 'do-sub-entry)
   (define-key do-mode-map "\ee" 'do-new-entry)
@@ -32,18 +32,9 @@
   (define-key do-mode-map "\e!" 'do-entry-order)
   (define-key do-mode-map "\e@" 'do-entry-after)
   (define-key do-mode-map "\e$" 'do-entry-to-end)
-  (define-key do-mode-map "\C-x\C-n" 'do-next-entry)
-  (define-key do-mode-map "\C-x\C-p" 'do-previous-entry)
+;  (define-key do-mode-map "\C-x\C-n" 'next-dodo)
+;  (define-key do-mode-map "\C-x\C-p" 'do-previous-entry)
 )
-
-
-;(defun non-saved-text-mode ()
-;  "Like text-mode, but delete auto save file when file is saved for real."
-;  (text-mode)
-;  (make-local-variable 'delete-auto-save-files)
-;  (setq delete-auto-save-files t))
-
-(setq do-DODO-FILE-NAME "~/info/diary/dodo/dodo")
 
 (defun do-mode ()
   "Major mode for editing my todo files.  Special commands:\\{do-mode-map}
@@ -58,140 +49,107 @@ if that value is non-nil."
   (set-syntax-table do-mode-syntax-table)
   (run-hooks 'do-mode-hook))
 
-;;; ---------------------------------------------------------------
-;;; dodo
-;;; ---------------------------------------------------------------
-(defun dodo ()
-  "Access diary files"
+;;; ---------------------------------------------------------------------------
+(defun previous-dodo ()
+  "Find the previous DODO buffer"
   (interactive)
-
-  (let ((diary_jpy (format-time-string "~/diary/journal/personal/%Y"))
-        (diary_jw "~/diary/journal/work")
-        (diary_jy (format-time-string "/journal/%Y"))
-        (diary_jwy (format-time-string "~/diary/journal/work/%Y"))
-        (diary_jwym (format-time-string "~/diary/journal/work/%Y/%m"))
-        (prj_worktime "~/prj/worktime")
-        (jnl_year (format-time-string "~/Dropbox/journal/%Y"))
-        (thumb "/Volumes/ZAPHOD")
-
-        (daily (format-time-string "%d.dodo"))
-        (journal (format-time-string "%m.txt"))
-        (queue "queue.dodo")
-        (stats "FX.txt")
-        (projects "PROJECTS.txt")
-        (workfile (format-time-string "%Y.txt"))
-        (worklog (format-time-string "%Y.txt"))
-        (worklog "WORKLOG")
-        )
-
-;    (if (file-exists-p "~/bin/makedodo")
-;        (call-process "~/bin/makedodo" nil "*Messages*" 't "-c" "30"))
-
-    ; (do-findfile diary_jpy stats)
-    ; (do-findfile diary_jw projects)
-    ; (do-findfile diary_jpy journal)
-    ; (do-findfile diary_jwym daily)
-    ; (do-findfile diary_jw queue)
-    ; (do-findfile "~/Dropbox/journal" "work.do")
-    ; (do-findfile "~/Dropbox/journal" "personal.do")
-    ; (do-findfile jnl_year journal)
-    (do-findfile jnl_year "WORKLOG")
-    (goto-char (point-max))
-;;     (if (file-exists-p thumb)
-;;         (progn
-;;           ; (do-findfile (concat thumb "/prj") "ROOT.do")
-;;           ; (do-findfile (concat thumb diary_jy) journal)
-;;           ; (do-findfile (concat thumb diary_jy) worklog)
-;;           ; (goto-char (point-max))
-;;         )
-;;     )
+  (setq blist (reverse (buffer-list)))
+  (while (not (string-match "DODO" (buffer-name (car blist))))
+    (setq blist (cdr blist)))
+  (switch-to-buffer (car blist))
   )
-)
-(global-set-key "\M-?" 'dodo)
+(global-set-key "\C-x\C-p" 'previous-dodo)
 
-;;; ---------------------------------------------------------------
-;;; do-findfile
-;;; ---------------------------------------------------------------
-(defun do-findfile (path name)
-  (if (not (file-directory-p path))
-      (make-directory path)
-      )
-  (find-file (concat path "/" name))
-)
-
-;;; ---------------------------------------------------------------
-;;; do-into
-;;; ---------------------------------------------------------------
-(defun do-into ()
-  "Enter a file mentioned in the current line in the form \"(filename)\""
+;;; ---------------------------------------------------------------------------
+(defun next-dodo ()
+  "Find the next DODO buffer"
   (interactive)
-  (beginning-of-line)
-  (re-search-forward "-.*( *")
-  (setq start (point-marker))
-  (search-forward ".do")
-  (find-file (buffer-substring start (point)))
-;  (text-mode)
-)
+  (if (string-match "DODO" (buffer-name))
+      (bury-buffer))
+  (setq blist (buffer-list))
+  (while (not (string-match "DODO" (buffer-name (car blist))))
+    (setq blist (cdr blist)))
 
-;;; ---------------------------------------------------------------
-;;; do-done-name
-;;; 2001-11-24 - replaced (call-process "mkdir") with (make-directory)
-;;; ---------------------------------------------------------------
-(defun do-done-name ()
-  "Return the name of today's done log file"
-  (setq d_dir (concat (getenv "HOME")
-                      (format-time-string "/info/diary/done/%Y/%m")))
-  (if (not (file-directory-p d_dir))
-      ; (call-process "mkdir" nil nil nil "-p" d_dir)
-      (make-directory d_dir 't)
-    )
-  (concat d_dir "/" (format-time-string "%d.done"))
-)
-
-;;; ---------------------------------------------------------------
-;;; do-done-name-test
-;;; ---------------------------------------------------------------
-(defun do-done-name-test ()
-  "Test the function do-done-name"
-  (interactive)
-  (setq filename (do-done-name))
-  (message "filename: '%s'" filename)
-)
-
-;;; ---------------------------------------------------------------
-;;; do-visit-done
-;;; ---------------------------------------------------------------
-(defun do-visit-done ()
-  "visit the done log"
-  (interactive)
-  (find-file (do-done-name))
-)
+  (switch-to-buffer (car blist))
+  )
+(global-set-key "\C-x\C-n" 'next-dodo)
 
 ;;; ---------------------------------------------------------------
 ;;; do-done
 ;;; ---------------------------------------------------------------
-(defun do-done ()
-  "Mark a dodo entry as done (+) and move it to today's diary file"
+(defun do-done (mark)
+  "Move a task to the DONE section and mark it with MARK"
   (interactive)
-  (do-mark-done "+")
+  (let ((rgx "^ [-+.>^<x] ")
+        (donesect "^--- DONE ---")
+        (point-str (buffer-substring (point) (+ 3 (point))))
+        (initial-point (point))
+        (start 0)
+        (end 0))
+    (save-excursion
+      (if (string-match rgx point-str)
+          (forward-word)
+        (if (string-match "[^ \n]{1,3}.{1,3}" point-str)
+            (backward-word)
+          (if (string-match ".{1,2}\n{1,2}" point-str)
+              (backward-word)
+          )
+        )
+      )
+
+      (if (re-search-forward rgx nil 't)  ; find beginning of next entry
+          (setq end_t (re-search-backward rgx))
+        (setq end_t (point-max)))
+      (goto-char initial-point)         ; back up to where we started
+      (re-search-forward donesect)      ; find beginning of DONE section
+      (setq end_d (re-search-backward donesect))
+      (setq end (min end_t end_d))      ; take the min of the two
+      (goto-char end)                   ; reposition to end of entry
+      (setq start (re-search-backward rgx)) ; find beginning of target entry
+      (kill-region start end)           ; and yank it to kill ring
+
+      (re-search-forward donesect)      ; first entry in DONE section (or end of buf)
+      (if (re-search-forward rgx (point-max) 'foobar)
+          (re-search-backward rgx)
+        )
+      (if (not (eq ?\n (char-before)))
+          (insert "\n"))
+
+      (yank)                            ; yank the entry being moved
+      (re-search-backward rgx)          ; back to the beginning of entry
+      ;;(replace-match " + ")             ; replace the marker
+      (replace-match mark)              ; replace the marker
+      (save-buffer)                     ; and write the file
+      )
+    )
+  )
+(cancel-debug-on-entry 'do-done)
+
+;;; ---------------------------------------------------------------
+;;; do-pdone - mark entry as completed
+;;; ---------------------------------------------------------------
+(defun do-pdone ()
+  "Mark a dodo entry as done (+) and move it to the DONE section"
+  (interactive)
+  (do-done " + ")
 )
 
 ;;; ---------------------------------------------------------------
-;;; do-xdone - mark entry as NOT done (x)
+;;; do-xdone - mark entry as NOT done/abandoned (x)
 ;;; ---------------------------------------------------------------
 (defun do-xdone ()
-  "Mark a dodo entry as not done (x) and move it to today's diary file"
+  "Mark a dodo entry as not done (x) and move it to the DONE section"
   (interactive)
-  (do-mark-done "x")
+  (do-done " x ")
 )
 
 ;;; ---------------------------------------------------------------
-;;; do-odone - mark entry as expanded or replaced (o)
+;;; do-odone - mark entry as diverted
 ;;; ---------------------------------------------------------------
 (defun do-odone ()
-  "Mark a dodo entry as expanded or replaced (o) and move it to the done log"
+  "Mark a dodo entry as diverted (<) and move it to the DONE seciton"
   (interactive)
-  (do-mark-done "o")
+  (do-done " < ")
 )
 
 ;;; ---------------------------------------------------------------
@@ -340,34 +298,48 @@ do-dated ()
 (defun do-new-entry ()
   "Create a new dodo entry with today's date"
   (interactive)
-  (setq search-exp "^[-x><+]")
-  (if (not (equal (point) (point-max)))
-      (forward-char 1))
-  (if (re-search-forward search-exp nil 'x)
-      (progn (forward-char -1)
-             ; (set-fill-prefix "!")
-             (setq fill-prefix "")
-             (open-line 2)
-             (do-create-entry)
-             )
+  (let ((donesect "^--- DONE ---")
+        (initial-point (point))
+        (initial-fill-prefix fill-prefix)
+        (rgx "^ [-+.>^<x] ")
+        )
+    (if (re-search-forward rgx nil 't)
+        (re-search-backward rgx))
+    (setq fill-prefix "")
+    (open-line 2)
+    (insert " - [" (format-time-string "%Y.%m%d") "] ")
+    (setq fill-prefix initial-fill-prefix)
     )
-  (if (eobp)
-      (progn ; (set-fill-prefix "!")
-             (setq fill-prefix "")
-             (if (not (equal (char-after (- (point) 1)) 10))
-                 (open-line 2)
-               )
-             (if (not (equal (char-after (- (point-max) 2)) 10))
-                 (open-line 1)
-               )
-             (goto-char (point-max))
-             (do-create-entry)
-             )
-    )
+
+
+  ;; (setq search-exp "^ [-+.>^<x] ")
+  ;; (if (not (equal (point) (point-max)))
+  ;;     (forward-char 1))
+  ;; (if (re-search-forward search-exp nil 'x)
+  ;;     (progn (forward-char -1)
+  ;;            ; (set-fill-prefix "!")
+  ;;            (setq fill-prefix "")
+  ;;            (open-line 2)
+  ;;            (do-create-entry)
+  ;;            )
+  ;;   )
+  ;; (if (eobp)
+  ;;     (progn ; (set-fill-prefix "!")
+  ;;            (setq fill-prefix "")
+  ;;            (if (not (equal (char-after (- (point) 1)) 10))
+  ;;                (open-line 2)
+  ;;              )
+  ;;            (if (not (equal (char-after (- (point-max) 2)) 10))
+  ;;                (open-line 1)
+  ;;              )
+  ;;            (goto-char (point-max))
+  ;;            (do-create-entry)
+  ;;            )
+  ;;   )
 )
 
 (defun do-create-entry ()
-  (insert "- [" (format-time-string "%Y.%m%d") "] ")
+  (insert " - [" (format-time-string "%Y.%m%d") "] ")
   ; (dt-date)
   ; (insert "] ")
   (setq fill-prefix "   ")
@@ -561,9 +533,132 @@ do-dated ()
 (defun add-reminders ()
   "Copy appropriate reminders from reminder file to DODO"
   (interactive)
-
-
 )
+
+;;; ---------------------------------------------------------------
+;;; vvv boneyard vvv
+
+;(defun non-saved-text-mode ()
+;  "Like text-mode, but delete auto save file when file is saved for real."
+;  (text-mode)
+;  (make-local-variable 'delete-auto-save-files)
+;  (setq delete-auto-save-files t))
+
+; (setq do-DODO-FILE-NAME "~/info/diary/dodo/dodo")
+
+;;; ---------------------------------------------------------------
+;;; dodo
+;;; ---------------------------------------------------------------
+;; (defun dodo ()
+;;   "Access diary files"
+;;   (interactive)
+;;
+;;   (let ((diary_jpy (format-time-string "~/diary/journal/personal/%Y"))
+;;         (diary_jw "~/diary/journal/work")
+;;         (diary_jy (format-time-string "/journal/%Y"))
+;;         (diary_jwy (format-time-string "~/diary/journal/work/%Y"))
+;;         (diary_jwym (format-time-string "~/diary/journal/work/%Y/%m"))
+;;         (prj_worktime "~/prj/worktime")
+;;         (jnl_year (format-time-string "~/Dropbox/journal/%Y"))
+;;         (thumb "/Volumes/ZAPHOD")
+;;
+;;         (daily (format-time-string "%d.dodo"))
+;;         (journal (format-time-string "%m.txt"))
+;;         (queue "queue.dodo")
+;;         (stats "FX.txt")
+;;         (projects "PROJECTS.txt")
+;;         (workfile (format-time-string "%Y.txt"))
+;;         (worklog (format-time-string "%Y.txt"))
+;;         (worklog "WORKLOG")
+;;         )
+;;
+;; ;    (if (file-exists-p "~/bin/makedodo")
+;; ;        (call-process "~/bin/makedodo" nil "*Messages*" 't "-c" "30"))
+;;
+;;     ; (do-findfile diary_jpy stats)
+;;     ; (do-findfile diary_jw projects)
+;;     ; (do-findfile diary_jpy journal)
+;;     ; (do-findfile diary_jwym daily)
+;;     ; (do-findfile diary_jw queue)
+;;     ; (do-findfile "~/Dropbox/journal" "work.do")
+;;     ; (do-findfile "~/Dropbox/journal" "personal.do")
+;;     ; (do-findfile jnl_year journal)
+;;     (do-findfile jnl_year "WORKLOG")
+;;     (goto-char (point-max))
+;; ;;     (if (file-exists-p thumb)
+;; ;;         (progn
+;; ;;           ; (do-findfile (concat thumb "/prj") "ROOT.do")
+;; ;;           ; (do-findfile (concat thumb diary_jy) journal)
+;; ;;           ; (do-findfile (concat thumb diary_jy) worklog)
+;; ;;           ; (goto-char (point-max))
+;; ;;         )
+;; ;;     )
+;;   )
+;; )
+;; (global-set-key "\M-?" 'dodo)
+
+;;; ---------------------------------------------------------------
+;;; do-findfile
+;;; ---------------------------------------------------------------
+;; (defun do-findfile (path name)
+;;   (if (not (file-directory-p path))
+;;       (make-directory path)
+;;       )
+;;   (find-file (concat path "/" name))
+;; )
+
+;;; ---------------------------------------------------------------
+;;; do-into
+;;; ---------------------------------------------------------------
+;; (defun do-into ()
+;;   "Enter a file mentioned in the current line in the form \"(filename)\""
+;;   (interactive)
+;;   (beginning-of-line)
+;;   (re-search-forward "-.*( *")
+;;   (setq start (point-marker))
+;;   (search-forward ".do")
+;;   (find-file (buffer-substring start (point)))
+;; ;  (text-mode)
+;; )
+
+;;; ---------------------------------------------------------------
+;;; do-done-name
+;;; 2001-11-24 - replaced (call-process "mkdir") with (make-directory)
+;;; ---------------------------------------------------------------
+;; (defun do-done-name ()
+;;   "Return the name of today's done log file"
+;;   (setq d_dir (concat (getenv "HOME")
+;;                       (format-time-string "/info/diary/done/%Y/%m")))
+;;   (if (not (file-directory-p d_dir))
+;;       ; (call-process "mkdir" nil nil nil "-p" d_dir)
+;;       (make-directory d_dir 't)
+;;     )
+;;   (concat d_dir "/" (format-time-string "%d.done"))
+;; )
+
+;;; ---------------------------------------------------------------
+;;; do-done-name-test
+;;; ---------------------------------------------------------------
+;; (defun do-done-name-test ()
+;;   "Test the function do-done-name"
+;;   (interactive)
+;;   (setq filename (do-done-name))
+;;   (message "filename: '%s'" filename)
+;; )
+
+;;; ---------------------------------------------------------------
+;;; do-visit-done
+;;; ---------------------------------------------------------------
+;; (defun do-visit-done ()
+;;   "visit the done log"
+;;   (interactive)
+;;   (find-file (do-done-name))
+;; )
+
+
+
+;;; ^^^ boneyard ^^^
+;;; ---------------------------------------------------------------
 
 
 (message "file do-mode.el loaded")
