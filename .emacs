@@ -8,7 +8,7 @@
    '(lambda ()
       (auto-fill-mode 1)
       (setq tab-width 4)
-      (setq fill-column 75)
+      (setq fill-column 80)
 ))
 (setq sentence-end "[.?!][]\"')]*\\($\\|\t\\| \\)[ \t\n]*")
 (setq sentence-end-double-space 'nil)
