@@ -564,3 +564,6 @@ do-dated ()
 
 
 )
+
+
+(message "file do-mode.el loaded")
