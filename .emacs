@@ -105,6 +105,7 @@
 (setq auto-mode-alist (cons (quote ("log.[0-9]+" . text-mode)) auto-mode-alist))
 (setq auto-mode-alist (cons (quote ("sscr.[0-9]+" . text-mode)) auto-mode-alist))
 (setq auto-mode-alist (cons (quote (".php$" . tcl-mode)) auto-mode-alist))
+(setq auto-mode-alist (cons (quote ("do$" . do-mode)) auto-mode-alist))
 
 (setq dired-listing-switches "-l")
 (setq mail-yank-prefix "> ")
