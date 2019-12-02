@@ -18,6 +18,7 @@
 ;;    do-new-entry        (1600 - 1699)
 ;;    do-next-task-mark   (1700 - 1799)
 ;;    do-prev-task-mark   (1800 - 1899)
+;;    do-[pxo]done        (1900 - 1999)
 ;;
 
 
@@ -37,6 +38,24 @@
 ;; helper functions
 
 ;; ----------------------------------------------------------------------------
+(defun get-message-max ()
+  "Empty the *Messages* buffer"
+  (with-current-buffer "*Messages*"
+    (point-max)))
+
+;; ----------------------------------------------------------------------------
+(defun in-messages-p (after needle)
+  "If NEEDLE is in buffer *Messages* after AFTER, return its index, otherwise nil"
+  (with-current-buffer "*Messages*"
+    (string-match needle (buffer-substring after (point-max)))))
+
+;; ----------------------------------------------------------------------------
+(defun run-tests ()
+  "Set variable test-selector and return"
+  (interactive)
+  (ert-run-tests-batch-and-exit selector))
+
+;; ----------------------------------------------------------------------------
 (defun bytes-at (where count)
   "Return the next COUNT bytes after point (or before point at eobp)"
   (buffer-substring (min where (- (point-max) count))
@@ -47,16 +66,33 @@
 ;; tests for do-add-done-iff
 
 ;; ----------------------------------------------------------------------------
-(ert-deftest test-1000-add-done-iff-absent ()
+(ert-deftest test-1000-add-done-iff-empty ()
   (concat "verify that do-add-done-iff adds a done line if there isn't"
-          " one in the buffer already")
+          " one in the buffer already -- empty")
   (with-temp-buffer
     (do-add-done-iff)
     (goto-char (point-min))
     (should (re-search-forward do-mode-rgx-done))))
 
 ;; ----------------------------------------------------------------------------
-(ert-deftest test-1001-add-done-iff-present ()
+(ert-deftest test-1010-add-done-iff-absent-w-tasks ()
+  (concat "verify that do-add-done-iff adds a done line if there isn't"
+          " one in the buffer already -- with tasks")
+  (with-temp-buffer
+    (let ((done-pos)
+          (ltask-pos))
+      (insert buf-no-done)
+      (goto-char (point-min))
+      (do-add-done-iff)
+      (setq done-pos (do-done-position))
+      (goto-char (point-max))
+      (setq ltask-pos (re-search-backward do-mode-rgx-task))
+      (should (not (equal nil done-pos)))
+      (should (not (equal nil ltask-pos)))
+      (should (< ltask-pos done-pos)))))
+
+;; ----------------------------------------------------------------------------
+(ert-deftest test-1020-add-done-iff-present ()
   (concat "verify that do-add-done-iff doesn't add a done line"
           " if one is already present")
   (with-temp-buffer
@@ -79,7 +115,8 @@
   "test do-done-position when DONE line is missing"
   (with-temp-buffer
     (insert "\n\n\n\n\n")
-    (should (= (point-max) (do-done-position)))))
+    (should (equal nil (do-done-position)))))
+
 
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-1110-do-done-position-with-done ()
@@ -458,62 +495,62 @@
 ;;   (with-temp-buffer
 ;;     (do-new-entry)
 ;;     (should nil)))
-;; 
+;;
 ;; (ert-deftest test-1600-new-002 ()
 ;;   "new entry: no DONE line, one task, before 1st"
 ;;   (with-temp-buffer
 ;;     (should nil)))
-;; 
+;;
 ;; (ert-deftest test-1600-new-003 ()
 ;;   "new entry: no DONE line, one task, after 1st"
 ;;   (with-temp-buffer
 ;;     (should nil)))
-;; 
+;;
 ;; (ert-deftest test-1600-new-004 ()
 ;;   "new entry: no DONE line, two tasks, before 1st"
 ;;   (with-temp-buffer
 ;;     (should nil)))
-;; 
+;;
 ;; (ert-deftest test-1600-new-005 ()
 ;;   "new entry: no DONE line, two tasks, before 2nd"
 ;;   (with-temp-buffer
 ;;     (should nil)))
-;; 
+;;
 ;; (ert-deftest test-1600-new-006 ()
 ;;   "new entry: no DONE line, two tasks, after 2nd"
 ;;   (with-temp-buffer
 ;;     (should nil)))
-;; 
+;;
 ;; (ert-deftest test-1600-new-007 ()
 ;;   "new entry: no DONE line, three tasks, before 1st"
 ;;   (with-temp-buffer
 ;;     (should nil)))
-;; 
+;;
 ;; (ert-deftest test-1600-new-008 ()
 ;;   "new entry: no DONE line, three tasks, before 2nd"
 ;;   (with-temp-buffer
 ;;     (should nil)))
-;; 
+;;
 ;; (ert-deftest test-1600-new-009 ()
 ;;   "new entry: no DONE line, three tasks, before 3rd"
 ;;   (with-temp-buffer
 ;;     (should nil)))
-;; 
+;;
 ;; (ert-deftest test-1600-new-010 ()
 ;;   "new entry: no DONE line, three tasks, after 3rd"
 ;;   (with-temp-buffer
 ;;     (should nil)))
-;; 
+;;
 ;; (ert-deftest test-1600-new-011 ()
 ;;   "new entry: DONE line present, no tasks"
 ;;   (with-temp-buffer
 ;;     (should nil)))
-;; 
+;;
 ;; (ert-deftest test-1600-new-012 ()
 ;;   "new entry: DONE line present, one task, before 1st"
 ;;   (with-temp-buffer
 ;;     (should nil)))
-;; 
+;;
 ;; (ert-deftest test-1600-new-012 ()
 ;;   "new entry: DONE line present, one task, after 1st"
 ;;   (with-temp-buffer
@@ -790,66 +827,151 @@
 (ert-deftest test-1815-ptm-w-done ()
   "prev-task: with DONE, 5 tasks, point in last task by 1 byte"
   (with-temp-buffer
-    (insert buf-w-done)
-    (goto-char 122)
-    (should (string= "+ also" (bytes-at (point) 6)))
-    (setq result (do-prev-task-mark))
-    (should (= 106 result))
-    (should (string= " + fini" (bytes-at result 7)))))
+    (let ((result))
+      (insert buf-w-done)
+      (goto-char 122)
+      (should (string= "+ also" (bytes-at (point) 6)))
+      (setq result (do-prev-task-mark))
+      (should (= 106 result))
+      (should (string= " + fini" (bytes-at result 7))))))
 
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-1820-ptm-w-done ()
   "prev-task: with DONE, 5 tasks, point at last task"
   (with-temp-buffer
-    (insert buf-w-done)
-    (goto-char 121)
-    (should (= 121 (point)))
-    (should (string= " + al" (bytes-at (point) 5)))
-    (setq result (do-prev-task-mark))
-    (should (= 106 result))
-    (should (string= " + fini" (bytes-at result 7)))))
+    (let ((result))
+      (insert buf-w-done)
+      (goto-char 121)
+      (should (= 121 (point)))
+      (should (string= " + al" (bytes-at (point) 5)))
+      (setq result (do-prev-task-mark))
+      (should (= 106 result))
+      (should (string= " + fini" (bytes-at result 7))))))
 
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-1825-ptm-w-done ()
   "prev-task: with DONE, 5 tasks, point in penultimate task"
   (with-temp-buffer
-    (insert buf-w-done)
-    (goto-char 110)
-    (should (string= "inish" (bytes-at (point) 5)))
-    (setq result (do-prev-task-mark))
-    (should (= 106 result))
-    (should (string= " + fini" (bytes-at result 7)))))
+    (let ((result))
+      (insert buf-w-done)
+      (goto-char 110)
+      (should (string= "inish" (bytes-at (point) 5)))
+      (setq result (do-prev-task-mark))
+      (should (= 106 result))
+      (should (string= " + fini" (bytes-at result 7))))))
 
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-1830-ptm-w-done ()
   "prev-task: with DONE, 5 tasks, point early in penultimate task"
   (with-temp-buffer
-    (insert buf-w-done)
-    (goto-char 109)
-    (should (string= "finis" (bytes-at (point) 5)))
-    (setq result (do-prev-task-mark))
-    (should (= 106 result))
-    (should (string= " + fini" (bytes-at result 7)))))
+    (let ((result))
+      (insert buf-w-done)
+      (goto-char 109)
+      (should (string= "finis" (bytes-at (point) 5)))
+      (setq result (do-prev-task-mark))
+      (should (= 106 result))
+      (should (string= " + fini" (bytes-at result 7))))))
 
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-1835-ptm-w-done ()
   "prev-task: with DONE, 5 tasks, point in penultimate task mark"
   (with-temp-buffer
-    (insert buf-w-done)
-    (goto-char 108)
-    (should (string= " fini" (bytes-at (point) 5)))
-    (setq result (do-prev-task-mark))
-    (should (= 36 result))
-    (should (string= " - task thr" (bytes-at result 11)))))
+    (let ((result))
+      (insert buf-w-done)
+      (goto-char 108)
+      (should (string= " fini" (bytes-at (point) 5)))
+      (setq result (do-prev-task-mark))
+      (should (= 36 result))
+      (should (string= " - task thr" (bytes-at result 11))))))
 
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-1840-ptm-w-done ()
   "prev task: with DONE, 5 tasks, point before 1st task, land on 1st"
   (with-temp-buffer
-    (insert buf-w-done)
-    (goto-char 5)
-    (should (string= "\n\n\n -" (bytes-at (point) 5)))
-    (setq result (do-prev-task-mark))
-    (should (= 8 result))
-    (should (string= " - tas" (bytes-at result 6)))))
+    (let ((result))
+      (insert buf-w-done)
+      (goto-char 5)
+      (should (string= "\n\n\n -" (bytes-at (point) 5)))
+      (setq result (do-prev-task-mark))
+      (should (= 8 result))
+      (should (string= " - tas" (bytes-at result 6))))))
 
+;; ============================================================================
+;; tests for do-pdone
+;;
+;;  + empty file: no changes, message
+;;  + file of whitespace: no changes, message
+;;  + all completed tasks: no changes, message
+;;  one task, no DONE: DONE line added, task moves below
+;;  two task, no DONE: DONE line added, first task moves below
+;;  two task, no DONE: DONE line added, second task moves below
+;;  three tasks, no DONE: DONE line added, first task moves below
+;;  three tasks, no DONE: DONE line added, middle task moves below
+;;  three tasks, no DONE: DONE line added, last task moves below
+;;  one task, with DONE: task moves below
+;;  two tasks, with DONE: first task moves below
+;;  two tasks, with DONE: second task moves below
+;;  three tasks, with DONE: 1st task moves below
+;;  three tasks, with DONE: 2nd task moves below
+;;  three tasks, with DONE: 3rd task moves below
+
+;; ----------------------------------------------------------------------------
+(ert-deftest test-1900-pdone-empty ()
+  "pdone: empty file doesn't change"
+  (with-temp-buffer
+    (let ((msg-max (get-message-max)))
+      (do-pdone 't)
+      (should (in-messages-p msg-max "file too small to hold a task"))
+      (should (= (point-max) 1)))))
+
+;; ----------------------------------------------------------------------------
+(ert-deftest test-1905-xdone-whitespace ()
+  "xdone: file of whitespace doesn't change"
+  (with-temp-buffer
+    (let ((msg-max (get-message-max))
+          (before)
+          (pre-point))
+      (insert "       \n         \n              \n         ")
+      (setq before (buffer-string))
+      (setq pre-point (point))
+      (do-xdone 't)
+      (should (in-messages-p msg-max "no tasks in file"))
+      (should (string= before (buffer-string)))
+      (should (= pre-point (point))))))
+
+;; ----------------------------------------------------------------------------
+(ert-deftest test-1910-odone-no-active ()
+  "odone: no active tasks: no changes, message"
+  (with-temp-buffer
+    (let ((msg-max (get-message-max))
+          (before)
+          (pre-point))
+      (insert do-mode-done-line)
+      (insert "\n\n + completed task number 1")
+      (insert "\n\n x abandoned task number 2\n")
+      (setq before (buffer-string))
+      (goto-char (point-max))
+      (setq pre-point (point))
+      (do-odone 't)
+      (should (in-messages-p msg-max "no active tasks found"))
+      (should (string= before (buffer-string)))
+      (should (= pre-point (point))))))
+
+;; ----------------------------------------------------------------------------
+(ert-deftest test-1915-pdone-ndl-one ()
+  "pdone: one task, no DONE -> DONE line added, task moves below"
+  (with-temp-buffer
+    (let ((done-pos)
+          (task-pos))
+      (insert "\n\n - sample task\n\n")
+      (goto-char (string-match "sample" (buffer-string)))
+      (do-pdone 't)
+      (setq done-pos (do-done-position))
+      (goto-char (point-max))
+      (setq task-pos (re-search-backward do-mode-rgx-task))
+      (should (< done-pos task-pos)))))
+
+;; ----------------------------------------------------------------------------
+;; Copy this to *scratch* and eval-buffer (esc-b) to run the tests interactively
+;; (reload-do-mode)
+;; (ert-run-tests-interactively "t")
