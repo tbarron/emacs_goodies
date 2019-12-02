@@ -1,6 +1,7 @@
 ;;;; ===============================================================
 ;;;; Variable settings
 ;;;; ===============================================================
+; (require 'do-mode)
 (add-hook 'write-file-hooks 'time-stamp)
 (setq time-stamp-start "[Uu]pdated[:_= 	]+\\\\?[\"<]+")
 (setq time-stamp-format "%04y.%02m%02d %02H:%02M:%02S")
@@ -71,11 +72,11 @@
    '(lambda ()
       (setq tcl-indent-level 4)
       ))
-(setq do-mode-hook
-   '(lambda ()
-      (auto-fill-mode 1)
-      (setq tab-width 3)
-      (setq fill-prefix "   ")))
+;; (setq do-mode-hook
+;;    '(lambda ()
+;;       (auto-fill-mode 1)
+;;       (setq tab-width 3)
+;;       (setq fill-prefix "   ")))
 (setq view-hook
    '(lambda ()
       (local-set-key "\C-t" 'View-scroll-lines-backward)
@@ -105,7 +106,7 @@
 (setq auto-mode-alist (cons (quote ("log.[0-9]+" . text-mode)) auto-mode-alist))
 (setq auto-mode-alist (cons (quote ("sscr.[0-9]+" . text-mode)) auto-mode-alist))
 (setq auto-mode-alist (cons (quote (".php$" . tcl-mode)) auto-mode-alist))
-(setq auto-mode-alist (cons (quote ("do$" . do-mode)) auto-mode-alist))
+; (setq auto-mode-alist (cons (quote ("do$" . do-mode)) auto-mode-alist))
 
 (setq dired-listing-switches "-l")
 (setq mail-yank-prefix "> ")
@@ -167,7 +168,7 @@
 (global-set-key "\C-x\C-b" 'electric-buffer-list)
 (global-set-key "\C-x\C-d" 'do-visit-done)
 (global-set-key "\C-x\C-e" 'dt-mdy)
-(global-set-key "\C-x\C-n" 'repeat-complex-command)
+; (global-set-key "\C-x\C-n" 'repeat-complex-command)
 (global-set-key "\C-x\C-r" 'insert-file)
 (global-set-key "\C-x\C-t" 'goto-today)
 (global-set-key "\C-x\C-y" 'copy-region-as-kill)

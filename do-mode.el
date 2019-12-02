@@ -1,12 +1,31 @@
-;; Do mode, and its ideosyncratic commands.
+;;; ---------------------------------------------------------------------------
+;; do-mode supports tracking, editing, and managing lists of tasks
+;; that can be checked off and moved to a "done" section of the file
+;; when completed.
+;;
+;; status flag meaning
+;;   +   working
+;;   -   needs work
+;;
+;;  keys  status  function          purpose
+;;  \ee     -     do-new-entry       create a new entry
+;;  \ed     -     do-pdone           mark task completed (+)
+;;  \ez     -     do-xdone           mark task abandoned (x)
+;;  \e/     -     do-odone           divert task (<) (i.e., moved elsewhere)
+;;  \C-v    +     do-goto-next-task  jump to next task
+;;  \C-t    +     do-goto-prev-task  jump to previous task
+;;
+(message "loading do-mode.el: 0%%")
+(if (featurep 'do-mode)
+    (unload-feature 'do-mode 't))
 
+(provide 'do-mode)
+
+;;; ---------------------------------------------------------------------------
 (defvar do-mode-syntax-table nil
   "Syntax table used while in do mode.")
 
-(defvar do-mode-abbrev-table nil
-  "Abbrev table used while in do mode.")
-(define-abbrev-table 'do-mode-abbrev-table ())
-
+;;; ---------------------------------------------------------------------------
 (if do-mode-syntax-table
     ()
   (setq do-mode-syntax-table (make-syntax-table))
@@ -14,28 +33,57 @@
   (modify-syntax-entry ?\\ ".   " do-mode-syntax-table)
   (modify-syntax-entry ?' "w   " do-mode-syntax-table))
 
-(defvar do-mode-map nil "")
-(if do-mode-map
-    ()
-  (setq do-mode-map (make-sparse-keymap))
-  (define-key do-mode-map "\t" 'tab-to-tab-stop)
-  (define-key do-mode-map "\ed" 'do-pdone)
-  (define-key do-mode-map "\ez" 'do-xdone)
-  (define-key do-mode-map "\e<" 'do-odone)
-  (define-key do-mode-map "\ei" 'do-into)
-  (define-key do-mode-map "\es" 'do-sub-entry)
-  (define-key do-mode-map "\ee" 'do-new-entry)
-;  (define-key do-mode-map "\ex" 'do-cut-entry)
-  (define-key do-mode-map "\ea" 'do-copy-entry)
-  (define-key do-mode-map "\ep" 'do-yank-entry)
-  (define-key do-mode-map "\e^" 'do-entry-to-top)
-  (define-key do-mode-map "\e!" 'do-entry-order)
-  (define-key do-mode-map "\e@" 'do-entry-after)
-  (define-key do-mode-map "\e$" 'do-entry-to-end)
-;  (define-key do-mode-map "\C-x\C-n" 'next-dodo)
-;  (define-key do-mode-map "\C-x\C-p" 'do-previous-entry)
-)
+;;; ---------------------------------------------------------------------------
+(defvar do-mode-abbrev-table nil
+  "Abbrev table used while in do mode.")
 
+(define-abbrev-table 'do-mode-abbrev-table ())
+
+; (message "loading do-mode.el: 50")
+
+;;; ---------------------------------------------------------------------------
+;; defvar doesn't reset variables that are already defined. So we do a
+;; little magic here to ensure that the keymap will be updated when
+;; this file is reloaded. First, we create a keymap in local 'let'
+;; variable map and set all our keystroke sequences in it. Then, if
+;; do-mode-map is bound, we use setq to override whatever content it
+;; has with map. If it is not bound, instead we call defvar to create
+;; it and put the contents of map in it.
+(let ((map (make-keymap)))
+      (define-key map "\ee" 'do-new-entry)
+      (define-key map "\ed" 'do-pdone)
+      (define-key map "\ez" 'do-xdone)
+      (define-key map "\e/" 'do-odone)
+      (define-key map "\C-v" 'do-goto-next-task)
+      (define-key map "\C-t" 'do-goto-prev-task)
+      (if (boundp 'do-mode-map)
+          (setq do-mode-map map)
+        (defvar do-mode-map map
+          "Define or reset the keystroke map for do-mode")))
+
+
+;;; ---------------------------------------------------------------------------
+(defconst do-mode-rgx-done "^--- DONE ---"
+  "Regexp for finding the DONE line")
+
+;;; ---------------------------------------------------------------------------
+(defconst do-mode-rgx-task "^ [-+.>^<x] "
+  "Regexp for finding a task marker")
+
+;;; ---------------------------------------------------------------------------
+(defconst do-mode-done-line (concat "\n--- DONE ------------------------------"
+                                    "----------------------------------------")
+  "Regexp for finding the DONE line")
+
+;;; ---------------------------------------------------------------------------
+(defun reload-do-mode ()
+  "Reload this file"
+  (interactive)
+  (load-file "do-mode.el")
+) 
+
+
+;;; ---------------------------------------------------------------------------
 (defun do-mode ()
   "Major mode for editing my todo files.  Special commands:\\{do-mode-map}
 Turning on do-mode calls the value of the variable do-mode-hook,
@@ -48,6 +96,41 @@ if that value is non-nil."
   (setq local-abbrev-table do-mode-abbrev-table)
   (set-syntax-table do-mode-syntax-table)
   (run-hooks 'do-mode-hook))
+
+;;; ---------------------------------------------------------------------------
+(defun bytes-at (where count)
+  "Return the next COUNT bytes after point (or before point at eobp)"
+  (buffer-substring (min where (- (point-max) count))
+                    (min (+ count where) (point-max))))
+
+;;; ---------------------------------------------------------------------------
+(defun do-add-done-iff ()
+  "Insert a DONE line if there isn't one already present"
+  (interactive)
+  (save-excursion
+    (goto-char (point-min))
+    (if (not (re-search-forward do-mode-rgx-done nil 'limit))
+        (insert do-mode-done-line))))
+
+;;; ---------------------------------------------------------------
+(defun do-new-entry ()
+  "Create a new dodo entry with today's date"
+  (interactive)
+  (let ((donesect "^--- DONE ---")
+        (initial-point (point))
+        (initial-fill-prefix fill-prefix)
+        (rgx "^ [-+.>^<x] ")
+        (done-pos (do-done-position))
+        (next-pos (do-next-task-mark))
+        (end_t 0)
+        (end_d 0)
+        (end 0)
+        )
+    (setq fill-prefix "")
+    (goto-char (min next-pos done-pos))
+    (open-line 2)
+    (insert " - [" (format-time-string "%Y.%m%d") "] ")
+    (setq fill-prefix initial-fill-prefix)))
 
 ;;; ---------------------------------------------------------------------------
 (defun previous-dodo ()
@@ -74,9 +157,68 @@ if that value is non-nil."
   )
 (global-set-key "\C-x\C-n" 'next-dodo)
 
-;;; ---------------------------------------------------------------
-;;; do-done
-;;; ---------------------------------------------------------------
+;; ----------------------------------------------------------------------------
+(defun do-done-position ()
+  (concat "Return the front of '^--- DONE ---' if present, or (point-max)"
+          "if there's no DONE line")
+  (interactive)
+  (let ((done-rgx "^--- DONE ---"))
+    (save-excursion
+      (goto-char (point-max))
+      (re-search-backward done-rgx nil 't)
+      (point))))
+
+;; ----------------------------------------------------------------------------
+;; If point is on the last task mark in the file, we don't want to
+;; move it
+(defun do-goto-next-task ()
+  "Move point to the next task mark"
+  (interactive)
+  (let ((point-str (bytes-at (point) 3))
+        (new-point nil)
+        (initial-point (point)))
+    (save-excursion
+      (if (string-match do-mode-rgx-task point-str)
+          (forward-word))
+      (re-search-forward do-mode-rgx-task nil 't)
+      (setq new-point (re-search-backward do-mode-rgx-task)))
+    (if new-point
+        (goto-char new-point))))
+
+;; ----------------------------------------------------------------------------
+(defun do-next-task-mark ()
+  "Return the position of the first task mark after point"
+  (interactive)
+  (let ((point-str (bytes-at (point) 3))
+        (rval nil))
+    (save-excursion
+      (if (string-match do-mode-rgx-task point-str)
+          (forward-word))
+      (re-search-forward do-mode-rgx-task nil 't)
+      (setq rval (re-search-backward do-mode-rgx-task)))))
+
+;; ----------------------------------------------------------------------------
+;; If point is on the first task mark in the file, we don't want to
+;; move it
+(defun do-goto-prev-task ()
+  "Move point to the preceding task mark"
+  (interactive)
+  (if (not (re-search-backward do-mode-rgx-task nil 't))
+      (if (re-search-forward do-mode-rgx-task nil 't)
+          (re-search-backward do-mode-rgx-task)))
+  (point))
+
+;; ----------------------------------------------------------------------------
+(defun do-prev-task-mark ()
+  "Return the position of the task that precedes point"
+  (interactive)
+  (save-excursion
+    (if (not (re-search-backward do-mode-rgx-task nil 't))
+        (if (re-search-forward do-mode-rgx-task nil 't)
+            (re-search-backward do-mode-rgx-task)))
+    (point)))
+
+;; ----------------------------------------------------------------------------
 (defun do-done (mark)
   "Move a task to the DONE section and mark it with MARK"
   (interactive)
@@ -125,27 +267,21 @@ if that value is non-nil."
   )
 (cancel-debug-on-entry 'do-done)
 
-;;; ---------------------------------------------------------------
-;;; do-pdone - mark entry as completed
-;;; ---------------------------------------------------------------
+;; ----------------------------------------------------------------------------
 (defun do-pdone ()
   "Mark a dodo entry as done (+) and move it to the DONE section"
   (interactive)
   (do-done " + ")
 )
 
-;;; ---------------------------------------------------------------
-;;; do-xdone - mark entry as NOT done/abandoned (x)
-;;; ---------------------------------------------------------------
+;; ----------------------------------------------------------------------------
 (defun do-xdone ()
   "Mark a dodo entry as not done (x) and move it to the DONE section"
   (interactive)
   (do-done " x ")
 )
 
-;;; ---------------------------------------------------------------
-;;; do-odone - mark entry as diverted
-;;; ---------------------------------------------------------------
+;; ----------------------------------------------------------------------------
 (defun do-odone ()
   "Mark a dodo entry as diverted (<) and move it to the DONE seciton"
   (interactive)
@@ -153,387 +289,267 @@ if that value is non-nil."
 )
 
 ;;; ---------------------------------------------------------------
-;;; do-mark-done
-;;; -- this function replicates the code of do-mark-current-entry
-;;;    should be able to call do-mark-current-entry instead
-;;; ---------------------------------------------------------------
-(defun do-mark-done (do-mark)
-  ; find the beginning of the task entry being completed
-  (if (not (equal (point) (point-max)))
-      (forward-char 1))
-  (setq search-exp "^[-x><+]")
-  (re-search-backward search-exp)
-  (setq start (point-marker))
-
-  ; start now points to the beginning of the entry
-  (setq pchrs (char-to-string (char-after (point))))
-  (if (or (string= pchrs "-")
-	  (string= pchrs ">"))
-      (progn (delete-char 1) (insert do-mark))
-      (forward-char 1)
-  )
-
-  ; go to the end of the entry
-  (if (re-search-forward search-exp nil 'x)
-      (backward-char 1)
-  )
-
-  ; save the entry text as variable 'entry'
-  (setq entry (buffer-substring start (point)))
-
-  ; remove the entry from the current file
-  (delete-region start (point))
-  (setq back-to (point))
-
-  ; insert the entry after the "=== DONE ===" line
-  (if (search-forward "=== DONE ===" (point-max) 't)
-      (progn
-        (end-of-line)
-        (if (eq (point) (point-max))
-            (insert "\n")
-          (forward-char 1)
-          )
-        )
-    (progn
-      (goto-char (point-max))
-      (insert "\n\n- === DONE ===============================================\n")
-      )
-    )
-  (insert entry)
-  (save-buffer)
-  (goto-char back-to)
-)
-
-;;; ---------------------------------------------------------------
-;;; do-today - obsolete - no longer used
-;;; ---------------------------------------------------------------
-(defun do-today ()
-  "Move a dodo entry from a project-specific dodo file to today's dodo file"
-  (interactive)
-;  (diary-name)                           ; establish diary file name
-  (if (not (equal (point) (point-max)))
-      (forward-char 1))                  ; mark beginning of entry
-  (setq search-exp "^[-x><+]")
-  (re-search-backward search-exp)
-  (setq start (point-marker))
-  (setq pchrs (char-to-string (char-after (point))))
-;  (if (or (string= pchrs "-")
-;	  (string= pchrs ">"))
-;      (progn (delete-char 1) (insert "+"))
-;      (forward-char 1)
-;  )
-  (forward-char 1)
-  (if (re-search-forward search-exp nil 'x)   ; go to end of entry
-      (backward-char 1)
-  )
-  (setq entry (buffer-substring start (point)))
-  (delete-region start (point))
-  (other-window 1)
-  (find-file "~/.dodo/today_have_to.do")
-  (end-of-buffer)
-  (if (not (equal (point) 1))
-      (progn (setq pchrs (char-to-string (char-after (- (point) 1))))
-             (if (not (string= pchrs "\n"))
-                 (insert "\n\n")
-             )
-      )
-  )
-;  (insert "--- ")
-;  (call-process "date" nil 't nil "+%A %H:%M:%S ---")
-  (insert entry)
-  (save-buffer)
-  (other-window 1)                       ; back to .do file
-  (save-buffer)
-)
-
-;;; ---------------------------------------------------------------
 ;;; do-cut-entry
 ;;; ---------------------------------------------------------------
-(defun do-cut-entry ()
-  "Cut the current entry to the kill ring for subsequent yanking"
-  (interactive)
-  (do-mark-current-entry)
-  (setq entry (buffer-substring start (point)))
-  (kill-region start (point))
-)
+;; !@! uncomment this
+;; (defun do-cut-entry ()
+;;   "Cut the current entry to the kill ring for subsequent yanking"
+;;   (interactive)
+;;   (do-mark-current-entry)
+;;   (setq entry (buffer-substring start (point)))
+;;   (kill-region start (point))
+;; )
 
 ;;; ---------------------------------------------------------------
 ;;; do-copy-entry
 ;;; ---------------------------------------------------------------
-(defun do-copy-entry ()
-  "Copy the current entry to the kill ring for subsequent yanking"
-  (interactive)
-  (do-mark-current-entry)
-  (copy-region-as-kill start (point))
-)
+;; !@! uncomment this
+;; (defun do-copy-entry ()
+;;   "Copy the current entry to the kill ring for subsequent yanking"
+;;   (interactive)
+;;   (do-mark-current-entry)
+;;   (copy-region-as-kill start (point))
+;; )
 
 ;;; ---------------------------------------------------------------
 ;;; do-yank-entry
 ;;; ---------------------------------------------------------------
-(defun do-yank-entry ()
-  "Yank the most recent kill from the kill ring before the current entry"
-  (interactive)
-  (do-beginning-of-entry)
-  (yank)
-)
+;; !@! uncomment this
+;; (defun do-yank-entry ()
+;;   "Yank the most recent kill from the kill ring before the current entry"
+;;   (interactive)
+;;   (do-beginning-of-entry)
+;;   (yank)
+;; )
 
 ;;; ---------------------------------------------------------------
 ;;; do-dated
 ;;; ---------------------------------------------------------------
-(defun
-do-dated ()
-  "Create a dated reminder entry based on dt parameters"
-  (interactive)
-  (setq dt-arg (read-from-minibuffer "dt argument> "))
-  (set-buffer (get-buffer-create "*work*"))
-  (erase-buffer)
-  (call-process "/local/bin/dt" nil 't nil "~/.dodo/%y%m%d.dodo" dt-arg)
-  (setq dt-fname (buffer-substring (point-min) (- (point-max) 1)))
-  (find-file dt-fname)
-)
+;; !@! uncomment this
+;; (defun
+;; do-dated ()
+;;   "Create a dated reminder entry based on dt parameters"
+;;   (interactive)
+;;   (setq dt-arg (read-from-minibuffer "dt argument> "))
+;;   (set-buffer (get-buffer-create "*work*"))
+;;   (erase-buffer)
+;;   (call-process "/local/bin/dt" nil 't nil "~/.dodo/%y%m%d.dodo" dt-arg)
+;;   (setq dt-fname (buffer-substring (point-min) (- (point-max) 1)))
+;;   (find-file dt-fname)
+;; )
 
-;;;; ---------------------------------------------------------------
-;;; do-new-entry
-;;; ---------------------------------------------------------------
-(defun do-new-entry ()
-  "Create a new dodo entry with today's date"
-  (interactive)
-  (let ((donesect "^--- DONE ---")
-        (initial-point (point))
-        (initial-fill-prefix fill-prefix)
-        (rgx "^ [-+.>^<x] ")
-        )
-    (if (re-search-forward rgx nil 't)
-        (re-search-backward rgx))
-    (setq fill-prefix "")
-    (open-line 2)
-    (insert " - [" (format-time-string "%Y.%m%d") "] ")
-    (setq fill-prefix initial-fill-prefix)
-    )
-
-
-  ;; (setq search-exp "^ [-+.>^<x] ")
-  ;; (if (not (equal (point) (point-max)))
-  ;;     (forward-char 1))
-  ;; (if (re-search-forward search-exp nil 'x)
-  ;;     (progn (forward-char -1)
-  ;;            ; (set-fill-prefix "!")
-  ;;            (setq fill-prefix "")
-  ;;            (open-line 2)
-  ;;            (do-create-entry)
-  ;;            )
-  ;;   )
-  ;; (if (eobp)
-  ;;     (progn ; (set-fill-prefix "!")
-  ;;            (setq fill-prefix "")
-  ;;            (if (not (equal (char-after (- (point) 1)) 10))
-  ;;                (open-line 2)
-  ;;              )
-  ;;            (if (not (equal (char-after (- (point-max) 2)) 10))
-  ;;                (open-line 1)
-  ;;              )
-  ;;            (goto-char (point-max))
-  ;;            (do-create-entry)
-  ;;            )
-  ;;   )
-)
-
-(defun do-create-entry ()
-  (insert " - [" (format-time-string "%Y.%m%d") "] ")
-  ; (dt-date)
-  ; (insert "] ")
-  (setq fill-prefix "   ")
-)
+;; !@! uncomment this
+;; (defun do-create-entry ()
+;;   (insert " - [" (format-time-string "%Y.%m%d") "] ")
+;;   ; (dt-date)
+;;   ; (insert "] ")
+;;   (setq fill-prefix "   ")
+;; )
 
 ;;; ---------------------------------------------------------------
 ;;; do-sub-entry
 ;;; ---------------------------------------------------------------
-(defun do-sub-entry ()
-  "Create a sub-entry within the current dodo entry"
-  (interactive)
-  (setq search-exp "^[-x><+]")
-  (forward-char 1)
-  (if (re-search-forward search-exp nil 'x)
-      (backward-char 1)
-    )
-  (re-search-backward "[^ 	\n]")
-  (forward-char 1)
-  (newline)
-  (insert "   > ")
-  (insert (format-time-string "%Y.%m%d.%H%M" (current-time)))
-  ; (dt-datetime)
-  ; (forward-char -3)
-  ; (kill-line)
-  (insert ": ")
-  (setq fill-prefix "      ")
-)
+;; !@! uncomment this
+;; (defun do-sub-entry ()
+;;   "Create a sub-entry within the current dodo entry"
+;;   (interactive)
+;;   (setq search-exp "^[-x><+]")
+;;   (forward-char 1)
+;;   (if (re-search-forward search-exp nil 'x)
+;;       (backward-char 1)
+;;     )
+;;   (re-search-backward "[^ 	\n]")
+;;   (forward-char 1)
+;;   (newline)
+;;   (insert "   > ")
+;;   (insert (format-time-string "%Y.%m%d.%H%M" (current-time)))
+;;   ; (dt-datetime)
+;;   ; (forward-char -3)
+;;   ; (kill-line)
+;;   (insert ": ")
+;;   (setq fill-prefix "      ")
+;; )
 
 ;;; ---------------------------------------------------------------
 ;;; goto today's dodo file in the current buffer
 ;;; ---------------------------------------------------------------
-(defun do-goto-today ()
-  "Jump to today's dodo file"
-  (interactive)
-  (find-file "~/.dodo/today_have_to.do")
-)
+;; !@! uncomment this
+;; (defun do-goto-today ()
+;;   "Jump to today's dodo file"
+;;   (interactive)
+;;   (find-file "~/.dodo/today_have_to.do")
+;; )
 
 ;;; ---------------------------------------------------------------
 ;;; bracket the current entry - set mark start at beginning and put
 ;;; point at the end
 ;;; ---------------------------------------------------------------
-(defun do-mark-current-entry ()
-  (if (not (equal (point) (point-max)))
-      (forward-char 1))                  ; mark beginning of entry
-  (setq search-exp "^[-x><+]")
-  (re-search-backward search-exp)
-  (setq start (point-marker))
-  (forward-char 1)
-  (if (re-search-forward search-exp nil 'x)   ; go to end of entry
-      (backward-char 1)
-  )
-)
+;; !@! uncomment this
+;; (defun do-mark-current-entry ()
+;;   (if (not (equal (point) (point-max)))
+;;       (forward-char 1))                  ; mark beginning of entry
+;;   (setq search-exp "^[-x><+]")
+;;   (re-search-backward search-exp)
+;;   (setq start (point-marker))
+;;   (forward-char 1)
+;;   (if (re-search-forward search-exp nil 'x)   ; go to end of entry
+;;       (backward-char 1)
+;;   )
+;; )
 
 ;;; ---------------------------------------------------------------
 ;;; go to the beginning of the current dodo entry
 ;;; ---------------------------------------------------------------
-(defun do-beginning-of-entry ()
-  (interactive)
-  (if (not (equal (point) (point-max)))
-      (forward-char 1))                  ; mark beginning of entry
-  (setq search-exp "^[-x><+]")
-  (re-search-backward search-exp)
-)
+;; !@! uncomment this
+;; (defun do-beginning-of-entry ()
+;;   (interactive)
+;;   (if (not (equal (point) (point-max)))
+;;       (forward-char 1))                  ; mark beginning of entry
+;;   (setq search-exp "^[-x><+]")
+;;   (re-search-backward search-exp)
+;; )
 
 ;;; ---------------------------------------------------------------
 ;;; go to the beginning of the previous dodo entry
 ;;; ---------------------------------------------------------------
-(defun do-previous-entry ()
-  (interactive)
-  (setq search-exp "^[-x><+]")
-  (do-beginning-of-entry)
-  (re-search-backward search-exp (point-min) 'not-t-not-nil)
-)
+;; !@! uncomment this
+;; (defun do-previous-entry ()
+;;   (interactive)
+;;   (setq search-exp "^[-x><+]")
+;;   (do-beginning-of-entry)
+;;   (re-search-backward search-exp (point-min) 'not-t-not-nil)
+;; )
 
 ;;; ---------------------------------------------------------------
 ;;; go to the beginning of the next dodo entry
 ;;; ---------------------------------------------------------------
-(defun do-next-entry ()
-  (interactive)
-  (if (not (equal (point) (point-max)))
-      (forward-char 1))                  ; mark beginning of entry
-  (setq search-exp "^[-x><+]")
-  (if (re-search-forward search-exp (point-max) 'not-t-not-nil)
-      (forward-char -1))
-  (do-beginning-of-entry)
-)
+;; !@! uncomment this
+;; (defun do-next-entry ()
+;;   (interactive)
+;;   (if (not (equal (point) (point-max)))
+;;       (forward-char 1))                  ; mark beginning of entry
+;;   (setq search-exp "^[-x><+]")
+;;   (if (re-search-forward search-exp (point-max) 'not-t-not-nil)
+;;       (forward-char -1))
+;;   (do-beginning-of-entry)
+;; )
 
 ;;; ---------------------------------------------------------------
 ;;; move the current entry to top of file
 ;;; ---------------------------------------------------------------
-(defun do-entry-to-top ()
-  "Move the current entry to the top of the file"
-  (interactive)
-  (setq there (point))
-  (do-next-entry)
-  (setq here (point))
-  (if (> here there)
-      (forward-char -1))
-  (do-cut-entry)
-
-  (goto-char (point-min))
-  (yank)
-
-  (goto-char here)
-  (forward-char -1)
-  (do-beginning-of-entry)
-)
+;; !@! uncomment this
+;; (defun do-entry-to-top ()
+;;   "Move the current entry to the top of the file"
+;;   (interactive)
+;;   (setq there (point))
+;;   (do-next-entry)
+;;   (setq here (point))
+;;   (if (> here there)
+;;       (forward-char -1))
+;;   (do-cut-entry)
+;; 
+;;   (goto-char (point-min))
+;;   (yank)
+;; 
+;;   (goto-char here)
+;;   (forward-char -1)
+;;   (do-beginning-of-entry)
+;; )
 
 ;;; ---------------------------------------------------------------
 ;;; move the current entry to just before a line of "- =======..."
 ;;; ---------------------------------------------------------------
-(defun do-entry-order ()
-  "Move the current entry to precede the divider line ('- ====...')"
-  (interactive)
-  (setq there (point))
-  (do-next-entry)
-  (setq here (point))
-  (if (> here there)
-      (forward-char -1))
-  (do-cut-entry)
-
-  (re-search-backward "^- ======")
-  (yank)
-
-  (goto-char here)
-  (forward-char -1)
-  (do-beginning-of-entry)
-)
+;; !@! uncomment this
+;; (defun do-entry-order ()
+;;   "Move the current entry to precede the divider line ('- ====...')"
+;;   (interactive)
+;;   (setq there (point))
+;;   (do-next-entry)
+;;   (setq here (point))
+;;   (if (> here there)
+;;       (forward-char -1))
+;;   (do-cut-entry)
+;; 
+;;   (re-search-backward "^- ======")
+;;   (yank)
+;; 
+;;   (goto-char here)
+;;   (forward-char -1)
+;;   (do-beginning-of-entry)
+;; )
 
 ;;; ---------------------------------------------------------------
 ;;; move the current entry to just after a line of "- =======..."
 ;;; ---------------------------------------------------------------
-(defun do-entry-after ()
-  "Move the current entry to follow the divider line ('- ====...')"
-  (interactive)
-  (setq there (point))
-  (do-next-entry)
-  (setq here (point))
-  (if (> here there)
-      (forward-char -1))
-  (do-cut-entry)
-
-  (re-search-forward "^- ======")
-  (do-next-entry)
-  (yank)
-
-  (goto-char here)
-  (forward-char -1)
-  (do-beginning-of-entry)
-)
+;; !@! uncomment this
+;; (defun do-entry-after ()
+;;   "Move the current entry to follow the divider line ('- ====...')"
+;;   (interactive)
+;;   (setq there (point))
+;;   (do-next-entry)
+;;   (setq here (point))
+;;   (if (> here there)
+;;       (forward-char -1))
+;;   (do-cut-entry)
+;; 
+;;   (re-search-forward "^- ======")
+;;   (do-next-entry)
+;;   (yank)
+;; 
+;;   (goto-char here)
+;;   (forward-char -1)
+;;   (do-beginning-of-entry)
+;; )
 
 ;;; ---------------------------------------------------------------
 ;;; move the current entry to bottom of file
 ;;; ---------------------------------------------------------------
-(defun do-entry-to-end ()
-  "Move the current entry to the top of the file"
-  (interactive)
-  (do-cut-entry)
-  (setq here (point))
-  (goto-char (point-max))
-  (yank)
-  (goto-char here)
-;  (do-next-entry)
-)
+;; !@! uncomment this
+;; (defun do-entry-to-end ()
+;;   "Move the current entry to the top of the file"
+;;   (interactive)
+;;   (do-cut-entry)
+;;   (setq here (point))
+;;   (goto-char (point-max))
+;;   (yank)
+;;   (goto-char here)
+;; ;  (do-next-entry)
+;; )
 
 ; (global-unset-key "\M-^")
 ; (global-unset-key "\M-$")
 
-(global-set-key "\M-^" 'do-entry-to-top)
-(global-set-key "\M-$" 'do-entry-to-end)
+;(global-set-key "\M-^" 'do-entry-to-top)
+;(global-set-key "\M-^" 'do-entry-to-top)
+;(global-set-key "\M-$" 'do-entry-to-end)
 
 ;;; ---------------------------------------------------------------
 ;;; if date has changed, call add-reminders function
 ;;; ---------------------------------------------------------------
-(defun do-remind ()
-  "Check the update time of the DODO file and add appropriate reminders"
-  (interactive)
-  (setq mtime (nth 5 (file-attributes "~/Dropbox/DODO")))
-  (setq mdays (time-to-days mtime))
-  (setq ndays (time-to-days (current-time)))
-  (message "mdays = %d; ndays = %d" mdays ndays)
+; !@! uncomment this function
+;; (defun do-remind ()
+;;   "Check the update time of the DODO file and add appropriate reminders"
+;;   (interactive)
+;;   (setq mtime (nth 5 (file-attributes "~/Dropbox/DODO")))
+;;   (setq mdays (time-to-days mtime))
+;;   (setq ndays (time-to-days (current-time)))
+;;   (message "mdays = %d; ndays = %d" mdays ndays)
+;; 
+;;   (if (not (= mdays ndays))
+;;       (add-reminders)
+;;     )
+;; )
 
-  (if (not (= mdays ndays))
-      (add-reminders)
-    )
-)
 
 ;;; ---------------------------------------------------------------
 ;;; add reminders
 ;;; ---------------------------------------------------------------
-(defun add-reminders ()
-  "Copy appropriate reminders from reminder file to DODO"
-  (interactive)
-)
+; !@! uncomment this function
+;; (defun add-reminders ()
+;;   "Copy appropriate reminders from reminder file to DODO"
+;;   (interactive)
+;; )
+
 
 ;;; ---------------------------------------------------------------
 ;;; vvv boneyard vvv
@@ -661,4 +677,12 @@ do-dated ()
 ;;; ---------------------------------------------------------------
 
 
-(message "file do-mode.el loaded")
+(setq do-mode-hook
+   '(lambda ()
+      (auto-fill-mode 1)
+      (setq tab-width 3)
+      (setq fill-prefix "   ")))
+
+(setq auto-mode-alist (cons (quote ("do$" . do-mode)) auto-mode-alist))
+
+(message "loading do-mode.el: 100%%")
