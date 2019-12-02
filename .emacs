@@ -299,3 +299,4 @@
              '("melpa" . "http://melpa.milkbox.net/packages/"))
 (package-initialize)
 
+(put 'erase-buffer 'disabled nil)
