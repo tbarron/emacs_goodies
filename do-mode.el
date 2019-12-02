@@ -179,16 +179,7 @@ if that value is non-nil."
 (defun do-goto-next-task ()
   "Move point to the next task mark"
   (interactive)
-  (let ((point-str (bytes-at (point) 3))
-        (new-point nil)
-        (initial-point (point)))
-    (save-excursion
-      (if (string-match do-mode-rgx-task point-str)
-          (forward-word))
-      (re-search-forward do-mode-rgx-task nil 't)
-      (setq new-point (re-search-backward do-mode-rgx-task)))
-    (if new-point
-        (goto-char new-point))))
+  (goto-char (do-next-task-mark)))
 
 ;; ----------------------------------------------------------------------------
 (defun do-next-task-mark ()
@@ -208,10 +199,7 @@ if that value is non-nil."
 (defun do-goto-prev-task ()
   "Move point to the preceding task mark"
   (interactive)
-  (if (not (re-search-backward do-mode-rgx-task nil 't))
-      (if (re-search-forward do-mode-rgx-task nil 't)
-          (re-search-backward do-mode-rgx-task)))
-  (point))
+  (goto-char (do-prev-task-mark)))
 
 ;; ----------------------------------------------------------------------------
 (defun do-prev-task-mark ()
