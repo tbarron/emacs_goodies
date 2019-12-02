@@ -12,4 +12,4 @@ tarball:
 	tar -c -z -v -f ~/tmp/el.$(DATE).tar.gz --exclude .git .
 
 ert:
-	emacs -batch -l ert -l test-do-mode.el -f ert-run-tests-batch-and-exit
+	emacs -batch -l ert -l test-do-mode.el --eval "(ert-run-tests-batch-and-exit \"$(SEL)\")"
