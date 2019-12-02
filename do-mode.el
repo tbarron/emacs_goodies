@@ -82,9 +82,10 @@
 
 ;;; ---------------------------------------------------------------------------
 (defun reload-do-mode ()
-  "Reload this file"
+  "Reload this file and tests"
   (interactive)
   (load-file "do-mode.el")
+  (load-file "test-do-mode.el")
 ) 
 
 
@@ -105,6 +106,10 @@ if that value is non-nil."
 ;;; ---------------------------------------------------------------------------
 (defun bytes-at (where count)
   "Return the next COUNT bytes after point (or before point at eobp)"
+  (if (< where (point-min))
+      (setq where (point-min)))
+  (if (< (point-max) (+ where count))
+      (setq count (- (point-max) where)))
   (buffer-substring (min where (- (point-max) count))
                     (min (+ count where) (point-max))))
 
@@ -170,8 +175,7 @@ if that value is non-nil."
   (let ((done-rgx "^--- DONE ---"))
     (save-excursion
       (goto-char (point-max))
-      (re-search-backward done-rgx nil 't)
-      (point))))
+      (re-search-backward done-rgx nil 't))))
 
 ;; ----------------------------------------------------------------------------
 ;; If point is on the last task mark in the file, we don't want to
@@ -212,74 +216,97 @@ if that value is non-nil."
     (point)))
 
 ;; ----------------------------------------------------------------------------
-(defun do-done (mark)
+(defun do-done (mark nosave)
   "Move a task to the DONE section and mark it with MARK"
   (interactive)
-  (let ((rgx "^ [-+.>^<x] ")
-        (donesect "^--- DONE ---")
-        (point-str (buffer-substring (point) (+ 3 (point))))
-        (initial-point (point))
-        (start 0)
-        (end 0))
-    (save-excursion
-      (if (string-match rgx point-str)
-          (forward-word)
-        (if (string-match "[^ \n]{1,3}.{1,3}" point-str)
-            (backward-word)
-          (if (string-match ".{1,2}\n{1,2}" point-str)
-              (backward-word)
-          )
-        )
-      )
+  (catch 'empty
+    (if (< (point-max) 3)
+        (throw 'empty "file too small to hold a task"))
+    (let ((rgx "^ [-+.>^<x] ")
+          (donesect "^--- DONE ---")
+          ;; (point-str (buffer-substring (point) (+ 3 (point))))
+          (point-str (bytes-at (point) 3))
+          (initial-point (point))
+          (start 0)
+          (end 0))
+      (save-excursion
+        ;; (if (string-match rgx point-str)
+        ;;     (forward-word)
+        ;;   (if (string-match "[^ \n]{1,3}.{1,3}" point-str)
+        ;;       (backward-word)
+        ;;     (if (string-match ".{1,2}\n{1,2}" point-str)
+        ;;         (backward-word))))
 
-      (if (re-search-forward rgx nil 't)  ; find beginning of next entry
-          (setq end_t (re-search-backward rgx))
-        (setq end_t (point-max)))
-      (goto-char initial-point)         ; back up to where we started
-      (re-search-forward donesect)      ; find beginning of DONE section
-      (setq end_d (re-search-backward donesect))
-      (setq end (min end_t end_d))      ; take the min of the two
-      (goto-char end)                   ; reposition to end of entry
-      (setq start (re-search-backward rgx)) ; find beginning of target entry
-      (kill-region start end)           ; and yank it to kill ring
+        (end-of-line)
+        (if (re-search-forward rgx nil 't)  ; find beginning of next entry
+            (setq end_t (re-search-backward rgx))
+          ;; if the forward search above failed, point is after the last
+          ;; task mark in the buffer.
+          ;; if we search backward for a task mark and don't find one,
+          ;; there aren't any tasks in the file and we're done, so return
+          ;; if the backward search is successful, set end_t to (point-max)
+          ;; so it will be greater than the done-sect position
+          (if (re-search-backward rgx nil 't)
+              (setq end_t (point-max))
+            (throw 'empty "no tasks in file")))
+        (goto-char initial-point)         ; back up to where we started
 
-      (re-search-forward donesect)      ; first entry in DONE section (or end of buf)
-      (if (re-search-forward rgx (point-max) 'foobar)
-          (re-search-backward rgx)
-        )
-      (if (not (eq ?\n (char-before)))
-          (insert "\n"))
+        ;; (re-search-forward donesect)      ; find beginning of DONE section
+        ;; (setq end_d (re-search-backward donesect))
 
-      (yank)                            ; yank the entry being moved
-      (re-search-backward rgx)          ; back to the beginning of entry
-      ;;(replace-match " + ")             ; replace the marker
-      (replace-match mark)              ; replace the marker
-      (save-buffer)                     ; and write the file
-      )
-    )
-  )
-(cancel-debug-on-entry 'do-done)
+        (if (not (setq end_d (do-done-position)))
+            ;; if do-done-position returns nil, there is no done line in
+            ;; the buffer and we need to add one
+            (progn (do-add-done-iff)
+                   (setq end_d (do-done-position))))
+
+        (setq end (min end_t end_d))      ; take the min of the two
+        (goto-char end)                   ; reposition to end of entry
+
+        (if (not (setq start (re-search-backward rgx nil 't)))
+            ;; search failed, so no task to move -- give it up
+            (throw 'empty "no active tasks found"))
+        (kill-region start end)           ; and yank it to kill ring
+
+        (re-search-forward donesect)      ; first entry in DONE section (or end of buf)
+        (if (re-search-forward rgx (point-max) 'jump)
+            (re-search-backward rgx))
+        (if (not (eq ?\n (char-before)))
+            (insert "\n"))
+
+        ;; (yank)                            ; yank the entry being moved
+        (insert (current-kill 0 't))      ; yank without setting mark
+        (re-search-backward rgx)          ; back to the beginning of entry
+        (replace-match mark)              ; replace the marker
+        (if (not nosave)
+            (with-output-to-string
+              (save-buffer)))
+        ))))
+; (cancel-debug-on-entry 'do-done)
 
 ;; ----------------------------------------------------------------------------
-(defun do-pdone ()
+(defun do-pdone (&optional nosave)
   "Mark a dodo entry as done (+) and move it to the DONE section"
   (interactive)
-  (do-done " + ")
-)
+  (let ((msg))
+    (if (setq msg (do-done " + " nosave))
+        (message msg))))
 
 ;; ----------------------------------------------------------------------------
-(defun do-xdone ()
+(defun do-xdone (&optional nosave)
   "Mark a dodo entry as not done (x) and move it to the DONE section"
   (interactive)
-  (do-done " x ")
-)
+  (let ((msg))
+    (if (setq msg (do-done " x " nosave))
+        (message msg))))
 
 ;; ----------------------------------------------------------------------------
-(defun do-odone ()
+(defun do-odone (&optional nosave)
   "Mark a dodo entry as diverted (<) and move it to the DONE seciton"
   (interactive)
-  (do-done " < ")
-)
+  (let ((msg))
+    (if (setq msg (do-done " < " nosave))
+        (message msg))))
 
 ;;; ---------------------------------------------------------------
 ;;; do-cut-entry
