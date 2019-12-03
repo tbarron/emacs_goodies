@@ -279,9 +279,8 @@ if that value is non-nil."
         (re-search-backward rgx)          ; back to the beginning of entry
         (replace-match mark)              ; replace the marker
         (if (not nosave)
-            (with-output-to-string
-              (save-buffer)))
-        ))))
+            (save-buffer)))
+        )))
 ; (cancel-debug-on-entry 'do-done)
 
 ;; ----------------------------------------------------------------------------
