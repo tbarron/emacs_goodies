@@ -979,6 +979,89 @@
       (should (< done-pos task-pos)))))
 
 ;; ----------------------------------------------------------------------------
-;; Copy this to *scratch* and eval-buffer (esc-b) to run the tests interactively
+(ert-deftest test-1920-xdone-ndl-two-1st ()
+  "two task, no DONE: DONE line added, first task moves below"
+  (with-temp-buffer
+    (let ((done-pos)
+          (task-pos))
+      (insert buf-samples2)
+      (goto-char (string-match sp-first (buffer-string)))
+
+      (do-xdone 't)                                                   ; payload
+
+      (setq done-pos (do-done-position))
+      (setq task-pos (last-position do-mode-rgx-task))
+      (should (< done-pos task-pos))
+      (should (= task-pos (last-position x-first)))
+      )))
+
+;; ----------------------------------------------------------------------------
+(ert-deftest test-1925-odone-ndl-two-2nd ()
+  "two task, no DONE: DONE line added, second task moves below"
+  (with-temp-buffer
+    (let ((done-pos)
+          (task-pos))
+      (insert buf-samples2)
+      (goto-char (string-match sp-second (buffer-string)))
+
+      (do-odone 't)                                                   ; payload
+
+      (setq done-pos (do-done-position))
+      (setq task-pos (last-position do-mode-rgx-task))
+      (should (< done-pos task-pos))
+      (should (= task-pos (last-position less-2nd-sample)))
+      )))
+
+;; ----------------------------------------------------------------------------
+(ert-deftest test-1930-pdone-ndl-three-1st ()
+  "three tasks, no DONE: DONE line added, first task moves below"
+  (with-temp-buffer
+    (let ((done-pos)
+          (task-pos))
+      (insert buf-samples3)
+      (goto-char (string-match dash-1st-sample (buffer-string)))
+
+      (do-pdone 't)                                                   ; payload
+
+      (setq done-pos (do-done-position))
+      (setq task-pos (last-position do-mode-rgx-task))
+      (should (< done-pos task-pos))
+      (should (= task-pos (last-position plus-1st-sample)))
+      )))
+
+;; ----------------------------------------------------------------------------
+(ert-deftest test-1935-xdone-ndl-three-2nd ()
+  "three tasks, no DONE: DONE line added, middle task moves below"
+  (with-temp-buffer
+    (let ((done-pos)
+          (task-pos))
+      (insert buf-samples3)
+      (goto-char (string-match 2nd-sample (buffer-string)))
+
+      (do-xdone 't)                                                   ; payload
+
+      (setq done-pos (do-done-position))
+      (setq task-pos (last-position do-mode-rgx-task))
+      (should (< done-pos task-pos))
+      (should (= task-pos (last-position x-second-sample)))
+      )))
+
+;; ----------------------------------------------------------------------------
+(ert-deftest test-1940-odone-ndl-three-3rd ()
+  "three tasks, no DONE: DONE line added, last task moves below"
+  (with-temp-buffer
+    (let ((done-pos)
+          (task-pos))
+      (insert buf-samples3)
+      (goto-char (string-match 3rd-sample (buffer-string)))
+
+      (do-odone 't)                                                   ; payload
+
+      (setq done-pos (do-done-position))
+      (setq task-pos (last-position do-mode-rgx-task))
+      (should (< done-pos task-pos))
+      (should (= task-pos (last-position less-3rd-sample)))
+      )))
+
 ;; (reload-do-mode)
 ;; (ert-run-tests-interactively "t")
