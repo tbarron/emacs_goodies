@@ -1007,7 +1007,9 @@
   "pdone: empty file doesn't change"
   (with-temp-buffer
     (let ((msg-max (get-message-max)))
-      (do-pdone 't)
+
+      (do-pdone 't)                                                   ; payload
+
       (should (in-messages-p msg-max file-too-small))
       (should (= (point-max) 1)))))
 
@@ -1021,10 +1023,13 @@
       (insert whitespace)
       (setq before (buffer-string))
       (setq pre-point (point))
-      (do-xdone 't)
+
+      (do-xdone 't)                                                   ; payload
+
       (should (in-messages-p msg-max no-tasks))
       (should (string= before (buffer-string)))
-      (should (= pre-point (point))))))
+      (should (= pre-point (point)))
+      )))
 
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-1910-odone-no-active ()
@@ -1039,10 +1044,13 @@
       (setq before (buffer-string))
       (goto-char (point-max))
       (setq pre-point (point))
-      (do-odone 't)
+
+      (do-odone 't)                                                   ; payload
+
       (should (in-messages-p msg-max no-active-tasks))
       (should (string= before (buffer-string)))
-      (should (= pre-point (point))))))
+      (should (= pre-point (point)))
+      )))
 
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-1915-pdone-ndl-one ()
@@ -1050,13 +1058,17 @@
   (with-temp-buffer
     (let ((done-pos)
           (task-pos))
-      (do-pdone 't)
       (insert sample-task)
       (goto-char (string-match sample (buffer-string)))
+
+      (do-pdone 't)                                                   ; payload
+
       (setq done-pos (do-done-position))
       (goto-char (point-max))
       (setq task-pos (re-search-backward do-mode-rgx-task))
-      (should (< done-pos task-pos)))))
+      (should (< done-pos task-pos))
+      (should (= task-pos (last-position plus-sample)))
+      )))
 
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-1920-xdone-ndl-two-1st ()
