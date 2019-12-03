@@ -24,6 +24,11 @@
 
 ;; ============================================================================
 ;; variables
+(setq 2nd-sample "2nd sample")
+(setq 3rd-sample "3rd sample")
+(setq abandoned "\n\n x abandoned task number 2\n")
+(setq abandoned-1st "---\n\n x 1st")
+(setq also-sp "also ")
 (setq buf-no-done "      \n\n - first task\n - second task\n")
 (setq buf-w-done
       (concat "    \n\n\n"                ;  1 -  7
@@ -33,6 +38,64 @@
               "--- DONE --------------------------------------------\n\n"
               " + finished 1\n\n"
               " + also done 2\n"))
+(setq buf-samples2 (concat "\n\n - 1st sample task"
+                           "\n\n - 2nd sample task"
+                           "\n\n"))
+(setq buf-samples3 (concat "\n\n - 1st sample task"
+                           "\n\n - 2nd sample task"
+                           "\n\n - 3rd sample task"
+                           "\n\n"))
+(setq completed "\n\n + completed task number 1")
+(setq dash-1st-sample "- 1st sample")
+(setq dash-first " - first")
+(setq dash-sp-f "- f")
+(setq dash-sp-s "- s")
+(setq dash-sp-t "- t")
+(setq dash-tas " - tas")
+(setq dash-task-thr " - task thr")
+(setq diverted-2nd "---\n\n < 2nd sample")
+(setq done-line "--- DONE --------------------------------------------")
+(setq done-sample "---\n\n \\+ sample")
+(setq e-new-new "e\n\n")
+(setq file-too-small "file too small to hold a task")
+(setq finis "finis")
+(setq inish "inish")
+(setq k-sp-o "k o")
+(setq less-2nd-sample " < 2nd sample")
+(setq less-3rd-sample " < 3rd sample")
+(setq n-e-sp-2-new "ne 2\n")
+(setq new-new-sp "\n\n ")
+(setq new3-dash "\n\n\n -")
+(setq new-sp-dash "\n -")
+(setq no-active-tasks "no active tasks found")
+(setq no-tasks "no tasks in file")
+(setq plus-1st-sample " \\+ 1st sample")
+(setq plus-also "+ also")
+(setq plus-fini " + fini")
+(setq plus-sample " \\+ sample")
+(setq plus-sp-f "+ f")
+(setq s-k-new "sk\n")
+(setq sample "sample")
+(setq sample-task "\n\n - sample task\n\n")
+(setq six-new "\n\n\n\n\n\n")
+(setq sp-also-sp " also ")
+(setq sp-dash-sp " - ")
+(setq sp-first " 1st")
+(setq sp-plus-also " + also")
+(setq sp-plus-sp " + ")
+(setq sp-f-i " fi")
+(setq sp-fini " fini")
+(setq sp-new-new " \n\n")
+(setq sp-s-e " se")
+(setq sp-second " 2nd")
+(setq sp-t-a " ta")
+(setq t-a-s "tas")
+(setq t-sp-t "t t")
+(setq three-new "\n\n\n")
+(setq three-sp "   ")
+(setq whitespace "       \n         \n              \n         ")
+(setq x-first " x 1st")
+(setq x-second-sample " x 2nd sample")
 
 ;; ============================================================================
 ;; helper functions
