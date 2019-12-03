@@ -38,6 +38,12 @@
 ;; helper functions
 
 ;; ----------------------------------------------------------------------------
+(defun bytes-at (where count)
+  "Return the next COUNT bytes after point (or before point at eobp)"
+  (buffer-substring (min where (- (point-max) count))
+                    (min (+ count where) (point-max))))
+
+;; ----------------------------------------------------------------------------
 (defun get-message-max ()
   "Empty the *Messages* buffer"
   (with-current-buffer "*Messages*"
@@ -50,16 +56,17 @@
     (string-match needle (buffer-substring after (point-max)))))
 
 ;; ----------------------------------------------------------------------------
+(defun last-position (target)
+  "Return the position of the last occurrence of TARGET in the buffer"
+  (save-excursion
+    (goto-char (point-max))
+    (re-search-backward target)))
+
+;; ----------------------------------------------------------------------------
 (defun run-tests ()
   "Set variable test-selector and return"
   (interactive)
   (ert-run-tests-batch-and-exit selector))
-
-;; ----------------------------------------------------------------------------
-(defun bytes-at (where count)
-  "Return the next COUNT bytes after point (or before point at eobp)"
-  (buffer-substring (min where (- (point-max) count))
-                    (min (+ count where) (point-max))))
 
 
 ;; ============================================================================
