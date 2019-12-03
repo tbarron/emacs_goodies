@@ -166,9 +166,9 @@
   (concat "verify that do-add-done-iff doesn't add a done line"
           " if one is already present")
   (with-temp-buffer
-    (insert "\n\n\n")
+    (insert three-new)
     (insert do-mode-done-line)
-    (insert "\n\n\n\n\n\n")
+    (insert six-new)
     (goto-char (point-min))
     (should (re-search-forward do-mode-rgx-done))
     (do-add-done-iff)
@@ -184,15 +184,14 @@
 (ert-deftest test-1100-do-done-position-no-done ()
   "test do-done-position when DONE line is missing"
   (with-temp-buffer
-    (insert "\n\n\n\n\n")
+    (insert six-new)
     (should (equal nil (do-done-position)))))
-
 
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-1110-do-done-position-with-done ()
   "test do-done-position when DONE line is present"
   (with-temp-buffer
-    (insert "    \n\n--- DONE -------------------------\n\n\n")
+    (insert three-sp three-new done-line three-new)
     (should (= 7 (do-done-position)))))
 
 
@@ -245,7 +244,7 @@
   (with-temp-buffer
     (insert buf-no-done)
     (goto-char 7)
-    (should (string= "\n\n " (bytes-at (point) 3)))
+    (should (string= new-new-sp (bytes-at (point) 3)))
     (should (= 9 (do-goto-next-task)))))
 
 ;; ----------------------------------------------------------------------------
@@ -254,7 +253,7 @@
   (with-temp-buffer
     (insert buf-no-done)
     (goto-char 9)
-    (should (string= " - " (bytes-at (point) 3)))
+    (should (string= sp-dash-sp (bytes-at (point) 3)))
     (should (= 23 (do-goto-next-task)))))
 
 ;; ----------------------------------------------------------------------------
@@ -263,7 +262,7 @@
   (with-temp-buffer
     (insert buf-no-done)
     (goto-char 10)
-    (should (string= "- f" (bytes-at (point) 3)))
+    (should (string= dash-sp-f (bytes-at (point) 3)))
     (should (= 23 (do-goto-next-task)))))
 
 ;; ----------------------------------------------------------------------------
@@ -272,7 +271,7 @@
   (with-temp-buffer
     (insert buf-no-done)
     (goto-char 11)
-    (should (string= " fi" (bytes-at (point) 3)))
+    (should (string= sp-f-i (bytes-at (point) 3)))
     (should (= 23 (do-goto-next-task)))))
 
 ;; ----------------------------------------------------------------------------
@@ -281,7 +280,7 @@
   (with-temp-buffer
     (insert buf-no-done)
     (goto-char 16)
-    (should (string= "t t" (bytes-at (point) 3)))
+    (should (string= t-sp-t (bytes-at (point) 3)))
     (should (= 23 (do-goto-next-task)))))
 
 ;; ----------------------------------------------------------------------------
@@ -290,7 +289,7 @@
   (with-temp-buffer
     (insert buf-no-done)
     (goto-char 22)
-    (should (string= "\n -" (bytes-at (point) 3)))
+    (should (string= new-sp-dash (bytes-at (point) 3)))
     (should (= 23 (do-goto-next-task)))))
 
 ;; ----------------------------------------------------------------------------
@@ -299,7 +298,7 @@
   (with-temp-buffer
     (insert buf-no-done)
     (goto-char 23)
-    (should (string= " - " (bytes-at (point) 3)))
+    (should (string= sp-dash-sp (bytes-at (point) 3)))
     (should (= 23 (do-goto-next-task)))))
 
 ;; ----------------------------------------------------------------------------
@@ -308,7 +307,7 @@
   (with-temp-buffer
     (insert buf-no-done)
     (goto-char 24)
-    (should (string= "- s" (bytes-at (point) 3)))
+    (should (string= dash-sp-s (bytes-at (point) 3)))
     (should (= 9 (do-goto-next-task)))))
 
 ;; ----------------------------------------------------------------------------
@@ -317,7 +316,7 @@
   (with-temp-buffer
     (insert buf-no-done)
     (goto-char 25)
-    (should (string= " se" (bytes-at (point) 3)))
+    (should (string= sp-s-e (bytes-at (point) 3)))
     (should (= 9 (do-goto-next-task)))))
 
 ;; ----------------------------------------------------------------------------
@@ -326,7 +325,7 @@
   (with-temp-buffer
     (insert buf-no-done)
     (goto-char (point-max))
-    (should (string= "sk\n" (bytes-at (point) 3)))
+    (should (string= s-k-new (bytes-at (point) 3)))
     (should (= 23 (do-goto-next-task)))))
 
 ;; ----------------------------------------------------------------------------
@@ -335,7 +334,7 @@
   (with-temp-buffer
     (insert buf-w-done)
     (goto-char 1)
-    (should (string= "   " (bytes-at (point) 3)))
+    (should (string= three-sp (bytes-at (point) 3)))
     (should (= 8 (do-goto-next-task)))))
 
 ;; ----------------------------------------------------------------------------
@@ -344,7 +343,7 @@
   (with-temp-buffer
     (insert buf-w-done)
     (goto-char 7)
-    (should (string= "\n -" (bytes-at (point) 3)))
+    (should (string= new-sp-dash (bytes-at (point) 3)))
     (should (= 8 (do-goto-next-task)))))
 
 ;; ----------------------------------------------------------------------------
@@ -353,7 +352,7 @@
   (with-temp-buffer
     (insert buf-w-done)
     (goto-char 8)
-    (should (string= " - " (bytes-at (point) 3)))
+    (should (string= sp-dash-sp (bytes-at (point) 3)))
     (should (= 21 (do-goto-next-task)))))
 
 ;; ----------------------------------------------------------------------------
@@ -362,7 +361,7 @@
   (with-temp-buffer
     (insert buf-w-done)
     (goto-char 9)
-    (should (string= "- t" (bytes-at (point) 3)))
+    (should (string= dash-sp-t (bytes-at (point) 3)))
     (should (= 21 (do-goto-next-task)))))
 
 ;; ----------------------------------------------------------------------------
@@ -371,7 +370,7 @@
   (with-temp-buffer
     (insert buf-w-done)
     (goto-char 10)
-    (should (string= " ta" (bytes-at (point) 3)))
+    (should (string= sp-t-a (bytes-at (point) 3)))
     (should (= 21 (do-goto-next-task)))))
 
 ;; ----------------------------------------------------------------------------
@@ -380,7 +379,7 @@
   (with-temp-buffer
     (insert buf-w-done)
     (goto-char 14)
-    (should (string= "k o" (bytes-at (point) 3)))
+    (should (string= k-sp-o (bytes-at (point) 3)))
     (should (= 21 (do-goto-next-task)))))
 
 ;; ----------------------------------------------------------------------------
@@ -389,7 +388,7 @@
   (with-temp-buffer
     (insert buf-w-done)
     (goto-char 20)
-    (should (string= "\n -" (bytes-at (point) 3)))
+    (should (string= new-sp-dash (bytes-at (point) 3)))
     (should (= 21 (do-goto-next-task)))))
 
 ;; ----------------------------------------------------------------------------
@@ -398,7 +397,7 @@
   (with-temp-buffer
     (insert buf-w-done)
     (goto-char 21)
-    (should (string= " - " (bytes-at (point) 3)))
+    (should (string= sp-dash-sp (bytes-at (point) 3)))
     (should (= 36 (do-goto-next-task)))))
 
 ;; ----------------------------------------------------------------------------
@@ -407,7 +406,7 @@
   (with-temp-buffer
     (insert buf-w-done)
     (goto-char 24)
-    (should (string= "tas" (bytes-at (point) 3)))
+    (should (string= t-a-s (bytes-at (point) 3)))
     (should (= 36 (do-goto-next-task)))))
 
 ;; ----------------------------------------------------------------------------
@@ -416,7 +415,7 @@
   (with-temp-buffer
     (insert buf-w-done)
     (goto-char 33)
-    (should (string= " \n\n" (bytes-at (point) 3)))
+    (should (string= sp-new-new (bytes-at (point) 3)))
     (should (= 36 (do-goto-next-task)))))
 
 ;; ----------------------------------------------------------------------------
@@ -425,9 +424,9 @@
   (with-temp-buffer
     (insert buf-w-done)
     (goto-char 35)
-    (should (string= "\n -" (bytes-at (point) 3)))
+    (should (string= new-sp-dash (bytes-at (point) 3)))
     (should (= 36 (do-goto-next-task)))
-    (should (string= " + " (bytes-at 106 3)))))
+    (should (string= sp-plus-sp (bytes-at 106 3)))))
 
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-1396-next-w-done ()
@@ -435,9 +434,9 @@
   (with-temp-buffer
     (insert buf-w-done)
     (goto-char 48)
-    (should (string= "e\n\n" (bytes-at (point) 3)))
+    (should (string= e-new-new (bytes-at (point) 3)))
     (should (= 106 (do-goto-next-task)))
-    (should (string= " + " (bytes-at 106 3)))))
+    (should (string= sp-plus-sp (bytes-at 106 3)))))
 
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-1398-next-w-done ()
@@ -445,10 +444,10 @@
   (with-temp-buffer
     (insert buf-w-done)
     (goto-char 107)
-    (should (string= "+ f" (bytes-at (point) 3)))
+    (should (string= plus-sp-f (bytes-at (point) 3)))
     (should (= 121 (do-goto-next-task)))
-    (should (string= " + " (bytes-at 106 3)))
-    (should (string= " + " (bytes-at 121 3)))))
+    (should (string= sp-plus-sp (bytes-at 106 3)))
+    (should (string= sp-plus-sp (bytes-at 121 3)))))
 
 ;; ============================================================================
 ;; tests for do-goto-prev-task
@@ -462,10 +461,10 @@
   (with-temp-buffer
     (insert buf-w-done)
     (goto-char (point-max))
-    (should (string= "ne 2\n" (bytes-at (point) 5)))
+    (should (string= n-e-sp-2-new (bytes-at (point) 5)))
     (setq result (do-goto-prev-task))
     (should (= 121 result))
-    (should (string= " + also" (bytes-at result 7)))))
+    (should (string= sp-plus-also (bytes-at result 7)))))
 
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-1405-prev-w-done ()
@@ -473,10 +472,10 @@
   (with-temp-buffer
     (insert buf-w-done)
     (goto-char 124)
-    (should (string= "also " (bytes-at (point) 5)))
+    (should (string= also-sp (bytes-at (point) 5)))
     (setq result (do-goto-prev-task))
     (should (= 121 result))
-    (should (string= " + also" (bytes-at result 7)))))
+    (should (string= sp-plus-also (bytes-at result 7)))))
 
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-1410-prev-w-done ()
@@ -484,10 +483,10 @@
   (with-temp-buffer
     (insert buf-w-done)
     (goto-char 123)
-    (should (string= " also " (bytes-at (point) 6)))
+    (should (string= sp-also-sp (bytes-at (point) 6)))
     (setq result (do-goto-prev-task))
     (should (= 106 result))
-    (should (string= " + fini" (bytes-at result 7)))))
+    (should (string= plus-fini (bytes-at result 7)))))
 
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-1420-prev-w-done ()
@@ -495,10 +494,10 @@
   (with-temp-buffer
     (insert buf-w-done)
     (goto-char 122)
-    (should (string= "+ also" (bytes-at (point) 6)))
+    (should (string= plus-also (bytes-at (point) 6)))
     (setq result (do-goto-prev-task))
     (should (= 106 result))
-    (should (string= " + fini" (bytes-at result 7)))))
+    (should (string= plus-fini (bytes-at result 7)))))
 
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-1430-prev-w-done ()
@@ -507,10 +506,10 @@
     (insert buf-w-done)
     (goto-char 121)
     (should (= 121 (point)))
-    (should (string= " + al" (bytes-at (point) 5)))
+    (should (string= sp-plus-also (bytes-at (point) 7)))
     (setq result (do-goto-prev-task))
     (should (= 106 result))
-    (should (string= " + fini" (bytes-at result 7)))))
+    (should (string= plus-fini (bytes-at result 7)))))
 
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-1440-prev-w-done ()
@@ -518,10 +517,10 @@
   (with-temp-buffer
     (insert buf-w-done)
     (goto-char 110)
-    (should (string= "inish" (bytes-at (point) 5)))
+    (should (string= inish (bytes-at (point) 5)))
     (setq result (do-goto-prev-task))
     (should (= 106 result))
-    (should (string= " + fini" (bytes-at result 7)))))
+    (should (string= plus-fini (bytes-at result 7)))))
 
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-1442-prev-w-done ()
@@ -529,10 +528,10 @@
   (with-temp-buffer
     (insert buf-w-done)
     (goto-char 109)
-    (should (string= "finis" (bytes-at (point) 5)))
+    (should (string= finis (bytes-at (point) 5)))
     (setq result (do-goto-prev-task))
     (should (= 106 result))
-    (should (string= " + fini" (bytes-at result 7)))))
+    (should (string= plus-fini (bytes-at result 7)))))
 
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-1444-prev-w-done ()
@@ -540,10 +539,10 @@
   (with-temp-buffer
     (insert buf-w-done)
     (goto-char 108)
-    (should (string= " fini" (bytes-at (point) 5)))
+    (should (string= sp-fini (bytes-at (point) 5)))
     (setq result (do-goto-prev-task))
     (should (= 36 result))
-    (should (string= " - task thr" (bytes-at result 11)))))
+    (should (string= dash-task-thr (bytes-at result 11)))))
 
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-1450-prev-w-done ()
@@ -551,10 +550,10 @@
   (with-temp-buffer
     (insert buf-w-done)
     (goto-char 5)
-    (should (string= "\n\n\n -" (bytes-at (point) 5)))
+    (should (string= new3-dash (bytes-at (point) 5)))
     (setq result (do-goto-prev-task))
     (should (= 8 result))
-    (should (string= " - tas" (bytes-at result 6)))))
+    (should (string= dash-tas (bytes-at result 6)))))
 
 ;; ============================================================================
 ;; tests for do-new-entry
@@ -637,7 +636,7 @@
     (insert buf-no-done)
     (goto-char 2)
     (should (= 9 (do-next-task-mark)))
-    (should (string= " - first" (bytes-at 9 8)))))
+    (should (string= dash-first (bytes-at 9 8)))))
 
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-1703-ntm-no-done ()
@@ -646,10 +645,10 @@
     (let ((result))
       (insert buf-no-done)
       (goto-char 7)
-      (should (string= "\n\n " (bytes-at (point) 3)))
+      (should (string= new-new-sp (bytes-at (point) 3)))
       (setq result (do-next-task-mark))
       (should (= 9 result))
-      (should (string= " - first" (bytes-at result 8))))))
+      (should (string= dash-first (bytes-at result 8))))))
 
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-1706-ntm-no-done ()
@@ -657,7 +656,7 @@
   (with-temp-buffer
     (insert buf-no-done)
     (goto-char 9)
-    (should (string= " - " (bytes-at (point) 3)))
+    (should (string= sp-dash-sp (bytes-at (point) 3)))
     (should (= 23 (do-next-task-mark)))))
 
 ;; ----------------------------------------------------------------------------
@@ -666,7 +665,7 @@
   (with-temp-buffer
     (insert buf-no-done)
     (goto-char 10)
-    (should (string= "- f" (bytes-at (point) 3)))
+    (should (string= dash-sp-f (bytes-at (point) 3)))
     (should (= 23 (do-next-task-mark)))))
 
 ;; ----------------------------------------------------------------------------
@@ -675,7 +674,7 @@
   (with-temp-buffer
     (insert buf-no-done)
     (goto-char 11)
-    (should (string= " fi" (bytes-at (point) 3)))
+    (should (string= sp-f-i (bytes-at (point) 3)))
     (should (= 23 (do-next-task-mark)))))
 
 ;; ----------------------------------------------------------------------------
@@ -684,7 +683,7 @@
   (with-temp-buffer
     (insert buf-no-done)
     (goto-char 16)
-    (should (string= "t t" (bytes-at (point) 3)))
+    (should (string= t-sp-t (bytes-at (point) 3)))
     (should (= 23 (do-next-task-mark)))))
 
 ;; ----------------------------------------------------------------------------
@@ -693,7 +692,7 @@
   (with-temp-buffer
     (insert buf-no-done)
     (goto-char 22)
-    (should (string= "\n -" (bytes-at (point) 3)))
+    (should (string= new-sp-dash (bytes-at (point) 3)))
     (should (= 23 (do-next-task-mark)))))
 
 ;; ----------------------------------------------------------------------------
@@ -702,7 +701,7 @@
   (with-temp-buffer
     (insert buf-no-done)
     (goto-char 23)
-    (should (string= " - " (bytes-at (point) 3)))
+    (should (string= sp-dash-sp (bytes-at (point) 3)))
     (should (= 23 (do-next-task-mark)))))
 
 ;; ----------------------------------------------------------------------------
@@ -711,7 +710,7 @@
   (with-temp-buffer
     (insert buf-no-done)
     (goto-char 24)
-    (should (string= "- s" (bytes-at (point) 3)))
+    (should (string= dash-sp-s (bytes-at (point) 3)))
     (should (= 9 (do-next-task-mark)))))
 
 ;; ----------------------------------------------------------------------------
@@ -720,7 +719,7 @@
   (with-temp-buffer
     (insert buf-no-done)
     (goto-char 25)
-    (should (string= " se" (bytes-at (point) 3)))
+    (should (string= sp-s-e (bytes-at (point) 3)))
     (should (= 9 (do-next-task-mark)))))
 
 ;; ----------------------------------------------------------------------------
@@ -729,7 +728,7 @@
   (with-temp-buffer
     (insert buf-no-done)
     (goto-char (point-max))
-    (should (string= "sk\n" (bytes-at (point) 3)))
+    (should (string= s-k-new (bytes-at (point) 3)))
     (should (= 23 (do-next-task-mark)))))
 
 ;; ----------------------------------------------------------------------------
@@ -738,7 +737,7 @@
   (with-temp-buffer
     (insert buf-w-done)
     (goto-char 1)
-    (should (string= "   " (bytes-at (point) 3)))
+    (should (string= three-sp (bytes-at (point) 3)))
     (should (= 8 (do-next-task-mark)))))
 
 ;; ----------------------------------------------------------------------------
@@ -747,7 +746,7 @@
   (with-temp-buffer
     (insert buf-w-done)
     (goto-char 7)
-    (should (string= "\n -" (bytes-at (point) 3)))
+    (should (string= new-sp-dash (bytes-at (point) 3)))
     (should (= 8 (do-next-task-mark)))))
 
 ;; ----------------------------------------------------------------------------
@@ -756,7 +755,7 @@
   (with-temp-buffer
     (insert buf-w-done)
     (goto-char 8)
-    (should (string= " - " (bytes-at (point) 3)))
+    (should (string= sp-dash-sp (bytes-at (point) 3)))
     (should (= 21 (do-next-task-mark)))))
 
 ;; ----------------------------------------------------------------------------
@@ -765,7 +764,7 @@
   (with-temp-buffer
     (insert buf-w-done)
     (goto-char 9)
-    (should (string= "- t" (bytes-at (point) 3)))
+    (should (string= dash-sp-t (bytes-at (point) 3)))
     (should (= 21 (do-next-task-mark)))))
 
 ;; ----------------------------------------------------------------------------
@@ -774,7 +773,7 @@
   (with-temp-buffer
     (insert buf-w-done)
     (goto-char 10)
-    (should (string= " ta" (bytes-at (point) 3)))
+    (should (string= sp-t-a (bytes-at (point) 3)))
     (should (= 21 (do-next-task-mark)))))
 
 ;; ----------------------------------------------------------------------------
@@ -783,7 +782,7 @@
   (with-temp-buffer
     (insert buf-w-done)
     (goto-char 14)
-    (should (string= "k o" (bytes-at (point) 3)))
+    (should (string= k-sp-o (bytes-at (point) 3)))
     (should (= 21 (do-next-task-mark)))))
 
 ;; ----------------------------------------------------------------------------
@@ -792,7 +791,7 @@
   (with-temp-buffer
     (insert buf-w-done)
     (goto-char 20)
-    (should (string= "\n -" (bytes-at (point) 3)))
+    (should (string= new-sp-dash (bytes-at (point) 3)))
     (should (= 21 (do-next-task-mark)))))
 
 ;; ----------------------------------------------------------------------------
@@ -801,7 +800,7 @@
   (with-temp-buffer
     (insert buf-w-done)
     (goto-char 21)
-    (should (string= " - " (bytes-at (point) 3)))
+    (should (string= sp-dash-sp (bytes-at (point) 3)))
     (should (= 36 (do-next-task-mark)))))
 
 ;; ----------------------------------------------------------------------------
@@ -810,7 +809,7 @@
   (with-temp-buffer
     (insert buf-w-done)
     (goto-char 24)
-    (should (string= "tas" (bytes-at (point) 3)))
+    (should (string= t-a-s (bytes-at (point) 3)))
     (should (= 36 (do-next-task-mark)))))
 
 ;; ----------------------------------------------------------------------------
@@ -819,7 +818,7 @@
   (with-temp-buffer
     (insert buf-w-done)
     (goto-char 33)
-    (should (string= " \n\n" (bytes-at (point) 3)))
+    (should (string= sp-new-new (bytes-at (point) 3)))
     (should (= 36 (do-next-task-mark)))))
 
 ;; ----------------------------------------------------------------------------
@@ -828,9 +827,9 @@
   (with-temp-buffer
     (insert buf-w-done)
     (goto-char 35)
-    (should (string= "\n -" (bytes-at (point) 3)))
+    (should (string= new-sp-dash (bytes-at (point) 3)))
     (should (= 36 (do-next-task-mark)))
-    (should (string= " + " (bytes-at 106 3)))))
+    (should (string= sp-plus-sp (bytes-at 106 3)))))
 
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-1766-ntm-w-done ()
@@ -838,9 +837,9 @@
   (with-temp-buffer
     (insert buf-w-done)
     (goto-char 48)
-    (should (string= "e\n\n" (bytes-at (point) 3)))
+    (should (string= e-new-new (bytes-at (point) 3)))
     (should (= 106 (do-next-task-mark)))
-    (should (string= " + " (bytes-at 106 3)))))
+    (should (string= sp-plus-sp (bytes-at 106 3)))))
 
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-1769-ntm-w-done ()
@@ -848,10 +847,10 @@
   (with-temp-buffer
     (insert buf-w-done)
     (goto-char 107)
-    (should (string= "+ f" (bytes-at (point) 3)))
+    (should (string= plus-sp-f (bytes-at (point) 3)))
     (should (= 121 (do-next-task-mark)))
-    (should (string= " + " (bytes-at 106 3)))
-    (should (string= " + " (bytes-at 121 3)))))
+    (should (string= sp-plus-sp (bytes-at 106 3)))
+    (should (string= sp-plus-sp (bytes-at 121 3)))))
 
 ;; ============================================================================
 ;; tests for do-prev-task-mark
@@ -864,10 +863,10 @@
     (let ((result))
       (insert buf-w-done)
       (goto-char (point-max))
-      (should (string= "ne 2\n" (bytes-at (point) 5)))
+      (should (string= n-e-sp-2-new (bytes-at (point) 5)))
       (setq result (do-prev-task-mark))
       (should (= 121 result))
-      (should (string= " + also" (bytes-at result 7))))))
+      (should (string= sp-plus-also (bytes-at result 7))))))
 
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-1805-ptm-w-done ()
@@ -876,10 +875,10 @@
     (let ((result))
       (insert buf-w-done)
       (goto-char 124)
-      (should (string= "also " (bytes-at (point) 5)))
+      (should (string= also-sp (bytes-at (point) 5)))
       (setq result (do-prev-task-mark))
       (should (= 121 result))
-      (should (string= " + also" (bytes-at result 7))))))
+      (should (string= sp-plus-also (bytes-at result 7))))))
 
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-1810-ptm-w-done ()
@@ -888,10 +887,10 @@
     (let ((result))
       (insert buf-w-done)
       (goto-char 123)
-      (should (string= " also " (bytes-at (point) 6)))
+      (should (string= sp-also-sp (bytes-at (point) 6)))
       (setq result (do-prev-task-mark))
       (should (= 106 result))
-      (should (string= " + fini" (bytes-at result 7))))))
+      (should (string= plus-fini (bytes-at result 7))))))
 
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-1815-ptm-w-done ()
@@ -900,10 +899,10 @@
     (let ((result))
       (insert buf-w-done)
       (goto-char 122)
-      (should (string= "+ also" (bytes-at (point) 6)))
+      (should (string= plus-also (bytes-at (point) 6)))
       (setq result (do-prev-task-mark))
       (should (= 106 result))
-      (should (string= " + fini" (bytes-at result 7))))))
+      (should (string= plus-fini (bytes-at result 7))))))
 
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-1820-ptm-w-done ()
@@ -913,10 +912,10 @@
       (insert buf-w-done)
       (goto-char 121)
       (should (= 121 (point)))
-      (should (string= " + al" (bytes-at (point) 5)))
+      (should (string= sp-plus-also (bytes-at (point) 7)))
       (setq result (do-prev-task-mark))
       (should (= 106 result))
-      (should (string= " + fini" (bytes-at result 7))))))
+      (should (string= plus-fini (bytes-at result 7))))))
 
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-1825-ptm-w-done ()
@@ -925,10 +924,10 @@
     (let ((result))
       (insert buf-w-done)
       (goto-char 110)
-      (should (string= "inish" (bytes-at (point) 5)))
+      (should (string= inish (bytes-at (point) 5)))
       (setq result (do-prev-task-mark))
       (should (= 106 result))
-      (should (string= " + fini" (bytes-at result 7))))))
+      (should (string= plus-fini (bytes-at result 7))))))
 
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-1830-ptm-w-done ()
@@ -937,10 +936,10 @@
     (let ((result))
       (insert buf-w-done)
       (goto-char 109)
-      (should (string= "finis" (bytes-at (point) 5)))
+      (should (string= finis (bytes-at (point) 5)))
       (setq result (do-prev-task-mark))
       (should (= 106 result))
-      (should (string= " + fini" (bytes-at result 7))))))
+      (should (string= plus-fini (bytes-at result 7))))))
 
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-1835-ptm-w-done ()
@@ -949,10 +948,10 @@
     (let ((result))
       (insert buf-w-done)
       (goto-char 108)
-      (should (string= " fini" (bytes-at (point) 5)))
+      (should (string= sp-fini (bytes-at (point) 5)))
       (setq result (do-prev-task-mark))
       (should (= 36 result))
-      (should (string= " - task thr" (bytes-at result 11))))))
+      (should (string= dash-task-thr (bytes-at result 11))))))
 
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-1840-ptm-w-done ()
@@ -961,10 +960,10 @@
     (let ((result))
       (insert buf-w-done)
       (goto-char 5)
-      (should (string= "\n\n\n -" (bytes-at (point) 5)))
+      (should (string= new3-dash (bytes-at (point) 5)))
       (setq result (do-prev-task-mark))
       (should (= 8 result))
-      (should (string= " - tas" (bytes-at result 6))))))
+      (should (string= dash-tas (bytes-at result 6))))))
 
 ;; ============================================================================
 ;; tests for do-pdone
@@ -991,7 +990,7 @@
   (with-temp-buffer
     (let ((msg-max (get-message-max)))
       (do-pdone 't)
-      (should (in-messages-p msg-max "file too small to hold a task"))
+      (should (in-messages-p msg-max file-too-small))
       (should (= (point-max) 1)))))
 
 ;; ----------------------------------------------------------------------------
@@ -1001,11 +1000,11 @@
     (let ((msg-max (get-message-max))
           (before)
           (pre-point))
-      (insert "       \n         \n              \n         ")
+      (insert whitespace)
       (setq before (buffer-string))
       (setq pre-point (point))
       (do-xdone 't)
-      (should (in-messages-p msg-max "no tasks in file"))
+      (should (in-messages-p msg-max no-tasks))
       (should (string= before (buffer-string)))
       (should (= pre-point (point))))))
 
@@ -1017,13 +1016,13 @@
           (before)
           (pre-point))
       (insert do-mode-done-line)
-      (insert "\n\n + completed task number 1")
-      (insert "\n\n x abandoned task number 2\n")
+      (insert completed)
+      (insert abandoned)
       (setq before (buffer-string))
       (goto-char (point-max))
       (setq pre-point (point))
       (do-odone 't)
-      (should (in-messages-p msg-max "no active tasks found"))
+      (should (in-messages-p msg-max no-active-tasks))
       (should (string= before (buffer-string)))
       (should (= pre-point (point))))))
 
@@ -1033,9 +1032,9 @@
   (with-temp-buffer
     (let ((done-pos)
           (task-pos))
-      (insert "\n\n - sample task\n\n")
-      (goto-char (string-match "sample" (buffer-string)))
       (do-pdone 't)
+      (insert sample-task)
+      (goto-char (string-match sample (buffer-string)))
       (setq done-pos (do-done-position))
       (goto-char (point-max))
       (setq task-pos (re-search-backward do-mode-rgx-task))
