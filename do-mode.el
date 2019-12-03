@@ -20,7 +20,7 @@
 ;;  \e^     -?    do-task-to-top     move current task to top
 ;;  \e$     -?    do-task-to-bot     move current task to bottom
 ;;
-(message "loading do-mode.el: 0%%")
+; (message "loading do-mode.el: 0%%")
 (if (featurep 'do-mode)
     (unload-feature 'do-mode 't))
 
@@ -704,4 +704,4 @@ if that value is non-nil."
 
 (setq auto-mode-alist (cons (quote ("do$" . do-mode)) auto-mode-alist))
 
-(message "loading do-mode.el: 100%%")
+; (message "loading do-mode.el: 100%%")
