@@ -968,15 +968,33 @@
 ;; ============================================================================
 ;; tests for do-pdone
 ;;
-;;  + empty file: no changes, message
-;;  + file of whitespace: no changes, message
-;;  + all completed tasks: no changes, message
-;;  one task, no DONE: DONE line added, task moves below
-;;  two task, no DONE: DONE line added, first task moves below
-;;  two task, no DONE: DONE line added, second task moves below
-;;  three tasks, no DONE: DONE line added, first task moves below
-;;  three tasks, no DONE: DONE line added, middle task moves below
-;;  three tasks, no DONE: DONE line added, last task moves below
+;;  + test-1900-pdone-empty
+;;    empty file: no changes, message
+;;
+;;  + test-1905-xdone-whitespace
+;;    file of whitespace: no changes, message
+;;
+;;  + test-1910-odone-no-active
+;;    all completed tasks: no changes, message
+;;
+;;  + test-1915-pdone-ndl-one
+;;    one task, no DONE: DONE line added, task moves below
+;;
+;;  + test-1920-xdone-ndl-two-1st
+;;    two task, no DONE: DONE line added, first task moves below
+;;
+;;  + test-1925-odone-ndl-two-2nd
+;;    two task, no DONE: DONE line added, second task moves below
+;;
+;;  + test-1930-pdone-ndl-three-1st
+;;    three tasks, no DONE: DONE line added, first task moves below
+;;
+;;  + test-1935-xdone-ndl-three-2nd
+;;    three tasks, no DONE: DONE line added, middle task moves below
+;;
+;;  + test-1940-odone-ndl-three-3rd
+;;    three tasks, no DONE: DONE line added, last task moves below
+;;
 ;;  one task, with DONE: task moves below
 ;;  two tasks, with DONE: first task moves below
 ;;  two tasks, with DONE: second task moves below
@@ -1125,5 +1143,23 @@
       (should (= task-pos (last-position less-3rd-sample)))
       )))
 
+;; ----------------------------------------------------------------------------
+;;  one task, with DONE: task moves below
+;; ----------------------------------------------------------------------------
+;;  two tasks, with DONE: first task moves below
+;; ----------------------------------------------------------------------------
+;;  two tasks, with DONE: second task moves below
+;; ----------------------------------------------------------------------------
+;;  three tasks, with DONE: 1st task moves below
+;; ----------------------------------------------------------------------------
+;;  three tasks, with DONE: 2nd task moves below
+;; ----------------------------------------------------------------------------
+;;  three tasks, with DONE: 3rd task moves below
+
+
+;; ----------------------------------------------------------------------------
+;; Copy this to *scratch* and eval-buffer (esc-b) to run the tests
+;; interactively
+;;
 ;; (reload-do-mode)
 ;; (ert-run-tests-interactively "t")
