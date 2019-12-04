@@ -196,7 +196,11 @@ if that value is non-nil."
 (defun do-goto-next-task ()
   "Move point to the next task mark"
   (interactive)
-  (goto-char (do-next-task-mark)))
+  (let ((target))
+    (if (setq target (do-next-task-mark))
+        (goto-char target)
+      (point)
+      )))
 
 ;; ----------------------------------------------------------------------------
 (defun do-next-task-mark ()
