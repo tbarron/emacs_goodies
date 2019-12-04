@@ -55,7 +55,7 @@
 ;; has with map. If it is not bound, instead we call defvar to create
 ;; it and put the contents of map in it.
 (let ((map (make-keymap)))
-      (define-key map "\ee" 'do-new-entry)
+      (define-key map "\ee" 'do-new-task)
       (define-key map "\ed" 'do-pdone)
       (define-key map "\ez" 'do-xdone)
       (define-key map "\e/" 'do-odone)
