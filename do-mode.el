@@ -61,6 +61,7 @@
       (define-key map "\ed" 'do-pdone)
       (define-key map "\ez" 'do-xdone)
       (define-key map "\e/" 'do-odone)
+      (define-key map "\C-c\C-r" 'reload-do-mode)
       (define-key map "\C-v" 'do-goto-next-task)
       (define-key map "\C-t" 'do-goto-prev-task)
       (if (boundp 'do-mode-map)
@@ -90,7 +91,7 @@
   (load-file "test-do-mode.el")
   (do-mode)
 )
-(global-set-key "\C-c\C-r" 'reload-do-mode)
+; (global-set-key "\C-c\C-r" 'reload-do-mode)
 
 ;;; ---------------------------------------------------------------------------
 (defun do-mode ()
