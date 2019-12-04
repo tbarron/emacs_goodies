@@ -9,10 +9,10 @@
 ;;   ?   needs testing
 ;;
 ;;  keys  status  function          purpose
-;;  \ed     -?    do-pdone           mark task completed (+)
-;;  \ez     -?    do-xdone           mark task abandoned (x)
-;;  \e/     -?    do-odone           divert task (<) (i.e., moved elsewhere)
 ;;  \ee     +     do-new-task        create a new task
+;;  \ed     +     do-pdone           mark task completed (+)
+;;  \ez     +     do-xdone           mark task abandoned (x)
+;;  \e/     +     do-odone           divert task (<) (i.e., moved elsewhere)
 ;;  \C-v    +     do-goto-next-task  jump to next task
 ;;  \C-t    +     do-goto-prev-task  jump to previous task
 ;;  \ek     -?    do-move-task-up    move current task up
