@@ -705,4 +705,4 @@ if that value is non-nil."
 
 (setq auto-mode-alist (cons (quote ("do$" . do-mode)) auto-mode-alist))
 
-; (message "loading do-mode.el: 100%%")
+(message "loading do-mode.el: 100%%")
