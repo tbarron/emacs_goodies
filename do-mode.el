@@ -216,14 +216,6 @@ if that value is non-nil."
 ;; Helper functions - these get called indirectly by interactive
 ;; function to help get stuff done
 ;;; ---------------------------------------------------------------------------
-(defun bytes-at (where count)
-  "Return the next COUNT bytes at WHERE (adjusting for eobp)"
-  (if (< where (point-min))
-      (setq where (point-min)))
-  (if (< (point-max) (+ where count))
-      (setq count (- (point-max) where)))
-  (buffer-substring (min where (- (point-max) count))
-                    (min (+ count where) (point-max))))
 
 ;;; ---------------------------------------------------------------------------
 (defun do-buffer-p (&optional which)
@@ -253,8 +245,6 @@ if that value is non-nil."
         (throw 'empty "file too small to hold a task"))
     (let ((rgx "^ [-+.>^<x] ")
           (donesect "^--- DONE ---")
-          ;; (point-str (buffer-substring (point) (+ 3 (point))))
-          (point-str (bytes-at (point) 3))
           (initial-point (point))
           (start 0)
           (end 0)
