@@ -11,7 +11,8 @@
 ;; Contents of this file
 ;;    variables
 ;;    helper functions
-;;    do-add-done-iff     (1000 - 1099)
+;;    do-add-done-iff     (1000 - 1020)
+;;    bytes-at            (1090 - 1099)
 ;;    do-done-position    (1100 - 1199)
 ;;    do-goto-next-task   (1200 - 1399)
 ;;    do-goto-prev-task   (1400 - 1599)
@@ -29,6 +30,7 @@
 (setq 3rd-sample "3rd sample")
 (setq abandoned "\n\n x abandoned task number 2\n")
 (setq abandoned-1st "---\n\n x 1st")
+(setq alphabet "abcdefghijklmnopqrstuvwxyz")
 (setq also-sp "also ")
 (setq buf-no-done "      \n\n - first task\n - second task\n")
 (setq buf-w-done
@@ -110,9 +112,15 @@
 
 ;; ----------------------------------------------------------------------------
 (defun bytes-at (where count)
-  "Return the next COUNT bytes after point (or before point at eobp)"
-  (buffer-substring (min where (- (point-max) count))
-                    (min (+ count where) (point-max))))
+  "Return COUNT bytes (or as many as are available) near WHERE"
+  (setq top (+ where count))
+  (if (< (point-max) top)
+      (progn (setq top (point-max))
+             (setq where (- top count))
+             (if (< where (point-min))
+                 (setq where (point-min)))))
+  (buffer-substring where top)
+  )
 
 ;; ----------------------------------------------------------------------------
 (defun get-message-max ()
@@ -186,7 +194,81 @@
     (should (re-search-forward do-mode-rgx-done))
     (should (equal nil (re-search-forward do-mode-rgx-done nil 't)))))
 
+;; ============================================================================
+;; tests for bytes-at
 
+;; ----------------------------------------------------------------------------
+(ert-deftest test-1090-bytes-at-zero-min ()
+  "bytes-at: zero-length buffer point min"
+  (with-temp-buffer
+    (should (string= "" (bytes-at (point-min) 3)))
+    ))
+
+;; ----------------------------------------------------------------------------
+(ert-deftest test-1091-bytes-at-zero-mid ()
+  "bytes-at: zero-length buffer point middle"
+  (with-temp-buffer
+    (should (string= "" (bytes-at (point) 3)))
+    ))
+
+;; ----------------------------------------------------------------------------
+(ert-deftest test-1092-bytes-at-zero-max ()
+  "bytes-at: zero-length buffer point max"
+  (with-temp-buffer
+    (should (string= "" (bytes-at (point-max) 3)))
+    ))
+
+;; ----------------------------------------------------------------------------
+(ert-deftest test-1093-bytes-at-short-min ()
+  "bytes-at: short buffer point min"
+  (with-temp-buffer
+    (setq source (substring alphabet 0 2))
+    (insert source)
+    (should (string= source (bytes-at (point-min) 10)))
+    ))
+
+;; ----------------------------------------------------------------------------
+(ert-deftest test-1094-bytes-at-short-mid ()
+  "bytes-at: short buffer point middle"
+  (with-temp-buffer
+    (setq source (substring alphabet 0 2))
+    (insert source)
+    (should (string= source (bytes-at 2 10)))
+    ))
+
+;; ----------------------------------------------------------------------------
+(ert-deftest test-1095-bytes-at-short-max ()
+  "bytes-at: short buffer point max"
+  (with-temp-buffer
+    (setq source (substring alphabet 0 2))
+    (insert source)
+    (should (string= source (bytes-at (point-max) 10)))
+    ))
+            
+;; ----------------------------------------------------------------------------
+(ert-deftest test-1096-bytes-at-long-min ()
+  "bytes-at: long buffer point min"
+  (with-temp-buffer
+    (insert alphabet)
+    (should (string= "abc" (bytes-at (point-min) 3)))
+    ))
+
+;; ----------------------------------------------------------------------------
+(ert-deftest test-1097-bytes-at-long-mid ()
+  "bytes-at: long buffer point middle"
+  (with-temp-buffer
+    (insert alphabet)
+    (should (string= "mnop" (bytes-at 13 4)))
+    ))
+
+;; ----------------------------------------------------------------------------
+(ert-deftest test-1098-bytes-at-long-max ()
+  "bytes-at: long buffer point max"
+  (with-temp-buffer
+    (insert alphabet)
+    (should (string= "vwxyz" (bytes-at (point-max) 5)))
+    ))
+  
 ;; ============================================================================
 ;; tests for do-done-position
 
