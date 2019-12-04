@@ -115,7 +115,9 @@ if that value is non-nil."
   (while (not (do-buffer-p (car blist)))
     (setq blist (cdr blist)))
   (switch-to-buffer (car blist))
-  )
+  (if (not (string= major-mode "do-mode"))
+      (do-mode)))
+
 (global-set-key "\C-x\C-p" 'previous-dodo)
 
 ;;; ---------------------------------------------------------------------------
@@ -127,7 +129,9 @@ if that value is non-nil."
   (while (not (do-buffer-p (car blist)))
     (setq blist (cdr blist)))
   (switch-to-buffer (car blist))
-  )
+  (if (not (string= major-mode "do-mode"))
+      (do-mode)))
+
 (global-set-key "\C-x\C-n" 'next-dodo)
 
 ;;; ---------------------------------------------------------------
