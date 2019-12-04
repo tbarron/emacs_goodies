@@ -15,10 +15,12 @@
 ;;  \e/     +     do-odone           divert task (<) (i.e., moved elsewhere)
 ;;  \C-v    +     do-goto-next-task  jump to next task
 ;;  \C-t    +     do-goto-prev-task  jump to previous task
-;;  \ek     -?    do-move-task-up    move current task up
-;;  \ej     -?    do-move-task-down  move current task down
+;;  \C-xk   -?    do-task-up    move current task up
+;;  \C-xj   -?    do-task-down  move current task down
 ;;  \e^     -?    do-task-to-top     move current task to top
 ;;  \e$     -?    do-task-to-bot     move current task to bottom
+;;  \em     -?    do-mark-task       bracket task with mark and point
+;;  \C-c x  -?    do-kill-task       kill task into the kill-ring
 ;;
 ; (message "loading do-mode.el: 0%%")
 (if (featurep 'do-mode)
