@@ -202,13 +202,10 @@ if that value is non-nil."
 (defun do-next-task-mark ()
   "Return the position of the first task mark after point"
   (interactive)
-  (let ((point-str (bytes-at (point) 3))
-        (rval nil))
-    (save-excursion
-      (if (string-match do-mode-rgx-task point-str)
-          (forward-word))
-      (re-search-forward do-mode-rgx-task nil 't)
-      (setq rval (re-search-backward do-mode-rgx-task)))))
+  (save-excursion
+    (end-of-line)
+    (if (re-search-forward do-mode-rgx-task nil 't)
+        (re-search-backward do-mode-rgx-task))))
 
 ;; ----------------------------------------------------------------------------
 ;; If point is on the first task mark in the file, we don't want to
