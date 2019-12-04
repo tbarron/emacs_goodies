@@ -241,15 +241,9 @@ if that value is non-nil."
           (point-str (bytes-at (point) 3))
           (initial-point (point))
           (start 0)
-          (end 0))
+          (end 0)
+          (text))
       (save-excursion
-        ;; (if (string-match rgx point-str)
-        ;;     (forward-word)
-        ;;   (if (string-match "[^ \n]{1,3}.{1,3}" point-str)
-        ;;       (backward-word)
-        ;;     (if (string-match ".{1,2}\n{1,2}" point-str)
-        ;;         (backward-word))))
-
         (end-of-line)
         (if (re-search-forward rgx nil 't)  ; find beginning of next entry
             (setq end_t (re-search-backward rgx))
@@ -264,9 +258,6 @@ if that value is non-nil."
             (throw 'empty "no tasks in file")))
         (goto-char initial-point)         ; back up to where we started
 
-        ;; (re-search-forward donesect)      ; find beginning of DONE section
-        ;; (setq end_d (re-search-backward donesect))
-
         (if (not (setq end_d (do-done-position)))
             ;; if do-done-position returns nil, there is no done line in
             ;; the buffer and we need to add one
@@ -279,22 +270,22 @@ if that value is non-nil."
         (if (not (setq start (re-search-backward rgx nil 't)))
             ;; search failed, so no task to move -- give it up
             (throw 'empty "no active tasks found"))
-        (kill-region start end)           ; and yank it to kill ring
+        (setq text (buffer-substring start end)) ; save a copy
+        (delete-region start end)                ; and delete it
 
         (re-search-forward donesect)      ; first entry in DONE section (or end of buf)
-        (if (re-search-forward rgx (point-max) 'jump)
-            (re-search-backward rgx))
-        (if (not (eq ?\n (char-before)))
-            (insert "\n"))
+        (end-of-line)
+        (if (re-search-forward rgx (point-max) 't)
+            (re-search-backward rgx)
+          (delete-trailing-whitespace)
+          (insert "\n\n"))
 
-        ;; (yank)                            ; yank the entry being moved
-        (insert (current-kill 0 't))      ; yank without setting mark
+        (insert text)                     ; insert the saved copy
         (re-search-backward rgx)          ; back to the beginning of entry
         (replace-match mark)              ; replace the marker
         (if (not nosave)
             (save-buffer)))
         )))
-; (cancel-debug-on-entry 'do-done)
 
 ;; ----------------------------------------------------------------------------
 (defun do-pdone (&optional nosave)
