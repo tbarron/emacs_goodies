@@ -81,15 +81,8 @@
                                     "----------------------------------------")
   "Regexp for finding the DONE line")
 
-;;; ---------------------------------------------------------------------------
-(defun reload-do-mode ()
-  "Reload this file and tests"
-  (interactive)
-  (load-file "do-mode.el")
-  (load-file "test-do-mode.el")
-  (do-mode)
-)
-; (global-set-key "\C-c\C-r" 'reload-do-mode)
+;;; ===========================================================================
+;;; Interactive, user-facing functions -- called directly from keyboard
 
 ;;; ---------------------------------------------------------------------------
 (defun do-mode ()
@@ -106,23 +99,38 @@ if that value is non-nil."
   (run-hooks 'do-mode-hook))
 
 ;;; ---------------------------------------------------------------------------
-(defun bytes-at (where count)
-  "Return the next COUNT bytes after point (or before point at eobp)"
-  (if (< where (point-min))
-      (setq where (point-min)))
-  (if (< (point-max) (+ where count))
-      (setq count (- (point-max) where)))
-  (buffer-substring (min where (- (point-max) count))
-                    (min (+ count where) (point-max))))
+(defun reload-do-mode ()
+  "Reload this file and tests. After reloading files, re-establish do-mode."
+  (interactive)
+  (load-file "do-mode.el")
+  (load-file "test-do-mode.el")
+  (do-mode)
+)
 
 ;;; ---------------------------------------------------------------------------
-(defun do-add-done-iff ()
-  "Insert a DONE line if there isn't one already present"
+(defun previous-dodo ()
+  "Jump to the previous do-mode buffer in the buffer list"
   (interactive)
-  (save-excursion
-    (goto-char (point-min))
-    (if (not (re-search-forward do-mode-rgx-done nil 'limit))
-        (insert do-mode-done-line))))
+  (setq blist (reverse (buffer-list)))
+  (while (not (string-match "DODO" (buffer-name (car blist))))
+    (setq blist (cdr blist)))
+  (switch-to-buffer (car blist))
+  )
+(global-set-key "\C-x\C-p" 'previous-dodo)
+
+;;; ---------------------------------------------------------------------------
+(defun next-dodo ()
+  "Find the next DODO buffer"
+  (interactive)
+  (if (string-match "DODO" (buffer-name))
+      (bury-buffer))
+  (setq blist (buffer-list))
+  (while (not (string-match "DODO" (buffer-name (car blist))))
+    (setq blist (cdr blist)))
+
+  (switch-to-buffer (car blist))
+  )
+(global-set-key "\C-x\C-n" 'next-dodo)
 
 ;;; ---------------------------------------------------------------
 (defun do-new-task ()
@@ -157,41 +165,6 @@ if that value is non-nil."
     (goto-char (- (point) 2))
     (setq fill-prefix initial-fill-prefix)))
 
-;;; ---------------------------------------------------------------------------
-(defun previous-dodo ()
-  "Find the previous DODO buffer"
-  (interactive)
-  (setq blist (reverse (buffer-list)))
-  (while (not (string-match "DODO" (buffer-name (car blist))))
-    (setq blist (cdr blist)))
-  (switch-to-buffer (car blist))
-  )
-(global-set-key "\C-x\C-p" 'previous-dodo)
-
-;;; ---------------------------------------------------------------------------
-(defun next-dodo ()
-  "Find the next DODO buffer"
-  (interactive)
-  (if (string-match "DODO" (buffer-name))
-      (bury-buffer))
-  (setq blist (buffer-list))
-  (while (not (string-match "DODO" (buffer-name (car blist))))
-    (setq blist (cdr blist)))
-
-  (switch-to-buffer (car blist))
-  )
-(global-set-key "\C-x\C-n" 'next-dodo)
-
-;; ----------------------------------------------------------------------------
-(defun do-done-position ()
-  (concat "Return the front of '^--- DONE ---' if present, or (point-max)"
-          "if there's no DONE line")
-  (interactive)
-  (let ((done-rgx "^--- DONE ---"))
-    (save-excursion
-      (goto-char (point-max))
-      (re-search-backward done-rgx nil 't))))
-
 ;; ----------------------------------------------------------------------------
 ;; If point is on the last task mark in the file, we don't want to
 ;; move it
@@ -205,15 +178,6 @@ if that value is non-nil."
       )))
 
 ;; ----------------------------------------------------------------------------
-(defun do-next-task-mark ()
-  "Return the position of the first task mark after point"
-  (interactive)
-  (save-excursion
-    (end-of-line)
-    (if (re-search-forward do-mode-rgx-task nil 't)
-        (re-search-backward do-mode-rgx-task))))
-
-;; ----------------------------------------------------------------------------
 ;; If point is on the first task mark in the file, we don't want to
 ;; move it
 (defun do-goto-prev-task ()
@@ -222,14 +186,50 @@ if that value is non-nil."
   (goto-char (do-prev-task-mark)))
 
 ;; ----------------------------------------------------------------------------
-(defun do-prev-task-mark ()
-  "Return the position of the task that precedes point"
+(defun do-pdone (&optional nosave)
+  "Mark a dodo entry as done (+) and move it to the DONE section"
   (interactive)
+  (let ((msg))
+    (if (setq msg (do-done " + " nosave))
+        (message msg))))
+
+;; ----------------------------------------------------------------------------
+(defun do-xdone (&optional nosave)
+  "Mark a dodo entry as not done (x) and move it to the DONE section"
+  (interactive)
+  (let ((msg))
+    (if (setq msg (do-done " x " nosave))
+        (message msg))))
+
+;; ----------------------------------------------------------------------------
+(defun do-odone (&optional nosave)
+  "Mark a dodo entry as diverted (<) and move it to the DONE seciton"
+  (interactive)
+  (let ((msg))
+    (if (setq msg (do-done " < " nosave))
+        (message msg))))
+
+
+;;; ---------------------------------------------------------------
+;; Helper functions - these get called indirectly by interactive
+;; function to help get stuff done
+;;; ---------------------------------------------------------------------------
+(defun bytes-at (where count)
+  "Return the next COUNT bytes after point (or before point at eobp)"
+  (if (< where (point-min))
+      (setq where (point-min)))
+  (if (< (point-max) (+ where count))
+      (setq count (- (point-max) where)))
+  (buffer-substring (min where (- (point-max) count))
+                    (min (+ count where) (point-max))))
+
+;;; ---------------------------------------------------------------------------
+(defun do-add-done-iff ()
+  "Insert a DONE line if there isn't one already present"
   (save-excursion
-    (if (not (re-search-backward do-mode-rgx-task nil 't))
-        (if (re-search-forward do-mode-rgx-task nil 't)
-            (re-search-backward do-mode-rgx-task)))
-    (point)))
+    (goto-char (point-min))
+    (if (not (re-search-forward do-mode-rgx-done nil 'limit))
+        (insert do-mode-done-line))))
 
 ;; ----------------------------------------------------------------------------
 (defun do-done (mark nosave)
@@ -291,28 +291,30 @@ if that value is non-nil."
         )))
 
 ;; ----------------------------------------------------------------------------
-(defun do-pdone (&optional nosave)
-  "Mark a dodo entry as done (+) and move it to the DONE section"
-  (interactive)
-  (let ((msg))
-    (if (setq msg (do-done " + " nosave))
-        (message msg))))
+(defun do-done-position ()
+  (concat "Return the front of '^--- DONE ---' if present, or (point-max)"
+          "if there's no DONE line")
+  (let ((done-rgx "^--- DONE ---"))
+    (save-excursion
+      (goto-char (point-max))
+      (re-search-backward done-rgx nil 't))))
 
 ;; ----------------------------------------------------------------------------
-(defun do-xdone (&optional nosave)
-  "Mark a dodo entry as not done (x) and move it to the DONE section"
-  (interactive)
-  (let ((msg))
-    (if (setq msg (do-done " x " nosave))
-        (message msg))))
+(defun do-next-task-mark ()
+  "Return the position of the first task mark after point"
+  (save-excursion
+    (end-of-line)
+    (if (re-search-forward do-mode-rgx-task nil 't)
+        (re-search-backward do-mode-rgx-task))))
 
 ;; ----------------------------------------------------------------------------
-(defun do-odone (&optional nosave)
-  "Mark a dodo entry as diverted (<) and move it to the DONE seciton"
-  (interactive)
-  (let ((msg))
-    (if (setq msg (do-done " < " nosave))
-        (message msg))))
+(defun do-prev-task-mark ()
+  "Return the position of the task that precedes point"
+  (save-excursion
+    (if (not (re-search-backward do-mode-rgx-task nil 't))
+        (if (re-search-forward do-mode-rgx-task nil 't)
+            (re-search-backward do-mode-rgx-task)))
+    (point)))
 
 ;;; ---------------------------------------------------------------
 ;;; do-cut-entry
