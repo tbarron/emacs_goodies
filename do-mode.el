@@ -215,13 +215,24 @@ if that value is non-nil."
 ;; function to help get stuff done
 ;;; ---------------------------------------------------------------------------
 (defun bytes-at (where count)
-  "Return the next COUNT bytes after point (or before point at eobp)"
+  "Return the next COUNT bytes at WHERE (adjusting for eobp)"
   (if (< where (point-min))
       (setq where (point-min)))
   (if (< (point-max) (+ where count))
       (setq count (- (point-max) where)))
   (buffer-substring (min where (- (point-max) count))
                     (min (+ count where) (point-max))))
+
+;;; ---------------------------------------------------------------------------
+(defun do-buffer-p (&optional which)
+  "Return t if WHICH is a do buffer (has do-mode set or name ends with do-rgx"
+  (let ((buf (if which
+                 (with-current-buffer which
+                   (current-buffer))
+               (current-buffer))))
+    (with-current-buffer buf
+      (or (string= major-mode "do-mode")
+          (string-match "[dD][oO]$" (buffer-name))))))
 
 ;;; ---------------------------------------------------------------------------
 (defun do-add-done-iff ()
