@@ -46,8 +46,6 @@
 
 (define-abbrev-table 'do-mode-abbrev-table ())
 
-; (message "loading do-mode.el: 50")
-
 ;;; ---------------------------------------------------------------------------
 ;; defvar doesn't reset variables that are already defined. So we do a
 ;; little magic here to ensure that the keymap will be updated when
