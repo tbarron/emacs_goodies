@@ -9,10 +9,10 @@
 ;;   ?   needs testing
 ;;
 ;;  keys  status  function          purpose
-;;  \ee     -?    do-new-task        create a new task
 ;;  \ed     -?    do-pdone           mark task completed (+)
 ;;  \ez     -?    do-xdone           mark task abandoned (x)
 ;;  \e/     -?    do-odone           divert task (<) (i.e., moved elsewhere)
+;;  \ee     +     do-new-task        create a new task
 ;;  \C-v    +     do-goto-next-task  jump to next task
 ;;  \C-t    +     do-goto-prev-task  jump to previous task
 ;;  \ek     -?    do-move-task-up    move current task up
@@ -126,20 +126,33 @@ if that value is non-nil."
 (defun do-new-task ()
   "Create a new dodo entry with today's date"
   (interactive)
-  (let ((donesect "^--- DONE ---")
-        (initial-point (point))
-        (initial-fill-prefix fill-prefix)
-        (rgx "^ [-+.>^<x] ")
-        (done-pos (do-done-position))
-        (next-pos (do-next-task-mark))
-        (end_t 0)
-        (end_d 0)
-        (end 0)
+  (let ((initial-fill-prefix fill-prefix)
+        (prelines "")
+        (done-pos)
+        (task-pos)
+        (where)
         )
+    (delete-trailing-whitespace)
+    (end-of-line)
+    (setq done-pos (do-done-position))
+    (setq task-pos (do-next-task-mark))
+    (if (and (equal nil done-pos) (equal nil task-pos))
+        (if (< 2 (setq where (point-max)))
+            (if (not (string= "\n" (buffer-substring (- (point-max) 1) (point-max))))
+                (setq prelines "\n\n")
+              (setq prelines "\n")))
+      (if (equal nil task-pos)
+          (setq where done-pos)
+        (if (equal nil done-pos)
+            (setq where task-pos)
+          (if (< task-pos done-pos)
+              (setq where task-pos)
+            (setq where done-pos)))))
+
     (setq fill-prefix "")
-    (goto-char (min next-pos done-pos))
-    (open-line 2)
-    (insert " - [" (format-time-string "%Y.%m%d") "] ")
+    (goto-char where)
+    (insert prelines " - [" (format-time-string "%Y.%m%d") "] \n\n")
+    (goto-char (- (point) 2))
     (setq fill-prefix initial-fill-prefix)))
 
 ;;; ---------------------------------------------------------------------------
