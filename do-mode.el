@@ -86,8 +86,9 @@
   (interactive)
   (load-file "do-mode.el")
   (load-file "test-do-mode.el")
-) 
-
+  (do-mode)
+)
+(global-set-key "\C-c\C-r" 'reload-do-mode)
 
 ;;; ---------------------------------------------------------------------------
 (defun do-mode ()
