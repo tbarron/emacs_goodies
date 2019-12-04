@@ -19,6 +19,7 @@
 ;;    do-next-task-mark   (1700 - 1799)
 ;;    do-prev-task-mark   (1800 - 1899)
 ;;    do-[pxo]done        (1900 - 1999)
+;;    do-buffer-p         (2000 - 2100)
 ;;
 
 
@@ -1396,6 +1397,67 @@
       (should (= ptask-pos (last-position plus-3rd-sample ltask-pos)))
       (should (equal nil (string-match dash-3rd-sample (buffer-string))))
       )))
+
+;; ============================================================================
+;; tests for do-buffer-p
+;;
+;;    + current buffer is not a do-buffer
+;;    + current buffer *is* a do-buffer
+;;    + other buffer is not a do-buffer
+;;    other buffer is a do-buffer by name
+;;    + other buffer is a do-buffer by mode
+;;    other buffer is a do-buffer by both mode and name
+
+;; ----------------------------------------------------------------------------
+(ert-deftest test-2000-dobufp-cur-no ()
+  "current buffer is not a do-buffer"
+  (with-temp-buffer
+    (should (equal nil (do-buffer-p)))))
+
+;; ----------------------------------------------------------------------------
+(ert-deftest test-2005-dobufp-cur-yes ()
+  "current buffer *is* a do-buffer"
+  (with-temp-buffer
+    (do-mode)
+    (should (do-buffer-p))))
+
+;; ----------------------------------------------------------------------------
+(ert-deftest test-2010-dobufp-other-no ()
+  "other buffer is not a do-buffer"
+  (let ((bufname "artemis"))
+    (create-file-buffer bufname)
+    (should (not (do-buffer-p bufname)))
+    (kill-buffer bufname)))
+
+;; ----------------------------------------------------------------------------
+(ert-deftest test-2015-dobufp-other-yes-mode ()
+  "other buffer *is* a do-buffer by mode"
+  (let ((bufname "hercules"))
+    (create-file-buffer bufname)
+    (with-current-buffer bufname
+      (do-mode))
+    (should (do-buffer-p bufname))
+    (kill-buffer bufname)))
+
+;; ----------------------------------------------------------------------------
+(ert-deftest test-2020-dobufp-other-yes-name ()
+  "other buffer is a do-buffer by name"
+  (let ((bufname "xyz.do"))
+    (create-file-buffer bufname)
+    (should (do-buffer-p bufname))
+    (kill-buffer bufname)
+    ))
+
+;; ----------------------------------------------------------------------------
+(ert-deftest test-2020-dobufp-other-yes-both ()
+  "other buffer is a do-buffer by both mode and name"
+  (let ((bufname "both.do"))
+    (create-file-buffer bufname)
+    (with-current-buffer bufname
+      (do-mode))
+    (should (do-buffer-p bufname))
+    (kill-buffer bufname)
+    ))
 
 ;; ----------------------------------------------------------------------------
 ;; Copy this to *scratch* and eval-buffer (esc-b) to run the tests
