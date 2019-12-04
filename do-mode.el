@@ -466,10 +466,10 @@ if that value is non-nil."
 ;;   (if (> here there)
 ;;       (forward-char -1))
 ;;   (do-cut-entry)
-;; 
+;;
 ;;   (goto-char (point-min))
 ;;   (yank)
-;; 
+;;
 ;;   (goto-char here)
 ;;   (forward-char -1)
 ;;   (do-beginning-of-entry)
@@ -488,10 +488,10 @@ if that value is non-nil."
 ;;   (if (> here there)
 ;;       (forward-char -1))
 ;;   (do-cut-entry)
-;; 
+;;
 ;;   (re-search-backward "^- ======")
 ;;   (yank)
-;; 
+;;
 ;;   (goto-char here)
 ;;   (forward-char -1)
 ;;   (do-beginning-of-entry)
@@ -510,11 +510,11 @@ if that value is non-nil."
 ;;   (if (> here there)
 ;;       (forward-char -1))
 ;;   (do-cut-entry)
-;; 
+;;
 ;;   (re-search-forward "^- ======")
 ;;   (do-next-entry)
 ;;   (yank)
-;; 
+;;
 ;;   (goto-char here)
 ;;   (forward-char -1)
 ;;   (do-beginning-of-entry)
@@ -553,7 +553,7 @@ if that value is non-nil."
 ;;   (setq mdays (time-to-days mtime))
 ;;   (setq ndays (time-to-days (current-time)))
 ;;   (message "mdays = %d; ndays = %d" mdays ndays)
-;; 
+;;
 ;;   (if (not (= mdays ndays))
 ;;       (add-reminders)
 ;;     )
