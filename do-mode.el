@@ -122,8 +122,7 @@ if that value is non-nil."
 (defun next-dodo ()
   "Find the next DODO buffer"
   (interactive)
-  (if (string-match "DODO" (buffer-name))
-      (bury-buffer))
+  (if (do-buffer-p) (bury-buffer))
   (setq blist (buffer-list))
   (while (not (string-match "DODO" (buffer-name (car blist))))
     (setq blist (cdr blist)))
