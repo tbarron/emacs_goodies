@@ -112,7 +112,7 @@ if that value is non-nil."
   "Jump to the previous do-mode buffer in the buffer list"
   (interactive)
   (setq blist (reverse (buffer-list)))
-  (while (not (string-match "DODO" (buffer-name (car blist))))
+  (while (not (do-buffer-p (car blist)))
     (setq blist (cdr blist)))
   (switch-to-buffer (car blist))
   )
@@ -124,9 +124,8 @@ if that value is non-nil."
   (interactive)
   (if (do-buffer-p) (bury-buffer))
   (setq blist (buffer-list))
-  (while (not (string-match "DODO" (buffer-name (car blist))))
+  (while (not (do-buffer-p (car blist)))
     (setq blist (cdr blist)))
-
   (switch-to-buffer (car blist))
   )
 (global-set-key "\C-x\C-n" 'next-dodo)
