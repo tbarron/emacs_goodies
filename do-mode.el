@@ -9,7 +9,7 @@
 ;;   ?   needs testing
 ;;
 ;;  keys  status  function          purpose
-;;  \ee     -?    do-new-entry       create a new entry
+;;  \ee     -?    do-new-task        create a new task
 ;;  \ed     -?    do-pdone           mark task completed (+)
 ;;  \ez     -?    do-xdone           mark task abandoned (x)
 ;;  \e/     -?    do-odone           divert task (<) (i.e., moved elsewhere)
@@ -123,7 +123,7 @@ if that value is non-nil."
         (insert do-mode-done-line))))
 
 ;;; ---------------------------------------------------------------
-(defun do-new-entry ()
+(defun do-new-task ()
   "Create a new dodo entry with today's date"
   (interactive)
   (let ((donesect "^--- DONE ---")
