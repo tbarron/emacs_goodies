@@ -40,7 +40,7 @@
   (text-mode)
   (goto-char (point-max))
 )
-(global-set-key "\C-xj" 'diary)
+; (global-set-key "\C-xj" 'diary)
 
 ;;; ---------------------------------------------------------------
 ;;; diary-append-entry
@@ -54,6 +54,17 @@
   (insert (format-time-string "\n\n--- %Y-%m-%d %H:%M:%S ---\n\n"))
 )
 (global-set-key "\M-j" 'diary-append-entry)
+
+(defun diary-append-entry-other-window ()
+  "Add an entry to today's personal or work diary file"
+  (interactive)
+  (other-window 1)
+  (diary)
+  (delete-trailing-whitespace)
+  (goto-char (point-max))
+  (insert (format-time-string "\n\n--- %Y-%m-%d %H:%M:%S ---\n\n"))
+)
+(global-set-key "\C-xj" 'diary-append-entry-other-window)
 
 
 ;;; ---------------------------------------------------------------
