@@ -38,6 +38,7 @@
               "--- DONE --------------------------------------------\n\n"
               " + finished 1\n\n"
               " + also done 2\n"))
+(setq buf-samples1 (concat "\n\n - single sample task\n\n"))
 (setq buf-samples2 (concat "\n\n - 1st sample task"
                            "\n\n - 2nd sample task"
                            "\n\n"))
@@ -47,7 +48,10 @@
                            "\n\n"))
 (setq completed "\n\n + completed task number 1")
 (setq dash-1st-sample "- 1st sample")
+(setq dash-2nd-sample " - 2nd sample")
+(setq dash-3rd-sample " - 3rd sample")
 (setq dash-first " - first")
+(setq dash-singsamp " - single sample")
 (setq dash-sp-f "- f")
 (setq dash-sp-s "- s")
 (setq dash-sp-t "- t")
@@ -67,12 +71,15 @@
 (setq new-new-sp "\n\n ")
 (setq new3-dash "\n\n\n -")
 (setq new-sp-dash "\n -")
+(setq new-task-rgx " - \\[[.0-9]\\{9\\}\\] ")
 (setq no-active-tasks "no active tasks found")
 (setq no-tasks "no tasks in file")
 (setq plus-1st-sample " \\+ 1st sample")
+(setq plus-3rd-sample " \\+ 3rd sample")
 (setq plus-also "+ also")
 (setq plus-fini " + fini")
 (setq plus-sample " \\+ sample")
+(setq plus-single " \\+ single")
 (setq plus-sp-f "+ f")
 (setq s-k-new "sk\n")
 (setq sample "sample")
@@ -119,10 +126,12 @@
     (string-match needle (buffer-substring after (point-max)))))
 
 ;; ----------------------------------------------------------------------------
-(defun last-position (target)
+(defun last-position (target &optional before)
   "Return the position of the last occurrence of TARGET in the buffer"
   (save-excursion
-    (goto-char (point-max))
+    (if before
+        (goto-char before)
+      (goto-char (point-max)))
     (re-search-backward target)))
 
 ;; ----------------------------------------------------------------------------
@@ -308,7 +317,7 @@
     (insert buf-no-done)
     (goto-char 24)
     (should (string= dash-sp-s (bytes-at (point) 3)))
-    (should (= 9 (do-goto-next-task)))))
+    (should (= 24 (do-goto-next-task)))))
 
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-1280-next-no-done ()
@@ -317,7 +326,7 @@
     (insert buf-no-done)
     (goto-char 25)
     (should (string= sp-s-e (bytes-at (point) 3)))
-    (should (= 9 (do-goto-next-task)))))
+    (should (= (point) (do-goto-next-task)))))
 
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-1290-next-no-done ()
@@ -325,8 +334,9 @@
   (with-temp-buffer
     (insert buf-no-done)
     (goto-char (point-max))
-    (should (string= s-k-new (bytes-at (point) 3)))
-    (should (= 23 (do-goto-next-task)))))
+    (should (string= s-k-new (bytes-at (- (point-max) 3) 3)))
+    (should (= (point-max) (do-goto-next-task)))
+    ))
 
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-1310-next-w-done ()
@@ -559,71 +569,219 @@
 ;; tests for do-new-entry
 ;;
 
-;; (ert-deftest test-1600-new-001 ()
-;;   "new entry: empty file"
-;;   (with-temp-buffer
-;;     (do-new-entry)
-;;     (should nil)))
-;;
-;; (ert-deftest test-1600-new-002 ()
-;;   "new entry: no DONE line, one task, before 1st"
-;;   (with-temp-buffer
-;;     (should nil)))
-;;
-;; (ert-deftest test-1600-new-003 ()
-;;   "new entry: no DONE line, one task, after 1st"
-;;   (with-temp-buffer
-;;     (should nil)))
-;;
-;; (ert-deftest test-1600-new-004 ()
-;;   "new entry: no DONE line, two tasks, before 1st"
-;;   (with-temp-buffer
-;;     (should nil)))
-;;
-;; (ert-deftest test-1600-new-005 ()
-;;   "new entry: no DONE line, two tasks, before 2nd"
-;;   (with-temp-buffer
-;;     (should nil)))
-;;
-;; (ert-deftest test-1600-new-006 ()
-;;   "new entry: no DONE line, two tasks, after 2nd"
-;;   (with-temp-buffer
-;;     (should nil)))
-;;
-;; (ert-deftest test-1600-new-007 ()
-;;   "new entry: no DONE line, three tasks, before 1st"
-;;   (with-temp-buffer
-;;     (should nil)))
-;;
-;; (ert-deftest test-1600-new-008 ()
-;;   "new entry: no DONE line, three tasks, before 2nd"
-;;   (with-temp-buffer
-;;     (should nil)))
-;;
-;; (ert-deftest test-1600-new-009 ()
-;;   "new entry: no DONE line, three tasks, before 3rd"
-;;   (with-temp-buffer
-;;     (should nil)))
-;;
-;; (ert-deftest test-1600-new-010 ()
-;;   "new entry: no DONE line, three tasks, after 3rd"
-;;   (with-temp-buffer
-;;     (should nil)))
-;;
-;; (ert-deftest test-1600-new-011 ()
-;;   "new entry: DONE line present, no tasks"
-;;   (with-temp-buffer
-;;     (should nil)))
-;;
-;; (ert-deftest test-1600-new-012 ()
-;;   "new entry: DONE line present, one task, before 1st"
-;;   (with-temp-buffer
-;;     (should nil)))
-;;
-;; (ert-deftest test-1600-new-012 ()
-;;   "new entry: DONE line present, one task, after 1st"
-;;   (with-temp-buffer
-;;     (should nil)))
+;; ----------------------------------------------------------------------------
+(ert-deftest test-1600-new-001 ()
+  "new entry: empty file"
+  (with-temp-buffer
+    (do-new-task)                           ; payload
+    (should (string-match new-task-rgx (buffer-string)))
+    ))
+
+;; ----------------------------------------------------------------------------
+(ert-deftest test-1605-new-002 ()
+  "new entry: no DONE line, one task, before 1st"
+  (with-temp-buffer
+    (let ((ntask-pos) (otask-pos))
+      (insert buf-samples1)
+      (goto-char (point-min))
+      (do-new-task)                                                   ; payload
+      (goto-char (point-min))
+      (should (setq ntask-pos (string-match new-task-rgx (buffer-string))))
+      (should (setq otask-pos
+                    (string-match " - single sample" (buffer-string))))
+      (should (< ntask-pos otask-pos))
+    )))
+
+;; ----------------------------------------------------------------------------
+(ert-deftest test-1610-new-003 ()
+  "new entry: no DONE line, one task, after 1st"
+  (with-temp-buffer
+    (let ((ntask-pos) (otask-pos))
+      (insert buf-samples1)
+      (goto-char (string-match "task" (buffer-string)))
+      (do-new-task)                                                   ; payload
+      (should (setq ntask-pos (string-match new-task-rgx (buffer-string))))
+      (should (setq otask-pos (string-match dash-singsamp (buffer-string))))
+      (should (< otask-pos ntask-pos))
+      )))
+
+;; ----------------------------------------------------------------------------
+(ert-deftest test-1615-new-004 ()
+  "new entry: no DONE line, two tasks, before 1st"
+  (with-temp-buffer
+    (let ((ntask-pos) (first-pos) (second-pos))
+      (insert buf-samples2)
+      (goto-char (point-min))
+      (do-new-task)                                                   ; payload
+      (should (setq ntask-pos (string-match new-task-rgx (buffer-string))))
+      (should (setq first-pos (string-match " - 1st" (buffer-string))))
+      (should (setq second-pos (string-match " - 2nd" (buffer-string))))
+      (should (< ntask-pos first-pos))
+      )))
+
+;; ----------------------------------------------------------------------------
+(ert-deftest test-1620-new-005 ()
+  "new entry: no DONE line, two tasks, before 2nd"
+  (with-temp-buffer
+    (let ((ntask-pos) (first-pos) (second-pos))
+      (insert buf-samples2)
+      (goto-char (- (string-match " - 2nd sample" (buffer-string)) 5))
+      (do-new-task)                                                   ; payload
+      (should (setq ntask-pos (string-match new-task-rgx (buffer-string))))
+      (should (setq first-pos (string-match " - 1st" (buffer-string))))
+      (should (setq second-pos (string-match " - 2nd" (buffer-string))))
+      (should (< first-pos ntask-pos))
+      (should (< ntask-pos second-pos))
+      )))
+
+;; ----------------------------------------------------------------------------
+(ert-deftest test-1625-new-006 ()
+  "new entry: no DONE line, two tasks, after 2nd"
+  (with-temp-buffer
+    (let ((ntask-pos) (first-pos) (second-pos))
+      (insert buf-samples2)
+      (goto-char (- (point-max) 1))
+      (do-new-task)
+      (should (setq ntask-pos (string-match new-task-rgx (buffer-string))))
+      (should (setq first-pos (string-match " - 1st" (buffer-string))))
+      (should (setq second-pos (string-match " - 2nd" (buffer-string))))
+      (should (< first-pos ntask-pos))
+      (should (< second-pos ntask-pos))
+    )))
+
+;; ----------------------------------------------------------------------------
+(ert-deftest test-1630-new-007 ()
+  "new entry: no DONE line, three tasks, before 1st"
+  (with-temp-buffer
+    (let ((ntask-pos) (first-pos) (second-pos) (third-pos))
+      (insert buf-samples3)
+      (goto-char 2)
+      (do-new-task)
+      (should (setq ntask-pos (string-match new-task-rgx (buffer-string))))
+      (should (setq first-pos (string-match " - 1st" (buffer-string))))
+      (should (setq second-pos (string-match " - 2nd" (buffer-string))))
+      (should (setq third-pos (string-match " - 3rd" (buffer-string))))
+      (should (< ntask-pos first-pos))
+      )))
+
+;; ----------------------------------------------------------------------------
+(ert-deftest test-1635-new-008 ()
+  "new entry: no DONE line, three tasks, before 2nd"
+  (with-temp-buffer
+    (let ((ntask-pos) (first-pos) (second-pos) (third-pos))
+      (insert buf-samples3)
+      (goto-char 3)
+      (end-of-line)
+      (do-new-task)
+      (should (setq ntask-pos (string-match new-task-rgx (buffer-string))))
+      (should (setq first-pos (string-match " - 1st" (buffer-string))))
+      (should (setq second-pos (string-match " - 2nd" (buffer-string))))
+      (should (setq third-pos (string-match " - 3rd" (buffer-string))))
+      (should (< first-pos ntask-pos))
+      (should (< ntask-pos second-pos))
+      )))
+
+;; ----------------------------------------------------------------------------
+(ert-deftest test-1640-new-009 ()
+  "new entry: no DONE line, three tasks, before 3rd"
+  (with-temp-buffer
+    (let ((ntask-pos) (first-pos) (second-pos) (third-pos))
+      (insert buf-samples3)
+      (goto-char (+ (string-match "2nd sample" (buffer-string)) 10))
+      (do-new-task)
+      (should (setq ntask-pos (string-match new-task-rgx (buffer-string))))
+      (should (setq first-pos (string-match " - 1st" (buffer-string))))
+      (should (setq second-pos (string-match " - 2nd" (buffer-string))))
+      (should (setq third-pos (string-match " - 3rd" (buffer-string))))
+      (should (< second-pos ntask-pos))
+      (should (< ntask-pos third-pos))
+      )))
+
+;; ----------------------------------------------------------------------------
+(ert-deftest test-1645-new-010 ()
+  "new entry: no DONE line, three tasks, after 3rd"
+  (with-temp-buffer
+    (let ((ntask-pos) (first-pos) (second-pos) (third-pos))
+      (insert buf-samples3)
+      (goto-char (+ (string-match "3rd sample" (buffer-string)) 10))
+      (do-new-task)
+      (should (setq ntask-pos (string-match new-task-rgx (buffer-string))))
+      (should (setq first-pos (string-match " - 1st" (buffer-string))))
+      (should (setq second-pos (string-match " - 2nd" (buffer-string))))
+      (should (setq third-pos (string-match " - 3rd" (buffer-string))))
+      (should (< third-pos ntask-pos))
+      )))
+
+;; ----------------------------------------------------------------------------
+(ert-deftest test-1650-new-011 ()
+  "new entry: DONE line present, no tasks"
+  (with-temp-buffer
+    (let ((ntask-pos) (done-pos))
+      (insert done-line)
+      (goto-char (point-min))
+      (do-new-task)
+      (setq done-pos (do-done-position))
+      (setq ntask-pos (string-match new-task-rgx (buffer-string)))
+      (should (< ntask-pos done-pos))
+      )))
+
+;; ----------------------------------------------------------------------------
+(ert-deftest test-1655-new-011 ()
+  "new entry: DONE line present, no tasks"
+  (with-temp-buffer
+    (let ((ntask-pos) (done-pos))
+      (insert done-line)
+      (goto-char (point-max))
+      (do-new-task)
+      (setq done-pos (do-done-position))
+      (setq ntask-pos (string-match new-task-rgx (buffer-string)))
+      (should (< ntask-pos done-pos))
+      )))
+
+;; ----------------------------------------------------------------------------
+(ert-deftest test-1660-new-012 ()
+  "new entry: DONE line present, one task, before 1st"
+  (with-temp-buffer
+    (let ((ntask-pos) (done-pos))
+      (insert buf-samples1 done-line)
+      (goto-char (point-min))
+      (do-new-task)
+      (setq done-pos (do-done-position))
+      (setq ntask-pos (string-match new-task-rgx (buffer-string)))
+      (setq first-pos (string-match " - single sample" (buffer-string)))
+      (should (< ntask-pos done-pos))
+      (should (< ntask-pos first-pos))
+      )))
+
+;; ----------------------------------------------------------------------------
+(ert-deftest test-1665-new-012 ()
+  "new entry: DONE line present, one task, after 1st"
+  (with-temp-buffer
+    (let ((ntask-pos) (done-pos) (first-pos))
+      (insert buf-samples1 done-line "\n\n")
+      (goto-char (string-match "task" (buffer-string)))
+      (do-new-task)
+      (setq done-pos (do-done-position))
+      (setq ntask-pos (string-match new-task-rgx (buffer-string)))
+      (setq first-pos (string-match " - single sample" (buffer-string)))
+      (should (< ntask-pos done-pos))
+      (should (< first-pos ntask-pos))
+      )))
+
+;; ----------------------------------------------------------------------------
+(ert-deftest test-1670-new-012 ()
+  "new entry: DONE line present, one task, after done line"
+  (with-temp-buffer
+    (let ((ntask-pos) (done-pos))
+      (insert buf-samples1 done-line "\n\n")
+      (goto-char (point-max))
+      (do-new-task)
+      (setq done-pos (do-done-position))
+      (setq ntask-pos (string-match new-task-rgx (buffer-string)))
+      (setq first-pos (string-match " - single sample" (buffer-string)))
+      (should (< ntask-pos done-pos))
+      (should (< first-pos ntask-pos))
+      )))
 
 ;; ============================================================================
 ;; tests for do-next-task-mark
@@ -702,7 +860,7 @@
     (insert buf-no-done)
     (goto-char 23)
     (should (string= sp-dash-sp (bytes-at (point) 3)))
-    (should (= 23 (do-next-task-mark)))))
+    (should (equal nil (do-next-task-mark)))))
 
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-1724-ntm-no-done ()
@@ -711,7 +869,7 @@
     (insert buf-no-done)
     (goto-char 24)
     (should (string= dash-sp-s (bytes-at (point) 3)))
-    (should (= 9 (do-next-task-mark)))))
+    (should (equal nil (do-next-task-mark)))))
 
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-1727-ntm-no-done ()
@@ -720,7 +878,7 @@
     (insert buf-no-done)
     (goto-char 25)
     (should (string= sp-s-e (bytes-at (point) 3)))
-    (should (= 9 (do-next-task-mark)))))
+    (should (equal nil (do-next-task-mark)))))
 
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-1730-ntm-no-done ()
@@ -729,7 +887,7 @@
     (insert buf-no-done)
     (goto-char (point-max))
     (should (string= s-k-new (bytes-at (point) 3)))
-    (should (= 23 (do-next-task-mark)))))
+    (should (equal nil (do-next-task-mark)))))
 
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-1733-ntm-w-done ()
@@ -966,41 +1124,7 @@
       (should (string= dash-tas (bytes-at result 6))))))
 
 ;; ============================================================================
-;; tests for do-pdone
-;;
-;;  + test-1900-pdone-empty
-;;    empty file: no changes, message
-;;
-;;  + test-1905-xdone-whitespace
-;;    file of whitespace: no changes, message
-;;
-;;  + test-1910-odone-no-active
-;;    all completed tasks: no changes, message
-;;
-;;  + test-1915-pdone-ndl-one
-;;    one task, no DONE: DONE line added, task moves below
-;;
-;;  + test-1920-xdone-ndl-two-1st
-;;    two task, no DONE: DONE line added, first task moves below
-;;
-;;  + test-1925-odone-ndl-two-2nd
-;;    two task, no DONE: DONE line added, second task moves below
-;;
-;;  + test-1930-pdone-ndl-three-1st
-;;    three tasks, no DONE: DONE line added, first task moves below
-;;
-;;  + test-1935-xdone-ndl-three-2nd
-;;    three tasks, no DONE: DONE line added, middle task moves below
-;;
-;;  + test-1940-odone-ndl-three-3rd
-;;    three tasks, no DONE: DONE line added, last task moves below
-;;
-;;  one task, with DONE: task moves below
-;;  two tasks, with DONE: first task moves below
-;;  two tasks, with DONE: second task moves below
-;;  three tasks, with DONE: 1st task moves below
-;;  three tasks, with DONE: 2nd task moves below
-;;  three tasks, with DONE: 3rd task moves below
+;; tests for do-[pxo]done
 
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-1900-pdone-empty ()
@@ -1156,18 +1280,122 @@
       )))
 
 ;; ----------------------------------------------------------------------------
-;;  one task, with DONE: task moves below
-;; ----------------------------------------------------------------------------
-;;  two tasks, with DONE: first task moves below
-;; ----------------------------------------------------------------------------
-;;  two tasks, with DONE: second task moves below
-;; ----------------------------------------------------------------------------
-;;  three tasks, with DONE: 1st task moves below
-;; ----------------------------------------------------------------------------
-;;  three tasks, with DONE: 2nd task moves below
-;; ----------------------------------------------------------------------------
-;;  three tasks, with DONE: 3rd task moves below
+(ert-deftest test-1945-pdone-wdl-one ()
+  "one task, with DONE: task moves below"
+  (with-temp-buffer
+    (let ((done-pos) (task-pos))
+      (insert buf-samples1 done-line)
+      (goto-char (string-match sample (buffer-string)))
 
+      (do-pdone 't)                                                   ; payload
+
+      (setq done-pos (do-done-position))
+      (setq task-pos (last-position do-mode-rgx-task))
+      (should (< done-pos task-pos))
+      (should (= task-pos (last-position plus-single)))
+      )))
+
+;; ----------------------------------------------------------------------------
+(ert-deftest test-1950-xdone-wdl-two-1st ()
+  "two tasks, with DONE: first task moves below"
+  (with-temp-buffer
+    (let ((done-pos) (task-pos))
+      (insert buf-samples2 done-line)
+      (goto-char (string-match sample (buffer-string)))
+
+      (do-xdone 't)                                                   ; payload
+
+      (setq done-pos (do-done-position))
+      (setq task-pos (last-position do-mode-rgx-task))
+      (should (< done-pos task-pos))
+      (should (= task-pos (last-position x-first)))
+      )))
+
+;; ----------------------------------------------------------------------------
+(ert-deftest test-1955-odone-wdl-two-2nd ()
+  "two tasks, with DONE: second task moves below"
+  (with-temp-buffer
+    (let ((done-pos) (task-pos))
+      (insert buf-samples2 done-line)
+      (goto-char (string-match 2nd-sample (buffer-string)))
+
+      (do-odone 't)                                                   ; payload
+
+      (setq done-pos (do-done-position))
+      (setq task-pos (last-position do-mode-rgx-task))
+      (should (< done-pos task-pos))
+      (should (= task-pos (last-position less-2nd-sample)))
+      )))
+
+;; ----------------------------------------------------------------------------
+(ert-deftest test-1960-pdone-wdl-three-1st ()
+  "three tasks, with DONE: 1st task moves below"
+  (with-temp-buffer
+    (let ((done-pos) (task-pos))
+      (insert buf-samples3 done-line)
+      (goto-char (string-match sp-first (buffer-string)))
+
+      (do-pdone 't)                                                   ; payload
+
+      (setq done-pos (do-done-position))
+      (setq task-pos (last-position do-mode-rgx-task))
+      (should (< done-pos task-pos))
+      (should (= task-pos (last-position plus-1st-sample)))
+  )))
+
+;; ----------------------------------------------------------------------------
+(ert-deftest test-1965-xdone-wdl-three-2nd ()
+  "three tasks, with DONE: 2nd task moves below"
+  (with-temp-buffer
+    (let ((done-pos) (task-pos))
+      (insert buf-samples3 done-line)
+      (goto-char (string-match 2nd-sample (buffer-string)))
+
+      (do-xdone 't)                                                   ; payload
+
+      (setq done-pos (do-done-position))
+      (setq task-pos (last-position do-mode-rgx-task))
+      (should (< done-pos task-pos))
+      (should (= task-pos (last-position x-second-sample)))
+      )))
+
+;; ----------------------------------------------------------------------------
+(ert-deftest test-1970-odone-wdl-three-3rd ()
+  "three tasks, with DONE: 3rd task moves below"
+  (with-temp-buffer
+    (let ((done-pos) (task-pos))
+      (insert buf-samples3 done-line)
+      (goto-char (string-match "- 3rd sample" (buffer-string)))
+
+      (do-odone 't)                                                   ; payload
+
+      (setq done-pos (do-done-position))
+      (setq task-pos (last-position do-mode-rgx-task))
+      (should (< done-pos task-pos))
+      (should (= task-pos (last-position less-3rd-sample)))
+      )))
+
+;; ----------------------------------------------------------------------------
+;;  three tasks, with DONE: 1st, 2nd move below without concatenation
+(ert-deftest test-1975-odone-wdl-three-3rd ()
+  "three tasks, with DONE: 3rd task moves below"
+  (with-temp-buffer
+    (let ((done-pos) (task-pos))
+      (insert buf-samples3 done-line)
+      (goto-char (string-match "- 2nd sample" (buffer-string)))
+
+      (do-odone 't)                                                   ; payload
+      (do-pdone 't)                                                   ; payload
+
+      (setq done-pos (do-done-position))
+      (setq ltask-pos (last-position do-mode-rgx-task))
+      (setq ptask-pos (last-position do-mode-rgx-task ltask-pos))
+      (should (< ptask-pos ltask-pos))
+      (should (< done-pos ptask-pos))
+      (should (= ltask-pos (last-position less-2nd-sample)))
+      (should (= ptask-pos (last-position plus-3rd-sample ltask-pos)))
+      (should (equal nil (string-match dash-3rd-sample (buffer-string))))
+      )))
 
 ;; ----------------------------------------------------------------------------
 ;; Copy this to *scratch* and eval-buffer (esc-b) to run the tests
