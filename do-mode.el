@@ -62,6 +62,7 @@
       (define-key map "\C-c\C-r" 'reload-do-mode)
       (define-key map "\C-v" 'do-goto-next-task)
       (define-key map "\C-t" 'do-goto-prev-task)
+      (define-key map "\C-xk" 'do-task-up)
       (if (boundp 'do-mode-map)
           (setq do-mode-map map)
         (defvar do-mode-map map
@@ -211,6 +212,26 @@ if that value is non-nil."
     (if (setq msg (do-done " < " nosave))
         (message msg))))
 
+;; ----------------------------------------------------------------------------
+(defun do-task-up ()
+  (concat "Move the current task above the one before it, if any. "
+          "If this is the first task in the file, do nothing.")
+  (interactive)
+  (catch 'bail
+    (let ((start) (end) (where))
+      (save-excursion
+        (setq start (do-prev-task-or-done))
+        (if (string= "--- DONE ---" (bytes-at start 12))
+            (throw 'bail nil))
+        (setq end (do-next-task-or-done (+ 3 start)))
+        (setq where (do-prev-task-mark (- start 2)))
+
+        (goto-char start)
+        (if (< where start)
+            (progn (setq text (buffer-substring start end))
+                   (delete-region start end)
+                   (goto-char where)
+                   (insert text)))))))
 
 ;;; ---------------------------------------------------------------
 ;; Helper functions - these get called indirectly by interactive
