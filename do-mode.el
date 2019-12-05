@@ -15,8 +15,8 @@
 ;;  \e/     +     do-odone           divert task (<) (i.e., moved elsewhere)
 ;;  \C-v    +     do-goto-next-task  jump to next task
 ;;  \C-t    +     do-goto-prev-task  jump to previous task
-;;  \C-xj   -?    do-task-down       move current task down
-;;  \C-xk   -?    do-task-up         move current task up
+;;  \C-xk   +     do-task-up         move current task up
+;;  \C-xj   +     do-task-down       move current task down
 ;;  \e^     -?    do-task-to-top     move current task to top
 ;;  \e$     -?    do-task-to-bot     move current task to bottom
 ;;  \em     -?    do-mark-task       bracket task with mark and point
@@ -27,6 +27,7 @@
     (unload-feature 'do-mode 't))
 
 (provide 'do-mode)
+(global-set-key "\C-c\C-d" 'debug-on-entry)
 
 ;;; ---------------------------------------------------------------------------
 (defvar do-mode-syntax-table nil
@@ -62,7 +63,8 @@
       (define-key map "\C-c\C-r" 'reload-do-mode)
       (define-key map "\C-v" 'do-goto-next-task)
       (define-key map "\C-t" 'do-goto-prev-task)
-      (define-key map "\C-xk" 'do-task-up)
+      (define-key map "\C-c\C-k" 'do-task-up)
+      (define-key map "\C-c\C-j" 'do-task-down)
       (if (boundp 'do-mode-map)
           (setq do-mode-map map)
         (defvar do-mode-map map
@@ -80,7 +82,7 @@
 ;;; ---------------------------------------------------------------------------
 (defconst do-mode-done-line (concat "\n--- DONE ------------------------------"
                                     "----------------------------------------")
-  "Regexp for finding the DONE line")
+  "DONE line")
 
 ;;; ===========================================================================
 ;;; Interactive, user-facing functions -- called directly from keyboard
@@ -218,12 +220,11 @@ if that value is non-nil."
           "If this is the first task in the file, do nothing.")
   (interactive)
   (catch 'bail
-    (let ((start) (end) (where))
+    (let ((start) (end) (where) (done-pos))
       (save-excursion
-        (setq done-pos (do-done-position))
-        (setq start (do-prev-task-or-done))
-        (if (equal nil done-pos)
+        (if (equal nil (setq done-pos (do-done-position)))
             (setq done-pos (point-max)))
+        (setq start (do-prev-task-or-done))
         (if (= start done-pos)
             (throw 'bail nil))
         (setq end (do-next-task-or-done (+ 3 start)))
@@ -242,6 +243,35 @@ if that value is non-nil."
         (insert text))
       (goto-char where)
       )))
+
+;; ----------------------------------------------------------------------------
+(defun do-task-down ()
+  (concat "Move the current task under the one below it, if any. If this\n"
+          "is the last task before the DONE line, or the last task in the\n"
+          "file, do nothing.")
+  (interactive)
+  (catch 'bail
+    (let ((start) (end) (where) (done-pos) (text) (tlen))
+      (save-excursion
+        (if (equal nil (setq done-pos (do-done-position)))
+            (setq done-pos (point-max)))
+        (setq start (do-prev-task-or-done))
+        (if (= start done-pos)
+            (throw 'bail nil))
+        (setq end (do-next-task-or-done (+ 3 start)))
+        (setq where (do-next-task-or-done (+ 3 end)))
+
+        (if (<= where start)
+            (throw 'bail nil)
+          (if (or (and (< where done-pos) (< done-pos start))
+                  (and (< start done-pos) (< done-pos where)))
+              (throw 'bail nil)))
+        (setq text (buffer-substring start end))
+        (delete-region start end)
+        (setq where (- where (- end start)))
+        (goto-char where)
+        (insert text))
+      (goto-char where))))
 
 ;;; ---------------------------------------------------------------
 ;; Helper functions - these get called indirectly by interactive
