@@ -16,7 +16,7 @@
 ;;    do-done-position    (1100 - 1199)
 ;;    do-goto-next-task   (1200 - 1399)
 ;;    do-goto-prev-task   (1400 - 1599)
-;;    do-new-entry        (1600 - 1699)
+;;    do-new-task         (1600 - 1699)
 ;;    do-next-task-mark   (1700 - 1799)
 ;;    do-prev-task-mark   (1800 - 1899)
 ;;    do-[pxo]done        (1900 - 1999)
