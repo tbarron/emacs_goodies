@@ -1483,13 +1483,6 @@
 
 ;; ============================================================================
 ;; tests for do-buffer-p
-;;
-;;    + current buffer is not a do-buffer
-;;    + current buffer *is* a do-buffer
-;;    + other buffer is not a do-buffer
-;;    other buffer is a do-buffer by name
-;;    + other buffer is a do-buffer by mode
-;;    other buffer is a do-buffer by both mode and name
 
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-2000-dobufp-cur-no ()
