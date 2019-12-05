@@ -373,6 +373,24 @@ if that value is non-nil."
         (if (re-search-forward do-mode-rgx-done nil 't)
             (re-search-backward do-mode-rgx-done)
           (point-max))))))
+;; ----------------------------------------------------------------------------
+(defun look-forward (start rgx)
+  "Searching forward from START, return the position where RGX begins"
+  (save-excursion
+    (goto-char start)
+    (end-of-line)
+    (if (re-search-forward rgx nil 't)
+        (re-search-backward rgx)
+      nil)))
+
+;; ----------------------------------------------------------------------------
+(defun look-backward (start rgx)
+  "Searching backward from START, return the position where RGX begins"
+  (save-excursion
+    (goto-char start)
+    (end-of-line)
+    (re-search-backward rgx nil 't)
+    ))
 
 ;; ----------------------------------------------------------------------------
 (defun do-next-task-mark (&optional start)
