@@ -112,16 +112,6 @@
 ;; helper functions
 
 ;; ----------------------------------------------------------------------------
-(defun bytes-at (where count)
-  "Return COUNT bytes (or as many as are available) near WHERE"
-  (setq top (+ where count))
-  (if (< (point-max) top)
-      (progn (setq top (point-max))
-             (setq where (- top count))
-             (if (< where (point-min))
-                 (setq where (point-min)))))
-  (buffer-substring where top)
-  )
 (defun qrepl (before new mod)
   "Replace BEFORE with NEW iteratively modified per MOD"
   (interactive "nSearch:\nnFirst:\nxMod:")

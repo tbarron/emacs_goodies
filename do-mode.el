@@ -217,6 +217,18 @@ if that value is non-nil."
 ;; function to help get stuff done
 ;;; ---------------------------------------------------------------------------
 
+;; ----------------------------------------------------------------------------
+(defun bytes-at (where count)
+  "Return COUNT bytes (or as many as are available) near WHERE"
+  (setq top (+ where count))
+  (if (< (point-max) top)
+      (progn (setq top (point-max))
+             (setq where (- top count))
+             (if (< where (point-min))
+                 (setq where (point-min)))))
+  (buffer-substring where top)
+  )
+
 ;;; ---------------------------------------------------------------------------
 (defun do-buffer-p (&optional which)
   "Return t if WHICH is a do buffer (has do-mode set or name ends with do-rgx"
