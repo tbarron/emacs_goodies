@@ -20,8 +20,9 @@
 ;;    do-next-task-mark   (1700 - 1799)
 ;;    do-prev-task-mark   (1800 - 1899)
 ;;    do-[pxo]done        (1900 - 1999)
-;;    do-buffer-p         (2000 - 2100)
-;;    do-task-up          (2100 - 2200)
+;;    do-buffer-p         (2000 - 2099)
+;;    do-task-up          (2100 - 2199)
+;;    do-task-down        (2200 - 2299)
 ;;
 
 
@@ -1706,6 +1707,183 @@
       (should (< second-pos first-pos))
       (should (< first-pos done-pos))
       (should (< done-pos post-pos))
+      (should (= (point) (+ 1 second-pos))
+      ))))
+
+
+;; ============================================================================
+;; tests for do-task-down
+;; ----------------------------------------------------------------------------
+
+(ert-deftest test-2200-do-task-down-zlen ()
+  "do-task-down: zero length buffer -- do nothing"
+  (let ((before))
+    (with-temp-buffer
+      (setq before (buffer-string))
+      (do-task-down)                                                    ; payload
+      (should (string= before (buffer-string)))
+  )))
+
+;; ----------------------------------------------------------------------------
+(ert-deftest test-2205-do-task-down ()
+  "do-task-down: whitespace -- do nothing"
+  (let ((before))
+    (with-temp-buffer
+      (insert "                    ")
+      (setq before (buffer-string))
+      (goto-char 8)
+      (do-task-down)                                                    ; payload
+      (should (string= before (buffer-string)))
+  )))
+
+;; ----------------------------------------------------------------------------
+(ert-deftest test-2210-do-task-down ()
+  "do-task-down: one task, no DONE -- do nothing"
+  (let ((before))
+    (with-temp-buffer
+      (insert "\n\n + 1st task\n\n")
+      (setq before (buffer-string))
+      (goto-char (string-match "1st" (buffer-string)))
+      (do-task-down)                                                    ; payload
+      (should (string= before (buffer-string)))
+  )))
+
+;; ----------------------------------------------------------------------------
+(ert-deftest test-2215-do-task-down ()
+  "do-task-down: one task, above DONE -- do nothing"
+  (let ((before))
+    (with-temp-buffer
+      (insert "\n\n + 1st task\n\n" done-line)
+      (setq before (buffer-string))
+      (goto-char (string-match "1st" (buffer-string)))
+      (do-task-down)                                                    ; payload
+      (should (string= before (buffer-string)))
+  )))
+
+;; ----------------------------------------------------------------------------
+(ert-deftest test-2220-do-task-down ()
+  "do-task-down: one task, above DONE -- moving DONE doesn't do anything"
+  (let ((before))
+    (with-temp-buffer
+      (insert "\n\n + 1st task\n\n" done-line)
+      (setq before (buffer-string))
+      (goto-char (string-match "DONE" (buffer-string)))
+      (do-task-down)                                                    ; payload
+      (should (string= before (buffer-string)))
+  )))
+
+;; ----------------------------------------------------------------------------
+(ert-deftest test-2225-do-task-down ()
+  "do-task-down: one task, below DONE -- do nothing"
+  (let ((before))
+    (with-temp-buffer
+      (insert done-line "\n\n + 1st task\n\n")
+      (setq before (buffer-string))
+      (goto-char (string-match "1st" (buffer-string)))
+      (do-task-down)                                                    ; payload
+      (should (string= before (buffer-string)))
+  )))
+
+;; ----------------------------------------------------------------------------
+(ert-deftest test-2230-do-task-down ()
+  "do-task-down: two tasks, no DONE -- bottom doesn't move"
+  (let ((before))
+    (with-temp-buffer
+      (insert "\n\n - 1st task\n\n - 2nd task\n\n")
+      (setq before (buffer-string))
+      (goto-char (string-match "2nd" (buffer-string)))
+      (do-task-down)                                                    ; payload
+      (should (string= before (buffer-string)))
+  )))
+
+;; ----------------------------------------------------------------------------
+(ert-deftest test-2235-do-task-down ()
+  "do-task-down: two tasks, no DONE -- top moves past bottom"
+  (let ((before))
+    (with-temp-buffer
+      (insert "\n\n - 1st task\n\n - 2nd task\n\n")
+      (goto-char (string-match "1st" (buffer-string)))
+      (do-task-down)                                                    ; payload
+      (setq second-pos (string-match " - 2nd" (buffer-string)))
+      (setq first-pos (string-match " - 1st" (buffer-string)))
+      (should (equal nil (do-done-position)))
+      (should (< second-pos first-pos))
+      (should (= (point) (+ 1 first-pos)))
+  )))
+
+;; ----------------------------------------------------------------------------
+(ert-deftest test-2240-do-task-down ()
+  "do-task-down: two tasks, above DONE -- top moves past bottom"
+  (let ((before) (first-pos) (second-pos) (done-pos))
+    (with-temp-buffer
+      (insert "\n\n - 1st task\n\n - 2nd task\n\n" done-line)
+      (setq before (buffer-string))
+      (goto-char (string-match "1st" (buffer-string)))
+      (do-task-down)                                                    ; payload
+      (setq second-pos (string-match " - 2nd" (buffer-string)))
+      (setq first-pos (string-match " - 1st" (buffer-string)))
+      (setq done-pos (do-done-position))
+      (should (< second-pos first-pos))
+      (should (< first-pos done-pos))
+      (should (= (point) (+ 1 first-pos)))
+  )))
+
+;; ----------------------------------------------------------------------------
+(ert-deftest test-2245-do-task-down ()
+  "do-task-down: two tasks, below DONE -- DONE won't move past top"
+  (let ((before))
+    (with-temp-buffer
+      (insert done-line "\n\n < 1st task\n\n + 2nd task\n\n")
+      (setq before (buffer-string))
+      (goto-char (+ 5 (do-done-position)))
+      (do-task-down)                                                    ; payload
+      (should (string= before (buffer-string)))
+  )))
+
+;; ----------------------------------------------------------------------------
+(ert-deftest test-2250-do-task-down ()
+  "do-task-down: two tasks, below DONE -- top moves past bottom"
+  (let ((before) (first-pos) (second-pos))
+    (with-temp-buffer
+      (insert done-line "\n\n + 1st task\n\n + 2nd task\n\n")
+      (setq before (buffer-string))
+      (goto-char (+ 4 (string-match "1st task" (buffer-string))))
+      (do-task-down)                                                    ; payload
+      (setq first-pos (string-match " \\+ 1st" (buffer-string)))
+      (setq second-pos (string-match " \\+ 2nd" (buffer-string)))
+      (should (< second-pos first-pos))
+      (should (< (do-done-position) second-pos))
+      (should (= (point) (+ 1 first-pos)))
+      )))
+
+;; ----------------------------------------------------------------------------
+(ert-deftest test-2255-do-task-down ()
+  "do-task-down: two tasks, above DONE -- bottom won't move past DONE"
+  (let ((before))
+    (with-temp-buffer
+      (insert "\n\n - 1st task\n\n - 2nd task\n" done-line)
+      (setq before (buffer-string))
+      (goto-char (+ 4 (string-match "2nd task" (buffer-string))))
+      (do-task-down)                                                    ; payload
+      (should (string= before (buffer-string)))
+      )))
+
+;; ----------------------------------------------------------------------------
+(ert-deftest test-2260-do-task-down ()
+  (concat "do-task-down: three tasks, DONE after 1 -- downing 2nd should not\n"
+          "take DONE with it")
+  (let ((first-pos) (second-pos) (done-pos) (third-pos))
+    (with-temp-buffer
+      (insert "\n\n - 1st task\n\n" done-line "\n\n + 2nd task\n\n + 3rd task")
+      (goto-char (+ 4 (string-match "2nd task" (buffer-string))))
+      (do-task-down)                                                    ; payload
+      (setq first-pos (string-match " - 1st task" (buffer-string)))
+      (setq done-pos (string-match "--- DONE ---" (buffer-string)))
+      (setq third-pos (string-match " \\+ 3rd task" (buffer-string)))
+      (setq second-pos (string-match " \\+ 2nd task" (buffer-string)))
+      (should (< first-pos done-pos))
+      (should (< done-pos third-pos))
+      (should (< third-pos second-pos))
       (should (= (point) (+ 1 second-pos))
       ))))
 
