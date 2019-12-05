@@ -344,12 +344,8 @@ if that value is non-nil."
       (if (not start)
           (setq start (point)))
 
-      (goto-char start)
-      (end-of-line)
-      (setq task-pos (re-search-backward do-mode-rgx-task nil 't))
-      (goto-char start)
-      (end-of-line)
-      (setq done-pos (re-search-backward do-mode-rgx-done nil 't))
+      (setq task-pos (look-backward start do-mode-rgx-task))
+      (setq done-pos (look-backward start do-mode-rgx-done))
       (if (and (equal nil task-pos) (equal nil done-pos))
           (point-min)
         (if (equal nil task-pos)
@@ -366,13 +362,20 @@ if that value is non-nil."
           "2) the DONE line, or 3) (point-max)")
   (let ((nt-pos) (dl-pos))
     (save-excursion
-      (if start
-          (goto-char start))
-      (if (re-search-forward do-mode-rgx-task nil 't)
-          (re-search-backward do-mode-rgx-task)
-        (if (re-search-forward do-mode-rgx-done nil 't)
-            (re-search-backward do-mode-rgx-done)
-          (point-max))))))
+      (if (not start)
+          (setq start (point)))
+      (setq nt-pos (look-forward start do-mode-rgx-task))
+      (setq dl-pos (look-forward start do-mode-rgx-done))
+      (if (and (equal nil nt-pos) (equal nil dl-pos))
+          (point-max)
+        (if (equal nil nt-pos)
+            done-pos
+          (if (equal nil dl-pos)
+              nt-pos
+            (if (< nt-pos dl-pos)
+                nt-pos
+              dl-pos)))))))
+
 ;; ----------------------------------------------------------------------------
 (defun look-forward (start rgx)
   "Searching forward from START, return the position where RGX begins"
