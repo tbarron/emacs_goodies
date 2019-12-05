@@ -1629,6 +1629,7 @@
       (setq first-pos (string-match " - 1st" (buffer-string)))
       (should (equal nil (do-done-position)))
       (should (< second-pos first-pos))
+      (should (= (point) (+ 1 second-pos)))
   )))
 
 ;; ----------------------------------------------------------------------------
@@ -1645,6 +1646,7 @@
       (setq done-pos (do-done-position))
       (should (< second-pos first-pos))
       (should (< first-pos done-pos))
+      (should (= (point) (+ 1 second-pos)))
   )))
 
 ;; ----------------------------------------------------------------------------
@@ -1672,6 +1674,7 @@
       (setq second-pos (string-match " \\+ 2nd" (buffer-string)))
       (should (< second-pos first-pos))
       (should (< (do-done-position) second-pos))
+      (should (= (point) (+ 1 second-pos)))
       )))
 
 ;; ----------------------------------------------------------------------------
@@ -1703,7 +1706,8 @@
       (should (< second-pos first-pos))
       (should (< first-pos done-pos))
       (should (< done-pos post-pos))
-      )))
+      (should (= (point) (+ 1 second-pos))
+      ))))
 
 ;; ----------------------------------------------------------------------------
 ;; Copy this to *scratch* and eval-buffer (esc-b) to run the tests
