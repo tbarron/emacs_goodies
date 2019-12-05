@@ -315,17 +315,61 @@ if that value is non-nil."
       (re-search-backward done-rgx nil 't))))
 
 ;; ----------------------------------------------------------------------------
-(defun do-next-task-mark ()
-  "Return the position of the first task mark after point"
+(defun do-prev-task-or-done (&optional start)
+  (concat "Return the position of the closest preceding 1) task mark, "
+          "2) DONE line, or 3) (point-min)")
+  (let ((task-pos) (done-pos))
+    (save-excursion
+      (if (not start)
+          (setq start (point)))
+
+      (goto-char start)
+      (end-of-line)
+      (setq task-pos (re-search-backward do-mode-rgx-task nil 't))
+      (goto-char start)
+      (end-of-line)
+      (setq done-pos (re-search-backward do-mode-rgx-done nil 't))
+      (if (and (equal nil task-pos) (equal nil done-pos))
+          (point-min)
+        (if (equal nil task-pos)
+            done-pos
+          (if (equal nil done-pos)
+              task-pos
+            (if (< task-pos done-pos)
+                done-pos
+              task-pos)))))))
+
+;; ----------------------------------------------------------------------------
+(defun do-next-task-or-done (&optional start)
+  (concat "Return the position of the earliest of 1) the next task, "
+          "2) the DONE line, or 3) (point-max)")
+  (let ((nt-pos) (dl-pos))
+    (save-excursion
+      (if start
+          (goto-char start))
+      (if (re-search-forward do-mode-rgx-task nil 't)
+          (re-search-backward do-mode-rgx-task)
+        (if (re-search-forward do-mode-rgx-done nil 't)
+            (re-search-backward do-mode-rgx-done)
+          (point-max))))))
+
+;; ----------------------------------------------------------------------------
+(defun do-next-task-mark (&optional start)
+  (concat "Return the position of the first task mark after START. If START "
+          "is not provided, we start from (point).")
   (save-excursion
+    (if start
+        (goto-char start))
     (end-of-line)
     (if (re-search-forward do-mode-rgx-task nil 't)
         (re-search-backward do-mode-rgx-task))))
 
 ;; ----------------------------------------------------------------------------
-(defun do-prev-task-mark ()
+(defun do-prev-task-mark (&optional start)
   "Return the position of the task that precedes point"
   (save-excursion
+    (if start
+        (goto-char start))
     (if (not (re-search-backward do-mode-rgx-task nil 't))
         (if (re-search-forward do-mode-rgx-task nil 't)
             (re-search-backward do-mode-rgx-task)))
