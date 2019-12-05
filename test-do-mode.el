@@ -21,6 +21,7 @@
 ;;    do-prev-task-mark   (1800 - 1899)
 ;;    do-[pxo]done        (1900 - 1999)
 ;;    do-buffer-p         (2000 - 2100)
+;;    do-task-up          (2100 - 2200)
 ;;
 
 
@@ -1540,6 +1541,179 @@
     (should (do-buffer-p bufname))
     (kill-buffer bufname)
     ))
+
+;; ============================================================================
+;; tests for do-task-up
+
+;; ----------------------------------------------------------------------------
+(ert-deftest test-2100-do-task-up-zlen ()
+  "do-task-up: zero length buffer -- do nothing"
+  (let ((before))
+    (with-temp-buffer
+      (setq before (buffer-string))
+      (do-task-up)                                                    ; payload
+      (should (string= before (buffer-string)))
+  )))
+
+;; ----------------------------------------------------------------------------
+(ert-deftest test-2105-do-task-up ()
+  "do-task-up: whitespace -- do nothing"
+  (let ((before))
+    (with-temp-buffer
+      (insert "                    ")
+      (setq before (buffer-string))
+      (goto-char 8)
+      (do-task-up)                                                    ; payload
+      (should (string= before (buffer-string)))
+  )))
+
+;; ----------------------------------------------------------------------------
+(ert-deftest test-2110-do-task-up ()
+  "do-task-up: one task, no DONE -- do nothing"
+  (let ((before))
+    (with-temp-buffer
+      (insert "\n\n + 1st task\n\n")
+      (setq before (buffer-string))
+      (goto-char (string-match "1st" (buffer-string)))
+      (do-task-up)                                                    ; payload
+      (should (string= before (buffer-string)))
+  )))
+
+;; ----------------------------------------------------------------------------
+(ert-deftest test-2115-do-task-up ()
+  "do-task-up: one task, above DONE -- do nothing"
+  (let ((before))
+    (with-temp-buffer
+      (insert "\n\n + 1st task\n\n" done-line)
+      (setq before (buffer-string))
+      (goto-char (string-match "1st" (buffer-string)))
+      (do-task-up)                                                    ; payload
+      (should (string= before (buffer-string)))
+  )))
+
+;; ----------------------------------------------------------------------------
+(ert-deftest test-2120-do-task-up ()
+  "do-task-up: one task, above DONE -- moving DONE doesn't do anything"
+  (let ((before))
+    (with-temp-buffer
+      (insert "\n\n + 1st task\n\n" done-line)
+      (setq before (buffer-string))
+      (goto-char (string-match "DONE" (buffer-string)))
+      (do-task-up)                                                    ; payload
+      (should (string= before (buffer-string)))
+  )))
+
+;; ----------------------------------------------------------------------------
+(ert-deftest test-2125-do-task-up ()
+  "do-task-up: one task, below DONE -- do nothing"
+  (let ((before))
+    (with-temp-buffer
+      (insert done-line "\n\n + 1st task\n\n")
+      (setq before (buffer-string))
+      (goto-char (string-match "1st" (buffer-string)))
+      (do-task-up)                                                    ; payload
+      (should (string= before (buffer-string)))
+  )))
+
+;; ----------------------------------------------------------------------------
+(ert-deftest test-2130-do-task-up ()
+  "do-task-up: two tasks, no DONE -- top doesn't move"
+  (let ((before))
+    (with-temp-buffer
+      (insert "\n\n - 1st task\n\n - 2nd task\n\n")
+      (setq before (buffer-string))
+      (goto-char (string-match "1st" (buffer-string)))
+      (do-task-up)                                                    ; payload
+      (should (string= before (buffer-string)))
+  )))
+
+;; ----------------------------------------------------------------------------
+(ert-deftest test-2135-do-task-up ()
+  "do-task-up: two tasks, no DONE -- bottom moves past top"
+  (let ((before))
+    (with-temp-buffer
+      (insert "\n\n - 1st task\n\n - 2nd task\n\n")
+      (goto-char (string-match "2nd" (buffer-string)))
+      (do-task-up)                                                    ; payload
+      (setq second-pos (string-match " - 2nd" (buffer-string)))
+      (setq first-pos (string-match " - 1st" (buffer-string)))
+      (should (equal nil (do-done-position)))
+      (should (< second-pos first-pos))
+  )))
+
+;; ----------------------------------------------------------------------------
+(ert-deftest test-2140-do-task-up ()
+  "do-task-up: two tasks, above DONE -- bottom moves past top"
+  (let ((before) (first-pos) (second-pos) (done-pos))
+    (with-temp-buffer
+      (insert "\n\n - 1st task\n\n - 2nd task\n\n" done-line)
+      (setq before (buffer-string))
+      (goto-char (string-match "2nd" (buffer-string)))
+      (do-task-up)                                                    ; payload
+      (setq second-pos (string-match " - 2nd" (buffer-string)))
+      (setq first-pos (string-match " - 1st" (buffer-string)))
+      (setq done-pos (do-done-position))
+      (should (< second-pos first-pos))
+      (should (< first-pos done-pos))
+  )))
+
+;; ----------------------------------------------------------------------------
+(ert-deftest test-2145-do-task-up ()
+  "do-task-up: two tasks, above DONE -- DONE won't move past bottom"
+  (let ((before))
+    (with-temp-buffer
+      (insert "\n\n - 1st task\n\n - 2nd task\n\n" done-line)
+      (setq before (buffer-string))
+      (goto-char (+ 5 (do-done-position)))
+      (do-task-up)                                                    ; payload
+      (should (string= before (buffer-string)))
+  )))
+
+;; ----------------------------------------------------------------------------
+(ert-deftest test-2150-do-task-up ()
+  "do-task-up: two tasks, below DONE -- bottom moves past top"
+  (let ((before) (first-pos) (second-pos))
+    (with-temp-buffer
+      (insert done-line "\n\n + 1st task\n\n + 2nd task\n\n")
+      (setq before (buffer-string))
+      (goto-char (+ 4 (string-match "2nd task" (buffer-string))))
+      (do-task-up)                                                    ; payload
+      (setq first-pos (string-match " \\+ 1st" (buffer-string)))
+      (setq second-pos (string-match " \\+ 2nd" (buffer-string)))
+      (should (< second-pos first-pos))
+      (should (< (do-done-position) second-pos))
+      )))
+
+;; ----------------------------------------------------------------------------
+(ert-deftest test-2155-do-task-up ()
+  "do-task-up: two tasks, below DONE -- top won't move past DONE"
+  (let ((before))
+    (with-temp-buffer
+      (insert done-line "\n\n + 1st task\n\n + 2nd task\n")
+      (setq before (buffer-string))
+      (goto-char (+ 4 (string-match "1st task" (buffer-string))))
+      (do-task-up)                                                    ; payload
+      (should (string= before (buffer-string)))
+      )))
+
+;; ----------------------------------------------------------------------------
+(ert-deftest test-2160-do-task-up ()
+  (concat "do-task-up: three tasks, DONE after 2 -- upping 2nd should not"
+          " take DONE with it")
+  (let ((first-pos) (second-pos) (done-pos) (post-pos))
+    (with-temp-buffer
+      (insert "\n\n - 1st task\n\n - 2nd task\n\n" done-line
+              "\n\n + completed task")
+      (goto-char (+ 4 (string-match "2nd task" (buffer-string))))
+      (do-task-up)                                                    ; payload
+      (setq first-pos (string-match " - 1st task" (buffer-string)))
+      (setq second-pos (string-match " - 2nd task" (buffer-string)))
+      (setq done-pos (string-match "--- DONE ---" (buffer-string)))
+      (setq post-pos (string-match " \\+ completed" (buffer-string)))
+      (should (< second-pos first-pos))
+      (should (< first-pos done-pos))
+      (should (< done-pos post-pos))
+      )))
 
 ;; ----------------------------------------------------------------------------
 ;; Copy this to *scratch* and eval-buffer (esc-b) to run the tests
