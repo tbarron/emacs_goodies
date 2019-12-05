@@ -220,18 +220,28 @@ if that value is non-nil."
   (catch 'bail
     (let ((start) (end) (where))
       (save-excursion
+        (setq done-pos (do-done-position))
         (setq start (do-prev-task-or-done))
-        (if (string= "--- DONE ---" (bytes-at start 12))
+        (if (equal nil done-pos)
+            (setq done-pos (point-max)))
+        (if (= start done-pos)
             (throw 'bail nil))
         (setq end (do-next-task-or-done (+ 3 start)))
         (setq where (do-prev-task-mark (- start 2)))
 
         (goto-char start)
-        (if (< where start)
-            (progn (setq text (buffer-substring start end))
-                   (delete-region start end)
-                   (goto-char where)
-                   (insert text)))))))
+        (if (<= start where)
+            (throw 'bail nil)
+          (if (and (< where done-pos) (< done-pos start))
+              (throw 'bail nil)
+            (if (and (< start done-pos) (< done-pos where))
+                (throw 'bail nil))))
+        (setq text (buffer-substring start end))
+        (delete-region start end)
+        (goto-char where)
+        (insert text))
+      (goto-char where)
+      )))
 
 ;;; ---------------------------------------------------------------
 ;; Helper functions - these get called indirectly by interactive
