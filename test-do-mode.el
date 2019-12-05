@@ -11,19 +11,20 @@
 ;; Contents of this file
 ;;    variables
 ;;    helper functions
-;;    do-add-done-iff     (1000 - 1020)
-;;    bytes-at            (1090 - 1099)
-;;    do-done-position    (1100 - 1199)
-;;    do-goto-next-task   (1200 - 1399)
-;;    do-goto-prev-task   (1400 - 1599)
-;;    do-new-task         (1600 - 1699)
-;;    do-next-task-mark   (1700 - 1799)
-;;    do-prev-task-mark   (1800 - 1899)
-;;    do-[pxo]done        (1900 - 1999)
-;;    do-buffer-p         (2000 - 2099)
-;;    do-task-up          (2100 - 2199)
-;;    do-task-down        (2200 - 2299)
-;;
+;;    do-add-done-iff                (1000 - 1020)
+;;    bytes-at                       (1090 - 1099)
+;;    do-done-position               (1100 - 1199)
+;;    do-goto-next-task              (1200 - 1399)
+;;    do-goto-prev-task              (1400 - 1599)
+;;    do-new-task                    (1600 - 1699)
+;;    do-next-task-mark              (1700 - 1799)
+;;    do-prev-task-mark              (1800 - 1899)
+;;    do-[pxo]done                   (1900 - 1999)
+;;    do-buffer-p                    (2000 - 2099)
+;;    do-task-up                     (2100 - 2199)
+;;    do-task-down                   (2200 - 2299)
+;;    {next,previous}-dodo           (2300 - 2399)
+
 
 
 ;; ============================================================================
@@ -243,7 +244,7 @@
     (insert source)
     (should (string= source (bytes-at (point-max) 10)))
     ))
-            
+
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-1096-bytes-at-long-min ()
   "bytes-at: long buffer point min"
@@ -267,7 +268,7 @@
     (insert alphabet)
     (should (string= "vwxyz" (bytes-at (point-max) 5)))
     ))
-  
+
 ;; ============================================================================
 ;; tests for do-done-position
 
@@ -1886,6 +1887,37 @@
       (should (< third-pos second-pos))
       (should (= (point) (+ 1 second-pos))
       ))))
+
+;; ============================================================================
+;; tests for next-dodo, previous-dodo
+
+;; ----------------------------------------------------------------------------
+(ert-deftest test-2300-next-dodo ()
+  "next-dodo: jump from one dodo buffer to the next"
+  (setq buflist '("journal" "friday" "todo" "sinbad" "dodo" "schlag" "ado"))
+  (setq expected '("todo" "dodo" "schlag" "ado"))
+  (dolist (bufname buflist) (create-file-buffer bufname))
+  (with-current-buffer "schlag"
+    (do-mode))
+  (dolist (exp expected)
+    (next-dodo)
+    (should (string= exp (buffer-name))))
+  (dolist (bufname buflist)
+    (kill-buffer bufname)))
+
+;; ----------------------------------------------------------------------------
+(ert-deftest test-2310-previous-dodo ()
+  "previous-dodo: jump from one dodo buffer to the previous"
+  (setq buflist '("journal" "friday" "todo" "sinbad" "dodo" "schlag" "ado"))
+  (setq expected '("ado" "dodo" "todo" "friday"))
+  (dolist (bufname buflist) (create-file-buffer bufname))
+  (with-current-buffer "friday"
+    (do-mode))
+  (dolist (exp expected)
+    (previous-dodo)
+    (should (string= exp (buffer-name))))
+  (dolist (bufname buflist)
+    (kill-buffer bufname)))
 
 ;; ----------------------------------------------------------------------------
 ;; Copy this to *scratch* and eval-buffer (esc-b) to run the tests
