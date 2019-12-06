@@ -1918,30 +1918,31 @@ not take DONE with it"
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-2300-next-dodo ()
   "next-dodo: jump from one dodo buffer to the next"
-  (setq buflist '("journal" "friday" "todo" "sinbad" "dodo" "schlag" "ado"))
-  (setq expected '("todo" "dodo" "schlag" "ado"))
-  (dolist (bufname buflist) (create-file-buffer bufname))
-  (with-current-buffer "schlag"
-    (do-mode))
-  (dolist (exp expected)
-    (next-dodo)
-    (should (string= exp (buffer-name))))
-  (dolist (bufname buflist)
-    (kill-buffer bufname)))
+  (let ((buflist '("journal" "friday" "todo" "sinbad" "dodo" "schlag" "ado"))
+        (expected '("todo" "dodo" "schlag" "ado")))
+    (dolist (bufname buflist) (create-file-buffer bufname))
+    (with-current-buffer "schlag"
+      (do-mode))
+    (dolist (exp expected)
+      (next-dodo)
+      (should (string= exp (buffer-name))))
+    (dolist (bufname buflist)
+      (kill-buffer bufname))))
 
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-2310-previous-dodo ()
   "previous-dodo: jump from one dodo buffer to the previous"
-  (setq buflist '("journal" "friday" "todo" "sinbad" "dodo" "schlag" "ado"))
-  (setq expected '("ado" "dodo" "todo" "friday"))
-  (dolist (bufname buflist) (create-file-buffer bufname))
-  (with-current-buffer "friday"
-    (do-mode))
-  (dolist (exp expected)
-    (previous-dodo)
-    (should (string= exp (buffer-name))))
-  (dolist (bufname buflist)
-    (kill-buffer bufname)))
+  (let ((buflist '("journal" "friday" "todo" "sinbad" "dodo" "schlag" "ado"))
+        (expected '("ado" "dodo" "todo" "friday")))
+    (dolist (bufname buflist) (create-file-buffer bufname))
+    (with-current-buffer "friday"
+      (do-mode))
+    (dolist (exp expected)
+      (previous-dodo)
+      (should (string= exp (buffer-name))))
+    (dolist (bufname buflist)
+      (kill-buffer bufname))))
+
 
 ;; ----------------------------------------------------------------------------
 ;; Copy this to *scratch* and eval-buffer (esc-b) to run the tests
