@@ -30,7 +30,9 @@
 
 ;; ============================================================================
 ;; variables
+(setq g-1st-task "1st task")
 (setq g-2nd-sample "2nd sample")
+(setq g-2nd-task "2nd task")
 (setq g-3rd-sample "3rd sample")
 (setq g-abandoned "\n\n x abandoned task number 2\n")
 ; (setq g-abandoned-1st "---\n\n x 1st")
@@ -93,17 +95,21 @@
 (setq g-new-task-rgx " - \\[[.0-9]\\{9\\}\\] ")
 (setq g-no-active-tasks "no active tasks found")
 (setq g-no-tasks "no tasks in file")
+(setq g-plus-1st " \\+ 1st")
 (setq g-plus-1st-task "\n\n + 1st task\n\n")
 (setq g-plus-1st-sample " \\+ 1st sample")
+(setq g-plus-2nd " \\+ 2nd")
 (setq g-plus-3rd-sample " \\+ 3rd sample")
 (setq g-plus-also "+ also")
 (setq g-plus-fini " + fini")
 (setq g-plus-sample " \\+ sample")
 (setq g-plus-single " \\+ single")
 (setq g-plus-sp-f "+ f")
+(setq g-plus-two-tasks "\n\n + 1st task\n\n + 2nd task\n\n")
 (setq g-s-k-new "sk\n")
 (setq g-sample "sample")
 (setq g-sample-task "\n\n - sample task\n\n")
+(setq g-second "2nd")
 (setq g-six-new "\n\n\n\n\n\n")
 (setq g-sp-also-sp " also ")
 (setq g-sp-dash-sp " - ")
@@ -1649,11 +1655,11 @@ already present"
   "do-task-up: two tasks, no DONE -- bottom moves past top"
   (with-temp-buffer
     (let ((before))
-      (insert "\n\n - 1st task\n\n - 2nd task\n\n")
-      (goto-char (string-match "2nd" (buffer-string)))
+      (insert g-two-tasks)
+      (goto-char (string-match g-second (buffer-string)))
       (do-task-up)                      ; payload
-      (setq second-pos (string-match " - 2nd" (buffer-string)))
-      (setq first-pos (string-match " - 1st" (buffer-string)))
+      (setq second-pos (string-match g-dash-2nd (buffer-string)))
+      (setq first-pos (string-match g-dash-1st (buffer-string)))
       (should (equal nil (do-done-position)))
       (should (< second-pos first-pos))
       (should (= (point) (+ 1 second-pos)))
@@ -1664,12 +1670,12 @@ already present"
   "do-task-up: two tasks, above DONE -- bottom moves past top"
   (with-temp-buffer
     (let ((before) (first-pos) (second-pos) (done-pos))
-      (insert "\n\n - 1st task\n\n - 2nd task\n\n" g-done-line)
+      (insert g-two-tasks g-done-line)
       (setq before (buffer-string))
-      (goto-char (string-match "2nd" (buffer-string)))
+      (goto-char (string-match g-second (buffer-string)))
       (do-task-up)                      ; payload
-      (setq second-pos (string-match " - 2nd" (buffer-string)))
-      (setq first-pos (string-match " - 1st" (buffer-string)))
+      (setq second-pos (string-match g-dash-2nd (buffer-string)))
+      (setq first-pos (string-match g-dash-1st (buffer-string)))
       (setq done-pos (do-done-position))
       (should (< second-pos first-pos))
       (should (< first-pos done-pos))
@@ -1681,7 +1687,7 @@ already present"
   "do-task-up: two tasks, above DONE -- DONE won't move past bottom"
   (with-temp-buffer
     (let ((before))
-      (insert "\n\n - 1st task\n\n - 2nd task\n\n" g-done-line)
+      (insert g-two-tasks g-done-line)
       (setq before (buffer-string))
       (goto-char (+ 5 (do-done-position)))
       (do-task-up)                      ; payload
@@ -1693,12 +1699,12 @@ already present"
   "do-task-up: two tasks, below DONE -- bottom moves past top"
   (with-temp-buffer
     (let ((before) (first-pos) (second-pos))
-      (insert g-done-line "\n\n + 1st task\n\n + 2nd task\n\n")
+      (insert g-done-line g-plus-two-tasks)
       (setq before (buffer-string))
-      (goto-char (+ 4 (string-match "2nd task" (buffer-string))))
+      (goto-char (+ 4 (string-match g-2nd-task (buffer-string))))
       (do-task-up)                      ; payload
-      (setq first-pos (string-match " \\+ 1st" (buffer-string)))
-      (setq second-pos (string-match " \\+ 2nd" (buffer-string)))
+      (setq first-pos (string-match g-plus-1st (buffer-string)))
+      (setq second-pos (string-match g-plus-2nd (buffer-string)))
       (should (< second-pos first-pos))
       (should (< (do-done-position) second-pos))
       (should (= (point) (+ 1 second-pos)))
@@ -1709,9 +1715,9 @@ already present"
   "do-task-up: two tasks, below DONE -- top won't move past DONE"
   (with-temp-buffer
     (let ((before))
-      (insert g-done-line "\n\n + 1st task\n\n + 2nd task\n")
+      (insert g-done-line g-plus-two-tasks)
       (setq before (buffer-string))
-      (goto-char (+ 4 (string-match "1st task" (buffer-string))))
+      (goto-char (+ 4 (string-match g-1st-task (buffer-string))))
       (do-task-up)                      ; payload
       (should (string= before (buffer-string)))
       )))
