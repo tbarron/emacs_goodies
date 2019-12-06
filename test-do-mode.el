@@ -1944,6 +1944,220 @@ not take DONE with it"
     (dolist (bufname buflist)
       (kill-buffer bufname))))
 
+;; ============================================================================
+;; tests for do-task-to-top
+
+(ert-deftest test-2400-task-to-top ()
+  "do-task-to-top: In a zero-length file, this will make no changes."
+  (with-temp-buffer
+    (let ((before))
+      (setq before (buffer-string))
+      (do-task-to-top)
+      (should (string= before (buffer-string)))
+      )))
+
+(ert-deftest test-2405-task-to-top ()
+  "do-task-to-top: In a file of whitespace, this will make no changes."
+  (should nil)
+  )
+
+(ert-deftest test-2410-task-to-top ()
+  "do-task-to-top: In a file with one task and no DONE line, this
+will make no changes."
+  (should nil)
+  )
+
+(ert-deftest test-2415-task-to-top ()
+  "do-task-to-top: In a file with a DONE line and one task above, this
+will make no changes."
+  (should nil)
+  )
+
+(ert-deftest test-2420-task-to-top ()
+  "do-task-to-top: In a file with a DONE line and one task below, this
+will make no changes."
+  (should nil)
+  )
+
+(ert-deftest test-2425-task-to-top ()
+  "do-task-to-top: In a file with no DONE line and two tasks, this
+will not move the top task (no changes)."
+   (should nil)
+ )
+
+(ert-deftest test-2430-task-to-top ()
+  "do-task-to-top: In a file with no DONE line and two tasks, this
+will move the bottom task to top."
+   (should nil)
+ )
+
+(ert-deftest test-2435-task-to-top ()
+  "do-task-to-top: In a file with a DONE line and two tasks above, this
+will not move the top task (no changes)."
+   (should nil)
+ )
+
+(ert-deftest test-2440-task-to-top ()
+  "do-task-to-top: In a file with a DONE line and two tasks above, this
+will move the bottom task to top."
+   (should nil)
+ )
+
+(ert-deftest test-2445-task-to-top ()
+  "do-task-to-top: In a file with a DONE line and two tasks below, this
+will not move the top task (no changes)."
+   (should nil)
+ )
+
+(ert-deftest test-2450-task-to-top ()
+  "do-task-to-top: In a file with a DONE line and two tasks below, this
+will move the bottom task to top."
+   (should nil)
+ )
+
+(ert-deftest test-2455-task-to-top ()
+  "do-task-to-top: In a file with a DONE line and three tasks
+above and three below, this will not move the top task above the DONE line (no
+changes)."
+   (should nil)
+ )
+
+(ert-deftest test-2460-task-to-top ()
+  "do-task-to-top: In a file with a DONE line and three tasks
+above and three below, this will move the middle task above the
+DONE line to the beginning of the file."  (should nil)
+ )
+
+(ert-deftest test-2465-task-to-top ()
+  "do-task-to-top: In a file with a DONE line and three tasks
+above and three below, this will move the bottom task above the
+DONE line to the top of the file."  (should nil)
+ )
+
+(ert-deftest test-2470-task-to-top ()
+  "do-task-to-top: In a file with a DONE line and three tasks
+above and three below, this will not move the top task below the
+DONE line (no changes)."  (should nil)
+ )
+
+(ert-deftest test-2475-task-to-top ()
+  "do-task-to-top: In a file with a DONE line and three tasks
+above and three below, this will move the middle task below the
+DONE line to just below the DONE line."  (should nil)
+ )
+
+(ert-deftest test-2480-task-to-top ()
+  "do-task-to-top: In a file with a DONE line and three tasks
+above and three below, this will move the bottom task below the
+DONE line to just below the DONE line."  (should nil)
+ )
+
+;; ============================================================================
+;; tests for do-task-to-end
+
+(ert-deftest test-2500-task-to-end ()
+  "do-task-to-end: In a zero-length file, this will make no changes."
+   (should nil)
+ )
+
+(ert-deftest test-2505-task-to-end ()
+  "do-task-to-end: In a file of whitespace, this will make no changes."
+   (should nil)
+ )
+
+(ert-deftest test-2510-task-to-end ()
+  "do-task-to-end: In a file with one task and no DONE line, this
+will make no changes."
+   (should nil)
+ )
+
+(ert-deftest test-2515-task-to-end ()
+  "do-task-to-end: In a file with a DONE line and one task above, this
+will make no changes."
+   (should nil)
+ )
+
+(ert-deftest test-2520-task-to-end ()
+  "do-task-to-end: In a file with a DONE line and one task below, this
+will make no changes."
+   (should nil)
+ )
+
+(ert-deftest test-2525-task-to-end ()
+  "do-task-to-end: In a file with no DONE line and two tasks, this
+will not move the bottom task (no changes)."
+   (should nil)
+ )
+
+(ert-deftest test-2530-task-to-end ()
+  "do-task-to-end: In a file with no DONE line and two tasks, this
+will move the top task to the end."
+   (should nil)
+ )
+
+(ert-deftest test-2535-task-to-end ()
+  "do-task-to-end: In a file with a DONE line and two tasks above, this
+will not move the bottom task (no changes)."
+   (should nil)
+ )
+
+(ert-deftest test-2540-task-to-end ()
+  "do-task-to-end: In a file with a DONE line and two tasks above, this
+will move the top task to just before the DONE line."
+   (should nil)
+ )
+
+(ert-deftest test-2545-task-to-end ()
+  "do-task-to-end: In a file with a DONE line and two tasks below, this
+will not move the bottom task (no changes)."
+   (should nil)
+ )
+
+(ert-deftest test-2550-task-to-end ()
+  "do-task-to-end: In a file with a DONE line and two tasks below, this
+will move the top task to the end of the file."
+   (should nil)
+ )
+
+(ert-deftest test-2555-task-to-end ()
+  "do-task-to-end: In a file with a DONE line and three tasks
+above and three below, this will not move the bottom task above the DONE line (no
+changes)."
+   (should nil)
+ )
+
+(ert-deftest test-2560-task-to-end ()
+  "do-task-to-end: In a file with a DONE line and three tasks
+above and three below, this will move the middle task above the
+DONE line to just before the DONE line."  (should nil)
+ )
+
+(ert-deftest test-2565-task-to-end ()
+  "do-task-to-end: In a file with a DONE line and three tasks
+above and three below, this will move the top task above the
+DONE line to just before the DONE line."  (should nil)
+ )
+
+(ert-deftest test-2570-task-to-end ()
+  "do-task-to-end: In a file with a DONE line and three tasks
+above and three below, this will not move the bottom task below the
+DONE line (no changes)."
+    (should nil)
+)
+
+(ert-deftest test-2575-task-to-end ()
+  "do-task-to-end: In a file with a DONE line and three tasks
+above and three below, this will move the middle task below the
+DONE line to the end of the file."
+    (should nil)
+)
+
+(ert-deftest test-2580-task-to-end ()
+  "do-task-to-end: In a file with a DONE line and three tasks
+above and three below, this will move the top task below the
+DONE line to the end of the file."
+    (should nil)
+)
 
 ;; ----------------------------------------------------------------------------
 ;; Copy this to *scratch* and eval-buffer (esc-b) to run the tests
