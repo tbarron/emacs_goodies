@@ -1564,8 +1564,8 @@ already present"
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-2100-do-task-up-zlen ()
   "do-task-up: zero length buffer -- do nothing"
-  (let ((before))
-    (with-temp-buffer
+  (with-temp-buffer
+    (let ((before))
       (setq before (buffer-string))
       (do-task-up)                      ; payload
       (should (string= before (buffer-string)))
@@ -1574,8 +1574,8 @@ already present"
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-2105-do-task-up ()
   "do-task-up: whitespace -- do nothing"
-  (let ((before))
-    (with-temp-buffer
+  (with-temp-buffer
+    (let ((before))
       (insert "                    ")
       (setq before (buffer-string))
       (goto-char 8)
@@ -1586,8 +1586,8 @@ already present"
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-2110-do-task-up ()
   "do-task-up: one task, no DONE -- do nothing"
-  (let ((before))
-    (with-temp-buffer
+  (with-temp-buffer
+    (let ((before))
       (insert g-plus-1st-task)
       (setq before (buffer-string))
       (goto-char (string-match g-first (buffer-string)))
@@ -1598,8 +1598,8 @@ already present"
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-2115-do-task-up ()
   "do-task-up: one task, above DONE -- do nothing"
-  (let ((before))
-    (with-temp-buffer
+  (with-temp-buffer
+    (let ((before))
       (insert g-plus-1st-task done-line)
       (setq before (buffer-string))
       (goto-char (string-match g-first (buffer-string)))
@@ -1610,8 +1610,8 @@ already present"
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-2120-do-task-up ()
   "do-task-up: one task, above DONE -- moving DONE doesn't do anything"
-  (let ((before))
-    (with-temp-buffer
+  (with-temp-buffer
+    (let ((before))
       (insert g-plus-1st-task done-line)
       (setq before (buffer-string))
       (goto-char (string-match g-done (buffer-string)))
@@ -1622,8 +1622,8 @@ already present"
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-2125-do-task-up ()
   "do-task-up: one task, below DONE -- do nothing"
-  (let ((before))
-    (with-temp-buffer
+  (with-temp-buffer
+    (let ((before))
       (insert done-line g-plus-1st-task)
       (setq before (buffer-string))
       (goto-char (string-match g-first (buffer-string)))
@@ -1634,8 +1634,8 @@ already present"
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-2130-do-task-up ()
   "do-task-up: two tasks, no DONE -- top doesn't move"
-  (let ((before))
-    (with-temp-buffer
+  (with-temp-buffer
+    (let ((before))
       (insert g-two-tasks)
       (setq before (buffer-string))
       (goto-char (string-match g-first (buffer-string)))
@@ -1646,8 +1646,8 @@ already present"
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-2135-do-task-up ()
   "do-task-up: two tasks, no DONE -- bottom moves past top"
-  (let ((before))
-    (with-temp-buffer
+  (with-temp-buffer
+    (let ((before))
       (insert "\n\n - 1st task\n\n - 2nd task\n\n")
       (goto-char (string-match "2nd" (buffer-string)))
       (do-task-up)                      ; payload
@@ -1661,8 +1661,8 @@ already present"
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-2140-do-task-up ()
   "do-task-up: two tasks, above DONE -- bottom moves past top"
-  (let ((before) (first-pos) (second-pos) (done-pos))
-    (with-temp-buffer
+  (with-temp-buffer
+    (let ((before) (first-pos) (second-pos) (done-pos))
       (insert "\n\n - 1st task\n\n - 2nd task\n\n" done-line)
       (setq before (buffer-string))
       (goto-char (string-match "2nd" (buffer-string)))
@@ -1678,8 +1678,8 @@ already present"
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-2145-do-task-up ()
   "do-task-up: two tasks, above DONE -- DONE won't move past bottom"
-  (let ((before))
-    (with-temp-buffer
+  (with-temp-buffer
+    (let ((before))
       (insert "\n\n - 1st task\n\n - 2nd task\n\n" done-line)
       (setq before (buffer-string))
       (goto-char (+ 5 (do-done-position)))
@@ -1690,8 +1690,8 @@ already present"
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-2150-do-task-up ()
   "do-task-up: two tasks, below DONE -- bottom moves past top"
-  (let ((before) (first-pos) (second-pos))
-    (with-temp-buffer
+  (with-temp-buffer
+    (let ((before) (first-pos) (second-pos))
       (insert done-line "\n\n + 1st task\n\n + 2nd task\n\n")
       (setq before (buffer-string))
       (goto-char (+ 4 (string-match "2nd task" (buffer-string))))
@@ -1706,8 +1706,8 @@ already present"
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-2155-do-task-up ()
   "do-task-up: two tasks, below DONE -- top won't move past DONE"
-  (let ((before))
-    (with-temp-buffer
+  (with-temp-buffer
+    (let ((before))
       (insert done-line "\n\n + 1st task\n\n + 2nd task\n")
       (setq before (buffer-string))
       (goto-char (+ 4 (string-match "1st task" (buffer-string))))
@@ -1717,10 +1717,10 @@ already present"
 
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-2160-do-task-up ()
-  (let ((first-pos) (second-pos) (done-pos) (post-pos))
-    (with-temp-buffer
   "do-task-up: three tasks, DONE after 2 -- upping 2nd should not
 take DONE with it"
+  (with-temp-buffer
+    (let ((first-pos) (second-pos) (done-pos) (post-pos))
       (insert "\n\n - 1st task\n\n - 2nd task\n\n" done-line
               "\n\n + completed task")
       (goto-char (+ 4 (string-match "2nd task" (buffer-string))))
@@ -1742,8 +1742,8 @@ take DONE with it"
 
 (ert-deftest test-2200-do-task-down-zlen ()
   "do-task-down: zero length buffer -- do nothing"
-  (let ((before))
-    (with-temp-buffer
+  (with-temp-buffer
+    (let ((before))
       (setq before (buffer-string))
       (do-task-down)                    ; payload
       (should (string= before (buffer-string)))
@@ -1752,8 +1752,8 @@ take DONE with it"
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-2205-do-task-down ()
   "do-task-down: whitespace -- do nothing"
-  (let ((before))
-    (with-temp-buffer
+  (with-temp-buffer
+    (let ((before))
       (insert "                    ")
       (setq before (buffer-string))
       (goto-char 8)
@@ -1764,8 +1764,8 @@ take DONE with it"
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-2210-do-task-down ()
   "do-task-down: one task, no DONE -- do nothing"
-  (let ((before))
-    (with-temp-buffer
+  (with-temp-buffer
+    (let ((before))
       (insert "\n\n + 1st task\n\n")
       (setq before (buffer-string))
       (goto-char (string-match "1st" (buffer-string)))
@@ -1776,8 +1776,8 @@ take DONE with it"
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-2215-do-task-down ()
   "do-task-down: one task, above DONE -- do nothing"
-  (let ((before))
-    (with-temp-buffer
+  (with-temp-buffer
+    (let ((before))
       (insert "\n\n + 1st task\n\n" done-line)
       (setq before (buffer-string))
       (goto-char (string-match "1st" (buffer-string)))
@@ -1788,8 +1788,8 @@ take DONE with it"
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-2220-do-task-down ()
   "do-task-down: one task, above DONE -- moving DONE doesn't do anything"
-  (let ((before))
-    (with-temp-buffer
+  (with-temp-buffer
+    (let ((before))
       (insert "\n\n + 1st task\n\n" done-line)
       (setq before (buffer-string))
       (goto-char (string-match "DONE" (buffer-string)))
@@ -1800,8 +1800,8 @@ take DONE with it"
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-2225-do-task-down ()
   "do-task-down: one task, below DONE -- do nothing"
-  (let ((before))
-    (with-temp-buffer
+  (with-temp-buffer
+    (let ((before))
       (insert done-line "\n\n + 1st task\n\n")
       (setq before (buffer-string))
       (goto-char (string-match "1st" (buffer-string)))
@@ -1812,8 +1812,8 @@ take DONE with it"
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-2230-do-task-down ()
   "do-task-down: two tasks, no DONE -- bottom doesn't move"
-  (let ((before))
-    (with-temp-buffer
+  (with-temp-buffer
+    (let ((before))
       (insert "\n\n - 1st task\n\n - 2nd task\n\n")
       (setq before (buffer-string))
       (goto-char (string-match "2nd" (buffer-string)))
@@ -1824,8 +1824,8 @@ take DONE with it"
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-2235-do-task-down ()
   "do-task-down: two tasks, no DONE -- top moves past bottom"
-  (let ((before))
-    (with-temp-buffer
+  (with-temp-buffer
+    (let ((before) (second-pos) (first-pos))
       (insert "\n\n - 1st task\n\n - 2nd task\n\n")
       (goto-char (string-match "1st" (buffer-string)))
       (do-task-down)                    ; payload
@@ -1839,8 +1839,8 @@ take DONE with it"
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-2240-do-task-down ()
   "do-task-down: two tasks, above DONE -- top moves past bottom"
-  (let ((before) (first-pos) (second-pos) (done-pos))
-    (with-temp-buffer
+  (with-temp-buffer
+    (let ((before) (first-pos) (second-pos) (done-pos))
       (insert "\n\n - 1st task\n\n - 2nd task\n\n" done-line)
       (setq before (buffer-string))
       (goto-char (string-match "1st" (buffer-string)))
@@ -1856,8 +1856,8 @@ take DONE with it"
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-2245-do-task-down ()
   "do-task-down: two tasks, below DONE -- DONE won't move past top"
-  (let ((before))
-    (with-temp-buffer
+  (with-temp-buffer
+    (let ((before))
       (insert done-line "\n\n < 1st task\n\n + 2nd task\n\n")
       (setq before (buffer-string))
       (goto-char (+ 5 (do-done-position)))
@@ -1868,8 +1868,8 @@ take DONE with it"
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-2250-do-task-down ()
   "do-task-down: two tasks, below DONE -- top moves past bottom"
-  (let ((before) (first-pos) (second-pos))
-    (with-temp-buffer
+  (with-temp-buffer
+    (let ((before) (first-pos) (second-pos))
       (insert done-line "\n\n + 1st task\n\n + 2nd task\n\n")
       (setq before (buffer-string))
       (goto-char (+ 4 (string-match "1st task" (buffer-string))))
@@ -1884,8 +1884,8 @@ take DONE with it"
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-2255-do-task-down ()
   "do-task-down: two tasks, above DONE -- bottom won't move past DONE"
-  (let ((before))
-    (with-temp-buffer
+  (with-temp-buffer
+    (let ((before))
       (insert "\n\n - 1st task\n\n - 2nd task\n" done-line)
       (setq before (buffer-string))
       (goto-char (+ 4 (string-match "2nd task" (buffer-string))))
@@ -1895,10 +1895,10 @@ take DONE with it"
 
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-2260-do-task-down ()
-  (let ((first-pos) (second-pos) (done-pos) (third-pos))
-    (with-temp-buffer
   "do-task-down: three tasks, DONE after 1 -- downing 2nd should
 not take DONE with it"
+  (with-temp-buffer
+    (let ((first-pos) (second-pos) (done-pos) (third-pos))
       (insert "\n\n - 1st task\n\n" done-line "\n\n + 2nd task\n\n + 3rd task")
       (goto-char (+ 4 (string-match "2nd task" (buffer-string))))
       (do-task-down)                     ; payload
