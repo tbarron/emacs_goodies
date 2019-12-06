@@ -213,28 +213,31 @@
 (ert-deftest test-1093-bytes-at-short-min ()
   "bytes-at: short buffer point min"
   (with-temp-buffer
-    (setq source (substring alphabet 0 2))
-    (insert source)
-    (should (string= source (bytes-at (point-min) 10)))
-    ))
+    (let ((source))
+      (setq source (substring alphabet 0 2))
+      (insert source)
+      (should (string= source (bytes-at (point-min) 10)))
+      )))
 
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-1094-bytes-at-short-mid ()
   "bytes-at: short buffer point middle"
   (with-temp-buffer
-    (setq source (substring alphabet 0 2))
-    (insert source)
-    (should (string= source (bytes-at 2 10)))
-    ))
+    (let ((source))
+      (setq source (substring alphabet 0 2))
+      (insert source)
+      (should (string= source (bytes-at 2 10)))
+      )))
 
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-1095-bytes-at-short-max ()
   "bytes-at: short buffer point max"
   (with-temp-buffer
-    (setq source (substring alphabet 0 2))
-    (insert source)
-    (should (string= source (bytes-at (point-max) 10)))
-    ))
+    (let ((source))
+      (setq source (substring alphabet 0 2))
+      (insert source)
+      (should (string= source (bytes-at (point-max) 10)))
+      )))
 
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-1096-bytes-at-long-min ()
@@ -543,101 +546,110 @@
 (ert-deftest test-1400-prev-w-done ()
   "goto-prev: with DONE, 5 tasks, point at eobp"
   (with-temp-buffer
-    (insert buf-w-done)
-    (goto-char (point-max))
-    (should (string= n-e-sp-2-new (bytes-at (point) 5)))
-    (setq result (do-goto-prev-task))
-    (should (= 121 result))
-    (should (string= sp-plus-also (bytes-at result 7)))))
+    (let ((result))
+      (insert buf-w-done)
+      (goto-char (point-max))
+      (should (string= n-e-sp-2-new (bytes-at (point) 5)))
+      (setq result (do-goto-prev-task))
+      (should (= 121 result))
+      (should (string= g-sp-plus-also (bytes-at result 7))))))
 
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-1405-prev-w-done ()
   "goto-prev: with DONE, 5 tasks, point at eobp"
   (with-temp-buffer
-    (insert buf-w-done)
-    (goto-char 124)
-    (should (string= also-sp (bytes-at (point) 5)))
-    (setq result (do-goto-prev-task))
-    (should (= 121 result))
-    (should (string= sp-plus-also (bytes-at result 7)))))
+    (let ((result))
+      (insert buf-w-done)
+      (goto-char 124)
+      (should (string= also-sp (bytes-at (point) 5)))
+      (setq result (do-goto-prev-task))
+      (should (= 121 result))
+      (should (string= g-sp-plus-also (bytes-at result 7))))))
 
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-1410-prev-w-done ()
   "goto-prev: with DONE, 5 tasks, point in last task"
   (with-temp-buffer
-    (insert buf-w-done)
-    (goto-char 123)
-    (should (string= sp-also-sp (bytes-at (point) 6)))
-    (setq result (do-goto-prev-task))
-    (should (= 106 result))
-    (should (string= plus-fini (bytes-at result 7)))))
+    (let ((result))
+      (insert buf-w-done)
+      (goto-char 123)
+      (should (string= g-sp-also-sp (bytes-at (point) 6)))
+      (setq result (do-goto-prev-task))
+      (should (= 106 result))
+      (should (string= g-plus-fini (bytes-at result 7))))))
 
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-1420-prev-w-done ()
   "goto-prev: with DONE, 5 tasks, point in last task by 1 byte"
   (with-temp-buffer
-    (insert buf-w-done)
-    (goto-char 122)
-    (should (string= plus-also (bytes-at (point) 6)))
-    (setq result (do-goto-prev-task))
-    (should (= 106 result))
-    (should (string= plus-fini (bytes-at result 7)))))
+    (let ((result))
+      (insert buf-w-done)
+      (goto-char 122)
+      (should (string= g-plus-also (bytes-at (point) 6)))
+      (setq result (do-goto-prev-task))
+      (should (= 106 result))
+      (should (string= g-plus-fini (bytes-at result 7))))))
 
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-1430-prev-w-done ()
   "goto-prev: with DONE, 5 tasks, point at last task"
   (with-temp-buffer
-    (insert buf-w-done)
-    (goto-char 121)
-    (should (= 121 (point)))
-    (should (string= sp-plus-also (bytes-at (point) 7)))
-    (setq result (do-goto-prev-task))
-    (should (= 106 result))
-    (should (string= plus-fini (bytes-at result 7)))))
+    (let ((result))
+      (insert buf-w-done)
+      (goto-char 121)
+      (should (= 121 (point)))
+      (should (string= g-sp-plus-also (bytes-at (point) 7)))
+      (setq result (do-goto-prev-task))
+      (should (= 106 result))
+      (should (string= g-plus-fini (bytes-at result 7))))))
 
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-1440-prev-w-done ()
   "goto-prev: with DONE, 5 tasks, point in penultimate task"
   (with-temp-buffer
-    (insert buf-w-done)
-    (goto-char 110)
-    (should (string= inish (bytes-at (point) 5)))
-    (setq result (do-goto-prev-task))
-    (should (= 106 result))
-    (should (string= plus-fini (bytes-at result 7)))))
+    (let ((result))
+      (insert buf-w-done)
+      (goto-char 110)
+      (should (string= inish (bytes-at (point) 5)))
+      (setq result (do-goto-prev-task))
+      (should (= 106 result))
+      (should (string= g-plus-fini (bytes-at result 7))))))
 
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-1442-prev-w-done ()
   "goto-prev: with DONE, 5 tasks, point early in penultimate task"
   (with-temp-buffer
-    (insert buf-w-done)
-    (goto-char 109)
-    (should (string= finis (bytes-at (point) 5)))
-    (setq result (do-goto-prev-task))
-    (should (= 106 result))
-    (should (string= plus-fini (bytes-at result 7)))))
+    (let ((result))
+      (insert buf-w-done)
+      (goto-char 109)
+      (should (string= finis (bytes-at (point) 5)))
+      (setq result (do-goto-prev-task))
+      (should (= 106 result))
+      (should (string= g-plus-fini (bytes-at result 7))))))
 
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-1444-prev-w-done ()
   "goto-prev: with DONE, 5 tasks, point in penultimate task mark"
   (with-temp-buffer
-    (insert buf-w-done)
-    (goto-char 108)
-    (should (string= sp-fini (bytes-at (point) 5)))
-    (setq result (do-goto-prev-task))
-    (should (= 36 result))
-    (should (string= dash-task-thr (bytes-at result 11)))))
+    (let ((result))
+      (insert buf-w-done)
+      (goto-char 108)
+      (should (string= g-sp-fini (bytes-at (point) 5)))
+      (setq result (do-goto-prev-task))
+      (should (= 36 result))
+      (should (string= dash-task-thr (bytes-at result 11))))))
 
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-1450-prev-w-done ()
   "prev task: with DONE, 5 tasks, point before 1st task, land on 1st"
   (with-temp-buffer
-    (insert buf-w-done)
-    (goto-char 5)
-    (should (string= new3-dash (bytes-at (point) 5)))
-    (setq result (do-goto-prev-task))
-    (should (= 8 result))
-    (should (string= dash-tas (bytes-at result 6)))))
+    (let ((result))
+      (insert buf-w-done)
+      (goto-char 5)
+      (should (string= new3-dash (bytes-at (point) 5)))
+      (setq result (do-goto-prev-task))
+      (should (= 8 result))
+      (should (string= dash-tas (bytes-at result 6))))))
 
 ;; ============================================================================
 ;; tests for do-new-entry
@@ -1521,7 +1533,7 @@
     (create-file-buffer bufname)
     (with-current-buffer bufname
       (do-mode))
-    (should (do-buffer-p bufname))
+    (should (do-buffer-p bufname))      ; payload
     (kill-buffer bufname)
     ))
 
@@ -1534,9 +1546,9 @@
   (let ((before))
     (with-temp-buffer
       (setq before (buffer-string))
-      (do-task-up)                                                    ; payload
+      (do-task-up)                      ; payload
       (should (string= before (buffer-string)))
-  )))
+      )))
 
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-2105-do-task-up ()
@@ -1546,9 +1558,9 @@
       (insert "                    ")
       (setq before (buffer-string))
       (goto-char 8)
-      (do-task-up)                                                    ; payload
+      (do-task-up)                      ; payload
       (should (string= before (buffer-string)))
-  )))
+      )))
 
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-2110-do-task-up ()
@@ -1558,9 +1570,9 @@
       (insert "\n\n + 1st task\n\n")
       (setq before (buffer-string))
       (goto-char (string-match "1st" (buffer-string)))
-      (do-task-up)                                                    ; payload
+      (do-task-up)                      ; payload
       (should (string= before (buffer-string)))
-  )))
+      )))
 
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-2115-do-task-up ()
@@ -1582,9 +1594,9 @@
       (insert "\n\n + 1st task\n\n" done-line)
       (setq before (buffer-string))
       (goto-char (string-match "DONE" (buffer-string)))
-      (do-task-up)                                                    ; payload
+      (do-task-up)                      ; payload
       (should (string= before (buffer-string)))
-  )))
+      )))
 
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-2125-do-task-up ()
@@ -1594,9 +1606,9 @@
       (insert done-line "\n\n + 1st task\n\n")
       (setq before (buffer-string))
       (goto-char (string-match "1st" (buffer-string)))
-      (do-task-up)                                                    ; payload
+      (do-task-up)                      ; payload
       (should (string= before (buffer-string)))
-  )))
+      )))
 
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-2130-do-task-up ()
@@ -1617,13 +1629,13 @@
     (with-temp-buffer
       (insert "\n\n - 1st task\n\n - 2nd task\n\n")
       (goto-char (string-match "2nd" (buffer-string)))
-      (do-task-up)                                                    ; payload
+      (do-task-up)                      ; payload
       (setq second-pos (string-match " - 2nd" (buffer-string)))
       (setq first-pos (string-match " - 1st" (buffer-string)))
       (should (equal nil (do-done-position)))
       (should (< second-pos first-pos))
       (should (= (point) (+ 1 second-pos)))
-  )))
+      )))
 
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-2140-do-task-up ()
@@ -1633,14 +1645,14 @@
       (insert "\n\n - 1st task\n\n - 2nd task\n\n" done-line)
       (setq before (buffer-string))
       (goto-char (string-match "2nd" (buffer-string)))
-      (do-task-up)                                                    ; payload
+      (do-task-up)                      ; payload
       (setq second-pos (string-match " - 2nd" (buffer-string)))
       (setq first-pos (string-match " - 1st" (buffer-string)))
       (setq done-pos (do-done-position))
       (should (< second-pos first-pos))
       (should (< first-pos done-pos))
       (should (= (point) (+ 1 second-pos)))
-  )))
+      )))
 
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-2145-do-task-up ()
@@ -1650,9 +1662,9 @@
       (insert "\n\n - 1st task\n\n - 2nd task\n\n" done-line)
       (setq before (buffer-string))
       (goto-char (+ 5 (do-done-position)))
-      (do-task-up)                                                    ; payload
+      (do-task-up)                      ; payload
       (should (string= before (buffer-string)))
-  )))
+      )))
 
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-2150-do-task-up ()
@@ -1662,7 +1674,7 @@
       (insert done-line "\n\n + 1st task\n\n + 2nd task\n\n")
       (setq before (buffer-string))
       (goto-char (+ 4 (string-match "2nd task" (buffer-string))))
-      (do-task-up)                                                    ; payload
+      (do-task-up)                      ; payload
       (setq first-pos (string-match " \\+ 1st" (buffer-string)))
       (setq second-pos (string-match " \\+ 2nd" (buffer-string)))
       (should (< second-pos first-pos))
@@ -1678,7 +1690,7 @@
       (insert done-line "\n\n + 1st task\n\n + 2nd task\n")
       (setq before (buffer-string))
       (goto-char (+ 4 (string-match "1st task" (buffer-string))))
-      (do-task-up)                                                    ; payload
+      (do-task-up)                      ; payload
       (should (string= before (buffer-string)))
       )))
 
@@ -1691,7 +1703,7 @@
       (insert "\n\n - 1st task\n\n - 2nd task\n\n" done-line
               "\n\n + completed task")
       (goto-char (+ 4 (string-match "2nd task" (buffer-string))))
-      (do-task-up)                                                    ; payload
+      (do-task-up)                      ; payload
       (setq first-pos (string-match " - 1st task" (buffer-string)))
       (setq second-pos (string-match " - 2nd task" (buffer-string)))
       (setq done-pos (string-match "--- DONE ---" (buffer-string)))
@@ -1712,9 +1724,9 @@
   (let ((before))
     (with-temp-buffer
       (setq before (buffer-string))
-      (do-task-down)                                                    ; payload
+      (do-task-down)                    ; payload
       (should (string= before (buffer-string)))
-  )))
+      )))
 
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-2205-do-task-down ()
@@ -1724,9 +1736,9 @@
       (insert "                    ")
       (setq before (buffer-string))
       (goto-char 8)
-      (do-task-down)                                                    ; payload
+      (do-task-down)                    ; payload
       (should (string= before (buffer-string)))
-  )))
+      )))
 
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-2210-do-task-down ()
@@ -1736,9 +1748,9 @@
       (insert "\n\n + 1st task\n\n")
       (setq before (buffer-string))
       (goto-char (string-match "1st" (buffer-string)))
-      (do-task-down)                                                    ; payload
+      (do-task-down)                    ; payload
       (should (string= before (buffer-string)))
-  )))
+      )))
 
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-2215-do-task-down ()
@@ -1748,9 +1760,9 @@
       (insert "\n\n + 1st task\n\n" done-line)
       (setq before (buffer-string))
       (goto-char (string-match "1st" (buffer-string)))
-      (do-task-down)                                                    ; payload
+      (do-task-down)                    ; payload
       (should (string= before (buffer-string)))
-  )))
+      )))
 
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-2220-do-task-down ()
@@ -1760,9 +1772,9 @@
       (insert "\n\n + 1st task\n\n" done-line)
       (setq before (buffer-string))
       (goto-char (string-match "DONE" (buffer-string)))
-      (do-task-down)                                                    ; payload
+      (do-task-down)                    ; payload
       (should (string= before (buffer-string)))
-  )))
+      )))
 
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-2225-do-task-down ()
@@ -1772,9 +1784,9 @@
       (insert done-line "\n\n + 1st task\n\n")
       (setq before (buffer-string))
       (goto-char (string-match "1st" (buffer-string)))
-      (do-task-down)                                                    ; payload
+      (do-task-down)                    ; payload
       (should (string= before (buffer-string)))
-  )))
+      )))
 
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-2230-do-task-down ()
@@ -1784,9 +1796,9 @@
       (insert "\n\n - 1st task\n\n - 2nd task\n\n")
       (setq before (buffer-string))
       (goto-char (string-match "2nd" (buffer-string)))
-      (do-task-down)                                                    ; payload
+      (do-task-down)                    ; payload
       (should (string= before (buffer-string)))
-  )))
+      )))
 
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-2235-do-task-down ()
@@ -1795,13 +1807,13 @@
     (with-temp-buffer
       (insert "\n\n - 1st task\n\n - 2nd task\n\n")
       (goto-char (string-match "1st" (buffer-string)))
-      (do-task-down)                                                    ; payload
+      (do-task-down)                    ; payload
       (setq second-pos (string-match " - 2nd" (buffer-string)))
       (setq first-pos (string-match " - 1st" (buffer-string)))
       (should (equal nil (do-done-position)))
       (should (< second-pos first-pos))
       (should (= (point) (+ 1 first-pos)))
-  )))
+      )))
 
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-2240-do-task-down ()
@@ -1811,14 +1823,14 @@
       (insert "\n\n - 1st task\n\n - 2nd task\n\n" done-line)
       (setq before (buffer-string))
       (goto-char (string-match "1st" (buffer-string)))
-      (do-task-down)                                                    ; payload
+      (do-task-down)                    ; payload
       (setq second-pos (string-match " - 2nd" (buffer-string)))
       (setq first-pos (string-match " - 1st" (buffer-string)))
       (setq done-pos (do-done-position))
       (should (< second-pos first-pos))
       (should (< first-pos done-pos))
       (should (= (point) (+ 1 first-pos)))
-  )))
+      )))
 
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-2245-do-task-down ()
@@ -1828,9 +1840,9 @@
       (insert done-line "\n\n < 1st task\n\n + 2nd task\n\n")
       (setq before (buffer-string))
       (goto-char (+ 5 (do-done-position)))
-      (do-task-down)                                                    ; payload
+      (do-task-down)                    ; payload
       (should (string= before (buffer-string)))
-  )))
+      )))
 
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-2250-do-task-down ()
@@ -1840,7 +1852,7 @@
       (insert done-line "\n\n + 1st task\n\n + 2nd task\n\n")
       (setq before (buffer-string))
       (goto-char (+ 4 (string-match "1st task" (buffer-string))))
-      (do-task-down)                                                    ; payload
+      (do-task-down)                    ; payload
       (setq first-pos (string-match " \\+ 1st" (buffer-string)))
       (setq second-pos (string-match " \\+ 2nd" (buffer-string)))
       (should (< second-pos first-pos))
@@ -1856,7 +1868,7 @@
       (insert "\n\n - 1st task\n\n - 2nd task\n" done-line)
       (setq before (buffer-string))
       (goto-char (+ 4 (string-match "2nd task" (buffer-string))))
-      (do-task-down)                                                    ; payload
+      (do-task-down)                    ; payload
       (should (string= before (buffer-string)))
       )))
 
@@ -1868,7 +1880,7 @@
     (with-temp-buffer
       (insert "\n\n - 1st task\n\n" done-line "\n\n + 2nd task\n\n + 3rd task")
       (goto-char (+ 4 (string-match "2nd task" (buffer-string))))
-      (do-task-down)                                                    ; payload
+      (do-task-down)                    ; payload
       (setq first-pos (string-match " - 1st task" (buffer-string)))
       (setq done-pos (string-match "--- DONE ---" (buffer-string)))
       (setq third-pos (string-match " \\+ 3rd task" (buffer-string)))
