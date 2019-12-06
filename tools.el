@@ -923,6 +923,17 @@
 )
 (global-set-key "\M-#" 'fcomment)
 
+; ---------------------------------------------------------------------------
+(defun reload-dot-emacs ()
+  "Reload the file $HOME/.emacs"
+  (interactive)
+  (setq home (getenv "HOME"))
+  (setq path (concat home "/.emacs"))
+  (load-file path)
+  (message "Reloaded %s" path)
+  )
+(global-set-key "\C-c\C-r" 'reload-dot-emacs)
+
 ;; ----------------------------------------------------------------------------
 (defun qrepl (before new mod)
   "Replace BEFORE with NEW iteratively modified per MOD"
