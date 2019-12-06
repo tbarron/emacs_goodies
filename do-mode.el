@@ -65,6 +65,8 @@
       (define-key map "\C-t" 'do-goto-prev-task)
       (define-key map "\C-c\C-k" 'do-task-up)
       (define-key map "\C-c\C-j" 'do-task-down)
+      (define-key map "\e^" 'do-task-to-top)
+      (define-key map "\e$" 'do-task-to-end)
       (if (boundp 'do-mode-map)
           (setq do-mode-map map)
         (defvar do-mode-map map
@@ -273,7 +275,60 @@ is the first task in the file, do nothing."
         (insert text))
       (goto-char where))))
 
-;;; ---------------------------------------------------------------
+;; ----------------------------------------------------------------------------
+(defun do-task-to-top ()
+  "Move the current task to the top of the list, either top of
+file above the DONE line or just below the DONE line for
+completed tasks."
+  (interactive)
+  (catch 'bail
+    (let ((done-pos) (start) (end) (where) (text))
+      (save-excursion
+        (if (not (setq done-pos (do-done-position)))
+            (setq done-pos (point-max)))
+        (setq start (do-prev-task-or-done))
+        (if (= start done-pos)    ; we're sitting on the DONE line
+            (throw 'bail nil))
+        (setq end (do-next-task-or-done (+ 3 start)))
+        (setq where (if (< start done-pos)
+                        (do-next-task-or-done (point-min))
+                      (do-next-task-mark done-pos)))
+        (if (= start where)
+            (throw 'bail nil))
+        (setq text (buffer-substring start end))
+        (delete-region start end)
+        (goto-char where)
+        (insert text))
+      (goto-char where)
+      )))
+
+;; ----------------------------------------------------------------------------
+(defun do-task-to-end ()
+  "Move the current task to the end of the list, either just
+above the DONE line or at the end of the file."
+  (interactive)
+  (catch 'bail
+    (let ((done-pos) (start) (end) (where) (text))
+      (save-excursion
+        (if (not (setq done-pos (do-done-position)))
+            (setq done-pos (point-max)))
+        (setq start (do-prev-task-or-done))
+        (if (= start done-pos)    ; we're sitting on the DONE line
+            (throw 'bail nil))
+        (setq end (do-next-task-or-done (+ 3 start)))
+        (setq where (if (< start done-pos)
+                        done-pos
+                      (do-prev-task-mark (point-max)))
+        (if (= start where)
+            (throw 'bail nil))
+        (setq text (buffer-substring start end))
+        (delete-region start end)
+        (goto-char where)
+        (insert text))
+      (goto-char where)
+      ))))
+
+;;; ---------------------------------------------------------------------------
 ;; Helper functions - these get called indirectly by interactive
 ;; function to help get stuff done
 ;;; ---------------------------------------------------------------------------
