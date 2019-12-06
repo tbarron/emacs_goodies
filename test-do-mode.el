@@ -114,15 +114,6 @@
 ;; helper functions
 
 ;; ----------------------------------------------------------------------------
-(defun qrepl (before new mod)
-  "Replace BEFORE with NEW iteratively modified per MOD"
-  (interactive "nSearch:\nnFirst:\nxMod:")
-  (while (re-search-forward (number-to-string before) nil 't)
-    (replace-match (number-to-string new))
-    (setq new (eval-expression mod))
-  ))
-
-;; ----------------------------------------------------------------------------
 (defun get-message-max ()
   "Empty the *Messages* buffer"
   (with-current-buffer "*Messages*"
