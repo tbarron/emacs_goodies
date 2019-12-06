@@ -115,19 +115,19 @@
 
 ;; ----------------------------------------------------------------------------
 (defun get-message-max ()
-  "Empty the *Messages* buffer"
-  (with-current-buffer "*Messages*"
+ "Get the maximum size of the *Messages* buffer so we can track
+subsequent messages."
     (point-max)))
 
 ;; ----------------------------------------------------------------------------
 (defun in-messages-p (after needle)
-  "If NEEDLE is in buffer *Messages* after AFTER, return its index, otherwise nil"
-  (with-current-buffer "*Messages*"
+  "Return the index of NEEDLE if it is in buffer *Messages*
+following AFTER. If NEEDLE is not found, return nil.\n"
     (string-match needle (buffer-substring after (point-max)))))
 
 ;; ----------------------------------------------------------------------------
 (defun last-position (target &optional before)
-  "Return the position of the last occurrence of TARGET in the buffer"
+  "Return the position of the last occurrence of TARGET in the buffer."
   (save-excursion
     (if before
         (goto-char before)
@@ -136,7 +136,7 @@
 
 ;; ----------------------------------------------------------------------------
 (defun run-tests ()
-  "Set variable test-selector and return"
+  "Set variable test-selector and return."
   (interactive)
   (ert-run-tests-batch-and-exit selector))
 
@@ -146,8 +146,8 @@
 
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-1000-add-done-iff-empty ()
-  (concat "verify that do-add-done-iff adds a done line if there isn't"
-          " one in the buffer already -- empty")
+  "The payload function should add a done line if there isn't one
+in the buffer already. In this test, the buffer is empty."
   (with-temp-buffer
     (do-add-done-iff)
     (goto-char (point-min))
@@ -155,8 +155,9 @@
 
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-1010-add-done-iff-absent-w-tasks ()
-  (concat "verify that do-add-done-iff adds a done line if there isn't"
-          " one in the buffer already -- with tasks")
+  "Verify that do-add-done-iff adds a done line if there isn't
+one in the buffer already. In this test, there are some tasks
+in the buffer."
   (with-temp-buffer
     (let ((done-pos)
           (ltask-pos))
@@ -172,8 +173,8 @@
 
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-1020-add-done-iff-present ()
-  (concat "verify that do-add-done-iff doesn't add a done line"
-          " if one is already present")
+  "Verify that do-add-done-iff doesn't add a done line if one is
+already present"
   (with-temp-buffer
     (insert three-new)
     (insert do-mode-done-line)
@@ -1696,10 +1697,10 @@
 
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-2160-do-task-up ()
-  (concat "do-task-up: three tasks, DONE after 2 -- upping 2nd should not"
-          " take DONE with it")
   (let ((first-pos) (second-pos) (done-pos) (post-pos))
     (with-temp-buffer
+  "do-task-up: three tasks, DONE after 2 -- upping 2nd should not
+take DONE with it"
       (insert "\n\n - 1st task\n\n - 2nd task\n\n" done-line
               "\n\n + completed task")
       (goto-char (+ 4 (string-match "2nd task" (buffer-string))))
@@ -1874,10 +1875,10 @@
 
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-2260-do-task-down ()
-  (concat "do-task-down: three tasks, DONE after 1 -- downing 2nd should not\n"
-          "take DONE with it")
   (let ((first-pos) (second-pos) (done-pos) (third-pos))
     (with-temp-buffer
+  "do-task-down: three tasks, DONE after 1 -- downing 2nd should
+not take DONE with it"
       (insert "\n\n - 1st task\n\n" done-line "\n\n + 2nd task\n\n + 3rd task")
       (goto-char (+ 4 (string-match "2nd task" (buffer-string))))
       (do-task-down)                    ; payload
