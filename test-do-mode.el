@@ -678,7 +678,9 @@ already present"
 (ert-deftest test-1600-new-001 ()
   "new entry: empty file"
   (with-temp-buffer
-    (do-new-task)                           ; payload
+
+    (do-new-task)                       ; payload
+
     (should (string-match g-new-task-rgx (buffer-string)))
     ))
 
@@ -689,13 +691,13 @@ already present"
     (let ((ntask-pos) (otask-pos))
       (insert buf-samples1)
       (goto-char (point-min))
-      (do-new-task)                                                   ; payload
+      (do-new-task)                     ; payload
       (goto-char (point-min))
       (should (setq ntask-pos (string-match g-new-task-rgx (buffer-string))))
       (should (setq otask-pos
                     (string-match dash-singsamp (buffer-string))))
       (should (< ntask-pos otask-pos))
-    )))
+      )))
 
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-1610-new-003 ()
@@ -752,7 +754,7 @@ already present"
       (should (setq second-pos (string-match dash-2nd (buffer-string))))
       (should (< first-pos ntask-pos))
       (should (< second-pos ntask-pos))
-    )))
+      )))
 
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-1630-new-007 ()
@@ -1237,7 +1239,7 @@ already present"
   (with-temp-buffer
     (let ((msg-max (get-message-max)))
 
-      (do-pdone 't)                                                   ; payload
+      (do-pdone 't)                     ; payload
 
       (should (in-messages-p msg-max file-too-small))
       (should (= (point-max) 1)))))
@@ -1253,7 +1255,7 @@ already present"
       (setq before (buffer-string))
       (setq pre-point (point))
 
-      (do-xdone 't)                                                   ; payload
+      (do-xdone 't)                     ; payload
 
       (should (in-messages-p msg-max g-no-tasks))
       (should (string= before (buffer-string)))
@@ -1274,7 +1276,7 @@ already present"
       (goto-char (point-max))
       (setq pre-point (point))
 
-      (do-odone 't)                                                   ; payload
+      (do-odone 't)                     ; payload
 
       (should (in-messages-p msg-max g-no-active-tasks))
       (should (string= before (buffer-string)))
@@ -1290,7 +1292,7 @@ already present"
       (insert g-sample-task)
       (goto-char (string-match g-sample (buffer-string)))
 
-      (do-pdone 't)                                                   ; payload
+      (do-pdone 't)                      ; payload
 
       (setq done-pos (do-done-position))
       (goto-char (point-max))
@@ -1308,7 +1310,7 @@ already present"
       (insert buf-samples2)
       (goto-char (string-match g-sp-first (buffer-string)))
 
-      (do-xdone 't)                                                   ; payload
+      (do-xdone 't)                      ; payload
 
       (setq done-pos (do-done-position))
       (setq task-pos (last-position do-mode-rgx-task))
@@ -1325,7 +1327,7 @@ already present"
       (insert buf-samples2)
       (goto-char (string-match g-sp-second (buffer-string)))
 
-      (do-odone 't)                                                   ; payload
+      (do-odone 't)                      ; payload
 
       (setq done-pos (do-done-position))
       (setq task-pos (last-position do-mode-rgx-task))
@@ -1342,7 +1344,7 @@ already present"
       (insert buf-samples3)
       (goto-char (string-match dash-1st-sample (buffer-string)))
 
-      (do-pdone 't)                                                   ; payload
+      (do-pdone 't)                      ; payload
 
       (setq done-pos (do-done-position))
       (setq task-pos (last-position do-mode-rgx-task))
@@ -1359,7 +1361,7 @@ already present"
       (insert buf-samples3)
       (goto-char (string-match g-2nd-sample (buffer-string)))
 
-      (do-xdone 't)                                                   ; payload
+      (do-xdone 't)                      ; payload
 
       (setq done-pos (do-done-position))
       (setq task-pos (last-position do-mode-rgx-task))
@@ -1376,7 +1378,7 @@ already present"
       (insert buf-samples3)
       (goto-char (string-match 3rd-sample (buffer-string)))
 
-      (do-odone 't)                                                   ; payload
+      (do-odone 't)                      ; payload
 
       (setq done-pos (do-done-position))
       (setq task-pos (last-position do-mode-rgx-task))
@@ -1392,7 +1394,7 @@ already present"
       (insert buf-samples1 done-line)
       (goto-char (string-match g-sample (buffer-string)))
 
-      (do-pdone 't)                                                   ; payload
+      (do-pdone 't)                      ; payload
 
       (setq done-pos (do-done-position))
       (setq task-pos (last-position do-mode-rgx-task))
@@ -1408,7 +1410,7 @@ already present"
       (insert buf-samples2 done-line)
       (goto-char (string-match g-sample (buffer-string)))
 
-      (do-xdone 't)                                                   ; payload
+      (do-xdone 't)                      ; payload
 
       (setq done-pos (do-done-position))
       (setq task-pos (last-position do-mode-rgx-task))
@@ -1424,7 +1426,7 @@ already present"
       (insert buf-samples2 done-line)
       (goto-char (string-match g-2nd-sample (buffer-string)))
 
-      (do-odone 't)                                                   ; payload
+      (do-odone 't)                      ; payload
 
       (setq done-pos (do-done-position))
       (setq task-pos (last-position do-mode-rgx-task))
@@ -1440,13 +1442,13 @@ already present"
       (insert buf-samples3 done-line)
       (goto-char (string-match g-sp-first (buffer-string)))
 
-      (do-pdone 't)                                                   ; payload
+      (do-pdone 't)                      ; payload
 
       (setq done-pos (do-done-position))
       (setq task-pos (last-position do-mode-rgx-task))
       (should (< done-pos task-pos))
       (should (= task-pos (last-position g-plus-1st-sample)))
-  )))
+      )))
 
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-1965-xdone-wdl-three-2nd ()
@@ -1456,7 +1458,7 @@ already present"
       (insert buf-samples3 done-line)
       (goto-char (string-match g-2nd-sample (buffer-string)))
 
-      (do-xdone 't)                                                   ; payload
+      (do-xdone 't)                      ; payload
 
       (setq done-pos (do-done-position))
       (setq task-pos (last-position do-mode-rgx-task))
@@ -1472,7 +1474,7 @@ already present"
       (insert buf-samples3 done-line)
       (goto-char (string-match dash-3rd-sample (buffer-string)))
       (forward-char)
-      (do-odone 't)                                                   ; payload
+      (do-odone 't)                      ; payload
       (setq done-pos (do-done-position))
       (setq task-pos (last-position do-mode-rgx-task))
       (should (< done-pos task-pos))
@@ -1489,8 +1491,8 @@ already present"
       (goto-char (string-match dash-2nd-sample (buffer-string)))
       (forward-char)
 
-      (do-odone 't)                                                   ; payload
-      (do-pdone 't)                                                   ; payload
+      (do-odone 't)                      ; payload
+      (do-pdone 't)                      ; payload
 
       (setq done-pos (do-done-position))
       (setq ltask-pos (last-position do-mode-rgx-task))
@@ -1601,7 +1603,7 @@ already present"
       (insert g-plus-1st-task done-line)
       (setq before (buffer-string))
       (goto-char (string-match g-first (buffer-string)))
-      (do-task-up)                                                    ; payload
+      (do-task-up)                      ; payload
       (should (string= before (buffer-string)))
   )))
 
@@ -1637,7 +1639,7 @@ already present"
       (insert g-two-tasks)
       (setq before (buffer-string))
       (goto-char (string-match g-first (buffer-string)))
-      (do-task-up)                                                    ; payload
+      (do-task-up)                      ; payload
       (should (string= before (buffer-string)))
   )))
 
@@ -1730,8 +1732,8 @@ take DONE with it"
       (should (< second-pos first-pos))
       (should (< first-pos done-pos))
       (should (< done-pos post-pos))
-      (should (= (point) (+ 1 second-pos))
-      ))))
+      (should (= (point) (+ 1 second-pos)))
+      )))
 
 
 ;; ============================================================================
@@ -1859,7 +1861,7 @@ take DONE with it"
       (insert done-line "\n\n < 1st task\n\n + 2nd task\n\n")
       (setq before (buffer-string))
       (goto-char (+ 5 (do-done-position)))
-      (do-task-down)                    ; payload
+      (do-task-down)                     ; payload
       (should (string= before (buffer-string)))
       )))
 
@@ -1871,7 +1873,7 @@ take DONE with it"
       (insert done-line "\n\n + 1st task\n\n + 2nd task\n\n")
       (setq before (buffer-string))
       (goto-char (+ 4 (string-match "1st task" (buffer-string))))
-      (do-task-down)                    ; payload
+      (do-task-down)                     ; payload
       (setq first-pos (string-match " \\+ 1st" (buffer-string)))
       (setq second-pos (string-match " \\+ 2nd" (buffer-string)))
       (should (< second-pos first-pos))
@@ -1887,7 +1889,7 @@ take DONE with it"
       (insert "\n\n - 1st task\n\n - 2nd task\n" done-line)
       (setq before (buffer-string))
       (goto-char (+ 4 (string-match "2nd task" (buffer-string))))
-      (do-task-down)                    ; payload
+      (do-task-down)                     ; payload
       (should (string= before (buffer-string)))
       )))
 
@@ -1899,7 +1901,7 @@ take DONE with it"
 not take DONE with it"
       (insert "\n\n - 1st task\n\n" done-line "\n\n + 2nd task\n\n + 3rd task")
       (goto-char (+ 4 (string-match "2nd task" (buffer-string))))
-      (do-task-down)                    ; payload
+      (do-task-down)                     ; payload
       (setq first-pos (string-match " - 1st task" (buffer-string)))
       (setq done-pos (string-match "--- DONE ---" (buffer-string)))
       (setq third-pos (string-match " \\+ 3rd task" (buffer-string)))
@@ -1907,8 +1909,8 @@ not take DONE with it"
       (should (< first-pos done-pos))
       (should (< done-pos third-pos))
       (should (< third-pos second-pos))
-      (should (= (point) (+ 1 second-pos))
-      ))))
+      (should (= (point) (+ 1 second-pos)))
+      )))
 
 ;; ============================================================================
 ;; tests for next-dodo, previous-dodo
