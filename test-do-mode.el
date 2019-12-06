@@ -686,8 +686,8 @@ already present"
     (let ((ntask-pos) (otask-pos))
       (insert buf-samples1)
       (goto-char (string-match "task" (buffer-string)))
-      (do-new-task)                                                   ; payload
       (should (setq ntask-pos (string-match new-task-rgx (buffer-string))))
+      (do-new-task)                     ; payload
       (should (setq otask-pos (string-match dash-singsamp (buffer-string))))
       (should (< otask-pos ntask-pos))
       )))
@@ -699,10 +699,10 @@ already present"
     (let ((ntask-pos) (first-pos) (second-pos))
       (insert buf-samples2)
       (goto-char (point-min))
-      (do-new-task)                                                   ; payload
       (should (setq ntask-pos (string-match new-task-rgx (buffer-string))))
       (should (setq first-pos (string-match " - 1st" (buffer-string))))
       (should (setq second-pos (string-match " - 2nd" (buffer-string))))
+      (do-new-task)                     ; payload
       (should (< ntask-pos first-pos))
       )))
 
@@ -713,10 +713,10 @@ already present"
     (let ((ntask-pos) (first-pos) (second-pos))
       (insert buf-samples2)
       (goto-char (- (string-match " - 2nd sample" (buffer-string)) 5))
-      (do-new-task)                                                   ; payload
       (should (setq ntask-pos (string-match new-task-rgx (buffer-string))))
       (should (setq first-pos (string-match " - 1st" (buffer-string))))
       (should (setq second-pos (string-match " - 2nd" (buffer-string))))
+      (do-new-task)                     ; payload
       (should (< first-pos ntask-pos))
       (should (< ntask-pos second-pos))
       )))
