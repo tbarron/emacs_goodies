@@ -216,8 +216,8 @@ if that value is non-nil."
 
 ;; ----------------------------------------------------------------------------
 (defun do-task-up ()
-  (concat "Move the current task above the one before it, if any. "
-          "If this is the first task in the file, do nothing.")
+  "Move the current task above the one before it, if any. If this
+is the first task in the file, do nothing."
   (interactive)
   (catch 'bail
     (let ((start) (end) (where) (done-pos))
