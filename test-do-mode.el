@@ -1941,206 +1941,435 @@ not take DONE with it"
 
 (ert-deftest test-2405-task-to-top ()
   "do-task-to-top: In a file of whitespace, this will make no changes."
-  (should nil)
-  )
+  (with-temp-buffer
+    (let ((before))
+      (setq before (buffer-string))
+      (do-task-to-top)
+      (should (string= before (buffer-string)))
+      )))
 
 (ert-deftest test-2410-task-to-top ()
   "do-task-to-top: In a file with one task and no DONE line, this
 will make no changes."
-  (should nil)
-  )
+  (with-temp-buffer
+    (let ((before))
+      (setq before (buffer-string))
+      (do-task-to-top)
+      (should (string= before (buffer-string)))
+      )))
 
 (ert-deftest test-2415-task-to-top ()
   "do-task-to-top: In a file with a DONE line and one task above, this
 will make no changes."
-  (should nil)
-  )
+  (with-temp-buffer
+    (let ((before))
+      (setq before (buffer-string))
+      (do-task-to-top)
+      (should (string= before (buffer-string)))
+      )))
 
 (ert-deftest test-2420-task-to-top ()
   "do-task-to-top: In a file with a DONE line and one task below, this
 will make no changes."
-  (should nil)
-  )
+  (with-temp-buffer
+    (let ((before))
+      (setq before (buffer-string))
+      (do-task-to-top)
+      (should (string= before (buffer-string)))
+      )))
 
 (ert-deftest test-2425-task-to-top ()
   "do-task-to-top: In a file with no DONE line and two tasks, this
 will not move the top task (no changes)."
-   (should nil)
- )
+  (with-temp-buffer
+    (let ((before))
+      (setq before (buffer-string))
+      (do-task-to-top)
+      (should (string= before (buffer-string)))
+      )))
 
 (ert-deftest test-2430-task-to-top ()
   "do-task-to-top: In a file with no DONE line and two tasks, this
 will move the bottom task to top."
-   (should nil)
- )
+  (with-temp-buffer
+    (let ((first-pos) (second-pos))
+      (insert g-two-tasks)
+      (goto-char (string-match-end g-second (buffer-string)))
+      (do-task-to-top)
+      (setq first-pos (string-match g-1st-task (buffer-string)))
+      (setq second-pos (string-match g-2nd-task (buffer-string)))
+      (should (< second-pos first-pos))
+      )))
 
 (ert-deftest test-2435-task-to-top ()
   "do-task-to-top: In a file with a DONE line and two tasks above, this
 will not move the top task (no changes)."
-   (should nil)
- )
+  (with-temp-buffer
+    (let ((before))
+      (setq before (buffer-string))
+      (do-task-to-top)
+      (should (string= before (buffer-string)))
+      )))
 
 (ert-deftest test-2440-task-to-top ()
   "do-task-to-top: In a file with a DONE line and two tasks above, this
 will move the bottom task to top."
-   (should nil)
- )
+  (with-temp-buffer
+    (let ((first-pos) (second-pos) (done-pos))
+      (insert g-two-tasks g-done-line)
+      (goto-char (string-match-end g-2nd-task (buffer-string)))
+      (do-task-to-top)
+      (setq first-pos (string-match g-1st-task (buffer-string)))
+      (setq second-pos (string-match g-2nd-task (buffer-string)))
+      (setq done-pos (do-done-position))
+      (should (< second-pos first-pos))
+      (should (< first-pos done-pos))
+      )))
 
 (ert-deftest test-2445-task-to-top ()
   "do-task-to-top: In a file with a DONE line and two tasks below, this
 will not move the top task (no changes)."
-   (should nil)
- )
+  (with-temp-buffer
+    (let ((before))
+      (setq before (buffer-string))
+      (do-task-to-top)
+      (should (string= before (buffer-string)))
+      )))
 
 (ert-deftest test-2450-task-to-top ()
   "do-task-to-top: In a file with a DONE line and two tasks below, this
-will move the bottom task to top."
-   (should nil)
- )
+will move the bottom task to just below DONE line."
+  (with-temp-buffer
+    (let ((done-pos) (first-pos) (second-pos))
+      (insert g-done-line g-plus-two-tasks)
+      (goto-char (string-match-end "2nd task" (buffer-string)))
+      (do-task-to-top)
+      (setq done-pos (do-done-position))
+      (setq first-pos (string-match "1st task" (buffer-string)))
+      (setq second-pos (string-match "2nd task" (buffer-string)))
+      (should (< done-pos second-pos))
+      (should (< second-pos first-pos))
+      )))
 
 (ert-deftest test-2455-task-to-top ()
   "do-task-to-top: In a file with a DONE line and three tasks
 above and three below, this will not move the top task above the DONE line (no
 changes)."
-   (should nil)
- )
+  (with-temp-buffer
+    (let ((before))
+      (setq before (buffer-string))
+      (do-task-to-top)
+      (should (string= before (buffer-string)))
+      )))
 
 (ert-deftest test-2460-task-to-top ()
   "do-task-to-top: In a file with a DONE line and three tasks
 above and three below, this will move the middle task above the
-DONE line to the beginning of the file."  (should nil)
- )
+DONE line to the beginning of the file."
+  (with-temp-buffer
+    (let ((first-pos) (second-pos) (third-pos) (done-pos))
+      (insert g-buf-samples3 g-done-line
+              (replace-regexp-in-string "-" "+" g-buf-samples3))
+      (goto-char (string-match-end " - 2nd samp" (buffer-string)))
+      (do-task-to-top)
+      (setq done-pos (do-done-position))
+      (setq first-pos (string-match " - 1st sample" (buffer-string)))
+      (setq second-pos (string-match " - 2nd sample" (buffer-string)))
+      (setq third-pos (string-match " - 3rd sample" (buffer-string)))
+      (should (< second-pos first-pos))
+      (should (< first-pos third-pos))
+      (should (< third-pos done-pos))
+      )))
 
 (ert-deftest test-2465-task-to-top ()
   "do-task-to-top: In a file with a DONE line and three tasks
 above and three below, this will move the bottom task above the
-DONE line to the top of the file."  (should nil)
- )
+DONE line to the top of the file."
+  (with-temp-buffer
+    (let ((first-pos) (second-pos) (third-pos) (done-pos))
+      (insert g-buf-samples3 g-done-line
+              (replace-regexp-in-string "-" "+" g-buf-samples3))
+      (goto-char (string-match-end " - 3rd samp" (buffer-string)))
+      (do-task-to-top)
+      (setq done-pos (do-done-position))
+      (setq first-pos (string-match " - 1st sample" (buffer-string)))
+      (setq second-pos (string-match " - 2nd sample" (buffer-string)))
+      (setq third-pos (string-match " - 3rd sample" (buffer-string)))
+      (should (< third-pos first-pos))
+      (should (< first-pos second-pos))
+      (should (< second-pos done-pos))
+      )))
 
 (ert-deftest test-2470-task-to-top ()
   "do-task-to-top: In a file with a DONE line and three tasks
 above and three below, this will not move the top task below the
-DONE line (no changes)."  (should nil)
- )
+DONE line (no changes)."
+  (with-temp-buffer
+    (let ((before))
+      (setq before (buffer-string))
+      (do-task-to-top)
+      (should (string= before (buffer-string)))
+      )))
 
 (ert-deftest test-2475-task-to-top ()
   "do-task-to-top: In a file with a DONE line and three tasks
 above and three below, this will move the middle task below the
-DONE line to just below the DONE line."  (should nil)
- )
+DONE line to just below the DONE line."
+  (with-temp-buffer
+    (let ((first-pos) (second-pos) (third-pos) (done-pos))
+      (insert g-buf-samples3 g-done-line
+              (replace-regexp-in-string "-" "+" g-buf-samples3))
+      (goto-char (string-match-end " \\+ 2nd samp" (buffer-string)))
+      (do-task-to-top)
+      (setq done-pos (do-done-position))
+      (setq first-pos (string-match " \\+ 1st sample" (buffer-string)))
+      (setq second-pos (string-match " \\+ 2nd sample" (buffer-string)))
+      (setq third-pos (string-match " \\+ 3rd sample" (buffer-string)))
+      (should (< done-pos second-pos))
+      (should (< second-pos first-pos))
+      (should (< first-pos third-pos))
+      )))
 
 (ert-deftest test-2480-task-to-top ()
   "do-task-to-top: In a file with a DONE line and three tasks
 above and three below, this will move the bottom task below the
-DONE line to just below the DONE line."  (should nil)
- )
+DONE line to just below the DONE line."
+  (with-temp-buffer
+    (let ((first-pos) (second-pos) (third-pos) (done-pos))
+      (insert g-buf-samples3 g-done-line
+              (replace-regexp-in-string "-" "+" g-buf-samples3))
+      (goto-char (string-match-end " \\+ 3rd samp" (buffer-string)))
+      (do-task-to-top)
+      (setq done-pos (do-done-position))
+      (setq first-pos (string-match " \\+ 1st sample" (buffer-string)))
+      (setq second-pos (string-match " \\+ 2nd sample" (buffer-string)))
+      (setq third-pos (string-match " \\+ 3rd sample" (buffer-string)))
+      (should (< done-pos third-pos))
+      (should (< third-pos first-pos))
+      (should (< first-pos second-pos))
+      )))
 
 ;; ============================================================================
 ;; tests for do-task-to-end
 
 (ert-deftest test-2500-task-to-end ()
   "do-task-to-end: In a zero-length file, this will make no changes."
-   (should nil)
- )
+  (with-temp-buffer
+    (let ((before))
+      (setq before (buffer-string))
+      (do-task-to-end)
+      (should (string= before (buffer-string)))
+      )))
 
 (ert-deftest test-2505-task-to-end ()
   "do-task-to-end: In a file of whitespace, this will make no changes."
-   (should nil)
- )
+  (with-temp-buffer
+    (let ((before))
+      (setq before (buffer-string))
+      (do-task-to-end)
+      (should (string= before (buffer-string)))
+      )))
 
 (ert-deftest test-2510-task-to-end ()
   "do-task-to-end: In a file with one task and no DONE line, this
 will make no changes."
-   (should nil)
- )
+  (with-temp-buffer
+    (let ((before))
+      (setq before (buffer-string))
+      (do-task-to-end)
+      (should (string= before (buffer-string)))
+      )))
 
 (ert-deftest test-2515-task-to-end ()
   "do-task-to-end: In a file with a DONE line and one task above, this
 will make no changes."
-   (should nil)
- )
+  (with-temp-buffer
+    (let ((before))
+      (setq before (buffer-string))
+      (do-task-to-end)
+      (should (string= before (buffer-string)))
+      )))
 
 (ert-deftest test-2520-task-to-end ()
   "do-task-to-end: In a file with a DONE line and one task below, this
 will make no changes."
-   (should nil)
- )
+  (with-temp-buffer
+    (let ((before))
+      (setq before (buffer-string))
+      (do-task-to-end)
+      (should (string= before (buffer-string)))
+      )))
 
 (ert-deftest test-2525-task-to-end ()
   "do-task-to-end: In a file with no DONE line and two tasks, this
 will not move the bottom task (no changes)."
-   (should nil)
- )
+  (with-temp-buffer
+    (let ((before))
+      (setq before (buffer-string))
+      (do-task-to-end)
+      (should (string= before (buffer-string)))
+      )))
 
 (ert-deftest test-2530-task-to-end ()
   "do-task-to-end: In a file with no DONE line and two tasks, this
 will move the top task to the end."
-   (should nil)
- )
+  (with-temp-buffer
+    (let ((first-pos) (second-pos))
+      (insert g-two-tasks)
+      (goto-char (string-match-end g-first (buffer-string)))
+      (do-task-to-end)
+      (setq first-pos (string-match g-1st-task (buffer-string)))
+      (setq second-pos (string-match g-2nd-task (buffer-string)))
+      (should (< second-pos first-pos))
+      )))
 
 (ert-deftest test-2535-task-to-end ()
   "do-task-to-end: In a file with a DONE line and two tasks above, this
 will not move the bottom task (no changes)."
-   (should nil)
- )
+  (with-temp-buffer
+    (let ((before))
+      (setq before (buffer-string))
+      (do-task-to-end)
+      (should (string= before (buffer-string)))
+      )))
 
 (ert-deftest test-2540-task-to-end ()
   "do-task-to-end: In a file with a DONE line and two tasks above, this
 will move the top task to just before the DONE line."
-   (should nil)
- )
+  (with-temp-buffer
+    (let ((done-pos) (first-pos) (second-pos))
+      (insert g-two-tasks g-done-line)
+      (goto-char (string-match-end g-1st-task (buffer-string)))
+      (do-task-to-end)
+      (setq first-pos (string-match g-1st-task (buffer-string)))
+      (setq second-pos (string-match g-2nd-task (buffer-string)))
+      (setq done-pos (do-done-position))
+      (should (< second-pos first-pos))
+      (should (< first-pos done-pos))
+      )))
 
 (ert-deftest test-2545-task-to-end ()
   "do-task-to-end: In a file with a DONE line and two tasks below, this
 will not move the bottom task (no changes)."
-   (should nil)
- )
+  (with-temp-buffer
+    (let ((before))
+      (setq before (buffer-string))
+      (do-task-to-end)
+      (should (string= before (buffer-string)))
+      )))
 
 (ert-deftest test-2550-task-to-end ()
   "do-task-to-end: In a file with a DONE line and two tasks below, this
 will move the top task to the end of the file."
-   (should nil)
- )
+  (with-temp-buffer
+    (let ((done-pos) (first-pos) (second-pos))
+      (insert g-done-line g-plus-two-tasks)
+      (goto-char (string-match-end "1st task" (buffer-string)))
+      (do-task-to-end)
+      (setq done-pos (do-done-position))
+      (setq first-pos (string-match "1st task" (buffer-string)))
+      (setq second-pos (string-match "2nd task" (buffer-string)))
+      (should (< done-pos second-pos))
+      (should (< second-pos first-pos))
+      )))
 
 (ert-deftest test-2555-task-to-end ()
   "do-task-to-end: In a file with a DONE line and three tasks
 above and three below, this will not move the bottom task above the DONE line (no
 changes)."
-   (should nil)
- )
+  (with-temp-buffer
+    (let ((before))
+      (setq before (buffer-string))
+      (do-task-to-end)
+      (should (string= before (buffer-string)))
+      )))
 
 (ert-deftest test-2560-task-to-end ()
   "do-task-to-end: In a file with a DONE line and three tasks
 above and three below, this will move the middle task above the
-DONE line to just before the DONE line."  (should nil)
- )
+DONE line to just before the DONE line."
+  (with-temp-buffer
+    (let ((done-pos) (first-pos) (second-pos) (third-pos))
+      (insert g-buf-samples3 g-done-line
+              (replace-regexp-in-string "-" "+" g-buf-samples3))
+      (goto-char (string-match-end " - 2nd samp" (buffer-string)))
+      (do-task-to-end)
+      (setq done-pos (do-done-position))
+      (setq first-pos (string-match " - 1st sample" (buffer-string)))
+      (setq second-pos (string-match " - 2nd sample" (buffer-string)))
+      (setq third-pos (string-match " - 3rd sample" (buffer-string)))
+      (should (< first-pos third-pos))
+      (should (< third-pos second-pos))
+      (should (< second-pos done-pos))
+      )))
 
 (ert-deftest test-2565-task-to-end ()
   "do-task-to-end: In a file with a DONE line and three tasks
 above and three below, this will move the top task above the
-DONE line to just before the DONE line."  (should nil)
- )
+DONE line to just before the DONE line."
+  (with-temp-buffer
+    (let ((done-pos) (first-pos) (second-pos) (third-pos))
+      (insert g-buf-samples3 g-done-line
+              (replace-regexp-in-string "-" "+" g-buf-samples3))
+      (goto-char (string-match-end " - 1st samp" (buffer-string)))
+      (do-task-to-end)
+      (setq done-pos (do-done-position))
+      (setq first-pos (string-match " - 1st sample" (buffer-string)))
+      (setq second-pos (string-match " - 2nd sample" (buffer-string)))
+      (setq third-pos (string-match " - 3rd sample" (buffer-string)))
+      (should (< second-pos third-pos))
+      (should (< third-pos first-pos))
+      (should (< first-pos done-pos))
+      )))
 
 (ert-deftest test-2570-task-to-end ()
   "do-task-to-end: In a file with a DONE line and three tasks
 above and three below, this will not move the bottom task below the
 DONE line (no changes)."
-    (should nil)
-)
+  (with-temp-buffer
+    (let ((before))
+      (setq before (buffer-string))
+      (do-task-to-end)
+      (should (string= before (buffer-string)))
+      )))
 
 (ert-deftest test-2575-task-to-end ()
   "do-task-to-end: In a file with a DONE line and three tasks
 above and three below, this will move the middle task below the
 DONE line to the end of the file."
-    (should nil)
-)
+  (with-temp-buffer
+    (let ((done-pos) (first-pos) (second-pos) (third-pos))
+      (insert g-buf-samples3 g-done-line
+              (replace-regexp-in-string "-" "+" g-buf-samples3))
+      (goto-char (string-match-end " \\+ 2nd samp" (buffer-string)))
+      (do-task-to-end)
+      (setq done-pos (do-done-position))
+      (setq first-pos (string-match " \\+ 1st sample" (buffer-string)))
+      (setq third-pos (string-match " \\+ 3rd sample" (buffer-string)))
+      (setq second-pos (string-match " \\+ 2nd sample" (buffer-string)))
+      (should (< done-pos first-pos))
+      (should (< first-pos third-pos))
+      (should (< third-pos second-pos))
+      )))
 
 (ert-deftest test-2580-task-to-end ()
   "do-task-to-end: In a file with a DONE line and three tasks
 above and three below, this will move the top task below the
 DONE line to the end of the file."
-    (should nil)
-)
+  (with-temp-buffer
+    (let ((done-pos) (first-pos) (second-pos) (third-pos))
+      (insert g-buf-samples3 g-done-line
+              (replace-regexp-in-string "-" "+" g-buf-samples3))
+      (goto-char (string-match-end " \\+ 1st samp" (buffer-string)))
+      (do-task-to-end)
+      (setq done-pos (do-done-position))
+      (setq second-pos (string-match " \\+ 2nd sample" (buffer-string)))
+      (setq third-pos (string-match " \\+ 3rd sample" (buffer-string)))
+      (setq first-pos (string-match " \\+ 1st sample" (buffer-string)))
+      (should (< done-pos second-pos))
+      (should (< second-pos third-pos))
+      (should (< third-pos first-pos))
+      )))
 
 ;; ----------------------------------------------------------------------------
 ;; Copy this to *scratch* and eval-buffer (esc-b) to run the tests
