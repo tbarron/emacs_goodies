@@ -167,6 +167,13 @@ following AFTER. If NEEDLE is not found, return nil.\n"
   (interactive)
   (ert-run-tests-batch-and-exit selector))
 
+;; ----------------------------------------------------------------------------
+(defun string-match-end (needle haystack)
+  "If NEEDLE occurs in HAYSTACK, return the end of the match"
+  (let ((where))
+    (setq where (string-match needle haystack))
+    (setq where (+ (length needle) where))
+    ))
 
 ;; ============================================================================
 ;; tests for do-add-done-iff
@@ -1671,7 +1678,7 @@ already present"
     (let ((before) (first-pos) (second-pos))
       (insert g-done-line g-plus-two-tasks)
       (setq before (buffer-string))
-      (goto-char (+ 4 (string-match g-2nd-task (buffer-string))))
+      (goto-char (string-match-end g-second (buffer-string)))
       (do-task-up)                      ; payload
       (setq first-pos (string-match g-plus-1st (buffer-string)))
       (setq second-pos (string-match g-plus-2nd (buffer-string)))
@@ -1687,7 +1694,7 @@ already present"
     (let ((before))
       (insert g-done-line g-plus-two-tasks)
       (setq before (buffer-string))
-      (goto-char (+ 4 (string-match g-1st-task (buffer-string))))
+      (goto-char (string-match-end g-first (buffer-string)))
       (do-task-up)                      ; payload
       (should (string= before (buffer-string)))
       )))
@@ -1700,7 +1707,7 @@ take DONE with it"
     (let ((first-pos) (second-pos) (done-pos) (post-pos))
       (insert "\n\n - 1st task\n\n - 2nd task\n\n" g-done-line
               "\n\n + completed task")
-      (goto-char (+ 4 (string-match "2nd task" (buffer-string))))
+      (goto-char (string-match-end g-second (buffer-string)))
       (do-task-up)                      ; payload
       (setq first-pos (string-match " - 1st task" (buffer-string)))
       (setq second-pos (string-match " - 2nd task" (buffer-string)))
@@ -1849,7 +1856,7 @@ take DONE with it"
     (let ((before) (first-pos) (second-pos))
       (insert g-done-line "\n\n + 1st task\n\n + 2nd task\n\n")
       (setq before (buffer-string))
-      (goto-char (+ 4 (string-match "1st task" (buffer-string))))
+      (goto-char (string-match-end g-first (buffer-string)))
       (do-task-down)                     ; payload
       (setq first-pos (string-match " \\+ 1st" (buffer-string)))
       (setq second-pos (string-match " \\+ 2nd" (buffer-string)))
@@ -1865,7 +1872,7 @@ take DONE with it"
     (let ((before))
       (insert "\n\n - 1st task\n\n - 2nd task\n" g-done-line)
       (setq before (buffer-string))
-      (goto-char (+ 4 (string-match "2nd task" (buffer-string))))
+      (goto-char (string-match-end g-second (buffer-string)))
       (do-task-down)                     ; payload
       (should (string= before (buffer-string)))
       )))
@@ -1877,7 +1884,7 @@ not take DONE with it"
   (with-temp-buffer
     (let ((first-pos) (second-pos) (done-pos) (third-pos))
       (insert "\n\n - 1st task\n\n" g-done-line "\n\n + 2nd task\n\n + 3rd task")
-      (goto-char (+ 4 (string-match "2nd task" (buffer-string))))
+      (goto-char (string-match-end "2nd task" (buffer-string)))
       (do-task-down)                     ; payload
       (setq first-pos (string-match " - 1st task" (buffer-string)))
       (setq done-pos (string-match "--- DONE ---" (buffer-string)))
