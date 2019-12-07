@@ -58,6 +58,8 @@
 (defun diary-append-entry-other-window ()
   "Add an entry to today's personal or work diary file"
   (interactive)
+  (if (= 1 (count-windows))
+      (split-window-below))
   (other-window 1)
   (diary)
   (delete-trailing-whitespace)
