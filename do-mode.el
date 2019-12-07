@@ -316,17 +316,19 @@ above the DONE line or at the end of the file."
         (if (= start done-pos)    ; we're sitting on the DONE line
             (throw 'bail nil))
         (setq end (do-next-task-or-done (+ 3 start)))
-        (setq where (if (< start done-pos)
-                        done-pos
-                      (do-prev-task-mark (point-max)))
+        (if (< start done-pos)
+            (setq where done-pos)
+          (setq where (do-prev-task-mark (point-max))))
         (if (= start where)
             (throw 'bail nil))
         (setq text (buffer-substring start end))
         (delete-region start end)
+        (if (< start done-pos)
+            (setq where (- where (- end start))))
         (goto-char where)
         (insert text))
       (goto-char where)
-      ))))
+      )))
 
 ;;; ---------------------------------------------------------------------------
 ;; Helper functions - these get called indirectly by interactive
