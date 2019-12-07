@@ -1,3 +1,5 @@
+.env
+do-test-files
 *[Dd][Oo]
 cmsg
 *~
