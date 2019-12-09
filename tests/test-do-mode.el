@@ -175,6 +175,82 @@ following AFTER. If NEEDLE is not found, return nil.\n"
     (setq where (+ (length needle) where))
     ))
 
+;; ----------------------------------------------------------------------------
+(defun strmatch (needle haystack &optional offset)
+  "Return (+ (string-match NEEDLE HAYSTACK) OFFSET).
+
+If OFFSET is negative, the result will be before NEEDLE in
+HAYSTACK. Note that string-match values are 0 based
+while (buffer-string) and (buffer-substring ...) values are 1
+based. Because of this, we add and extra 1 to adjust
+string-match's return value to align it with buffer values."
+  (let ((where))
+    (if (equal offset nil)
+        (setq offset 0))
+    (setq where (+ 1 offset (string-match needle haystack)))
+    where))
+
+;; ----------------------------------------------------------------------------
+(defun make-data (seq)
+  "Generate data based on contents of SEQ"
+  (let ((rval "") (tcount 1) (content) (mark))
+    (dolist (item seq)
+      (if (string-match-p item "- \\+ < x")
+          (progn (setq content (format "task %d" tcount))
+                 (setq mark (concat " " item " "))
+                 (setq tcount (+ 1 tcount))
+                 (setq rval (concat rval (ftask content mark 't))))
+        (if (string= "d" item)
+            (setq rval (concat rval "\n\n" g-done-line))
+          (if (string= "n" item)
+              (setq rval (concat rval "\n"))))))
+    rval))
+
+;; ----------------------------------------------------------------------------
+(defun task (num &optional pfx)
+  "Return the string 'task NUM'"
+  (let ((ipfx "") (rval ""))
+    (if pfx
+        (setq rval pfx))
+    (setq rval (concat rval (format "task %d" num)))
+    rval))
+
+;; ----------------------------------------------------------------------------
+(defun ftask (&rest args)
+  "Return a formatted task.
+
+A task is comprised of a MARK followed by CONTENT. Here's an
+exmample: ' - this is a task'. ' - ' is the MARK and the text is
+the CONTENT. If CONTENT is not provided, the string 'example
+task' is used. If MARK is not provided, the default ' - ' is
+used. If POST is t, two newlines are appended. If PRE is t, two
+newlines are prepended."
+  (let ((content) (mark) (pre) (post))
+    (if (not args)
+        nil
+      (setq content (car args))
+      (setq args (cdr args))
+      (if (not args)
+          nil
+        (setq mark (car args))
+        (setq args (cdr args))
+        (if (not args)
+            nil
+          (setq pre (car args))
+          (setq args (cdr args))
+          (if (not args)
+              nil
+            (setq post (car args))))))
+
+    (if (equal mark nil) (setq mark " - "))
+    (if (equal pre 't) (setq pre "\n\n"))
+    (if (equal post 't) (setq post "\n\n"))
+    (concat (if pre pre "")
+            mark
+            content
+            (if post post ""))))
+
+
 ;; ============================================================================
 ;; tests for do-add-done-iff
 
