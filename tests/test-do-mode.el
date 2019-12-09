@@ -147,8 +147,10 @@ subsequent messages."
 
 ;; ----------------------------------------------------------------------------
 (defun in-messages-p (after needle)
-  "Return the index of NEEDLE if it is in buffer *Messages*
-following AFTER. If NEEDLE is not found, return nil.\n"
+  "Find NEEDLE in buffer *Messages* following AFTER.
+
+If NEEDLE is found return its index in the buffer substring
+beginning at AFTER. If NEEDLE is not found, return nil."
   (with-current-buffer g-msgbuf-name
     (string-match needle (buffer-substring after (point-max)))))
 
