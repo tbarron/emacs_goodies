@@ -39,6 +39,7 @@
 (setq g-o "<")
 (setq g-p "+")
 (setq g-x "x")
+(setq g-nl "\n")
 (setq g-sds " - ")
 (setq g-sps " + ")
 (setq g-rsps " \\+ ")
@@ -111,7 +112,7 @@
 (setq g-less-2nd-sample " < 2nd sample")
 (setq g-less-3rd-sample " < 3rd sample")
 (setq g-mnop "mnop")
-(setq g-n "\n")
+;; (setq g-n "\n")
 (setq g-n-e-sp-2-new "ne 2\n")
 (setq g-new-new "\n\n")
 (setq g-nn "\n\n")
@@ -291,7 +292,7 @@ newlines are prepended."
 ;; ----------------------------------------------------------------------------
 ;; more variables
 (setq g-buf-no-done (concat (ftask g-first-task nil g-6sp-2n)
-                            (ftask g-second-task nil g-n 't)))
+                            (ftask g-second-task nil g-nl 't)))
 
 
 ;; ============================================================================
@@ -787,7 +788,7 @@ already present"
   "goto-prev: with DONE, 5 tasks, point in last task by 1 byte"
   (with-temp-buffer
     (let ((result)
-          (plus-task-5 (task 5 g-sps))
+          (plus-task-5 (concat (task 5 g-sps) g-nl))
           (pt4-rgx (task 4 g-rsps))
           (pt4-str (task 4 g-sps))
           )
