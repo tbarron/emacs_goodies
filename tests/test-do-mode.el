@@ -30,10 +30,28 @@
 
 ;; ============================================================================
 ;; variables
-(setq g-1st-task "1st task")
+(setq g-1st "1st")
+(setq g-2nd "2nd")
+(setq g-3rd "3rd")
+(setq g-d "d")
+(setq g-h "-")
+(setq g-n "n")
+(setq g-o "<")
+(setq g-p "+")
+(setq g-x "x")
+(setq g-sds " - ")
+(setq g-sps " + ")
+(setq g-rsps " \\+ ")
+(setq g-task "task")
+(setq g-task-1 "task 1")
+(setq g-task-2 "task 2")
+(setq g-task-3 "task 3")
+(setq g-sample "sample")
+(setq g-1st-task (concat g-1st " " g-task))
 (setq g-2nd-sample "2nd sample")
 (setq g-2nd-task "2nd task")
 (setq g-3rd-sample "3rd sample")
+(setq g-3rd-task "3rd task")
 (setq g-abandoned "\n\n x abandoned task number 2\n")
 ; (setq g-abandoned-1st "---\n\n x 1st")
 (setq g-abc "abc")
@@ -41,7 +59,10 @@
 (setq g-also-sp "also ")
 (setq g-artemis "artemis")
 (setq g-both-do "both.do")
-(setq g-buf-no-done "      \n\n - first task\n - second task\n")
+(setq g-first-task "first task")
+(setq g-second-task "second task")
+; (setq g-buf-no-done "      \n\n - first task\n - second task\n")
+(setq g-6sp-2n "      \n\n")
 (setq g-buf-w-done
       (concat "    \n\n\n"                ;  1 -  7
               " - task one\n\n"           ;  8 - 20
@@ -52,19 +73,21 @@
               " + also done 2\n"))
 (setq g-buf-samples1 (concat "\n\n - single sample task\n\n"))
 (setq g-buf-samples2 (concat "\n\n - 1st sample task"
-                           "\n\n - 2nd sample task"
-                           "\n\n"))
+                             "\n\n - 2nd sample task"
+                             "\n\n"))
 (setq g-buf-samples3 (concat "\n\n - 1st sample task"
-                           "\n\n - 2nd sample task"
-                           "\n\n - 3rd sample task"
-                           "\n\n"))
+                             "\n\n - 2nd sample task"
+                             "\n\n - 3rd sample task"
+                             "\n\n"))
 (setq g-completed "\n\n + completed task number 1")
+(setq g-dash " - ")
 (setq g-dash-1st " - 1st")
 (setq g-dash-2nd " - 2nd")
 (setq g-dash-3rd " - 3rd")
 (setq g-dash-1st-sample "- 1st sample")
 (setq g-dash-2nd-sample " - 2nd sample")
 (setq g-dash-3rd-sample " - 3rd sample")
+(setq g-dash-done "--- DONE ---")
 (setq g-dash-first " - first")
 (setq g-dash-singsamp " - single sample")
 (setq g-dash-sp-f "- f")
@@ -84,23 +107,33 @@
 (setq g-hercules "hercules")
 (setq g-inish "inish")
 (setq g-k-sp-o "k o")
+(setq g-less-1st-task "\n\n < 1st task")
 (setq g-less-2nd-sample " < 2nd sample")
 (setq g-less-3rd-sample " < 3rd sample")
 (setq g-mnop "mnop")
+(setq g-n "\n")
 (setq g-n-e-sp-2-new "ne 2\n")
 (setq g-new-new "\n\n")
-(setq g-new-new-sp "\n\n ")
+(setq g-nn "\n\n")
+; (setq g-new-new-sp "\n\n ")
+(setq g-nn-sp "\n\n ")
+(setq g-new2-dash "\n\n -")
 (setq g-new3-dash "\n\n\n -")
 (setq g-new-sp-dash "\n -")
 (setq g-new-task-rgx " - \\[[.0-9]\\{9\\}\\] ")
 (setq g-no-active-tasks "no active tasks found")
 (setq g-no-tasks "no tasks in file")
+(setq g-plus " + ")
+(setq g-eplus " \\+ ")
 (setq g-plus-1st " \\+ 1st")
 (setq g-plus-1st-task "\n\n + 1st task\n\n")
 (setq g-plus-1st-sample " \\+ 1st sample")
 (setq g-plus-2nd " \\+ 2nd")
+(setq g-plus-2nd-task "\n\n + 2nd task")
 (setq g-plus-3rd-sample " \\+ 3rd sample")
+(setq g-plus-3rd-task " \\+ 3rd task")
 (setq g-plus-also "+ also")
+(setq g-plus-completed " \\+ completed")
 (setq g-plus-fini " + fini")
 (setq g-plus-sample " \\+ sample")
 (setq g-plus-single " \\+ single")
@@ -122,7 +155,9 @@
 (setq g-sp-s-e " se")
 (setq g-sp-second " 2nd")
 (setq g-sp-t-a " ta")
+(setq g-sp-task " task")
 (setq g-t-a-s "tas")
+(setq g-tas "tas")
 (setq g-t-sp-t "t t")
 (setq g-task "task")
 (setq g-three-new "\n\n\n")
@@ -251,6 +286,12 @@ newlines are prepended."
             mark
             content
             (if post post ""))))
+
+
+;; ----------------------------------------------------------------------------
+;; more variables
+(setq g-buf-no-done (concat (ftask g-first-task nil g-6sp-2n)
+                            (ftask g-second-task nil g-n 't)))
 
 
 ;; ============================================================================
