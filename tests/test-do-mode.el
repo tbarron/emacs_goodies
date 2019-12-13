@@ -175,6 +175,34 @@
 ;; helper functions
 
 ;; ----------------------------------------------------------------------------
+(defun buffer-equal-p (str bufpos)
+  "Return t if STR strictly matches (buffer-string) at BUFPOS,
+otherwise nil. If STR extends past (point-max), the comparison
+fails."
+  (let ((result)
+        (bufend (+ bufpos (length str)))
+        )
+    (if (< (point-max) bufend)
+        (setq result nil)
+      (setq result (string= str (buffer-substring bufpos bufend))))
+    result
+    ))
+
+;; ----------------------------------------------------------------------------
+(defun buffer-match-p (str bufpos)
+  "Return t if STR matches (buffer-string) around BUFPOS,
+otherwise nil. If str would extend past (point-max), it is
+adjusted backward to attempt to match the end of the buffer."
+  (string= str (bytes-at bufpos (length str)))
+  )
+
+;; ----------------------------------------------------------------------------
+(defun buffer-pos (needle &optional offset)
+  "Return 1-based position of NEEDLE in buffer plus OFFSET"
+  (if (equal nil offset) (setq offset 0))
+  (+ (string-match needle (buffer-string)) 1 offset))
+
+;; ----------------------------------------------------------------------------
 (defun get-message-max ()
  "Get the maximum size of the *Messages* buffer so we can track
 subsequent messages."
@@ -189,6 +217,21 @@ If NEEDLE is found return its index in the buffer substring
 beginning at AFTER. If NEEDLE is not found, return nil."
   (with-current-buffer g-msgbuf-name
     (string-match needle (buffer-substring after (point-max)))))
+
+;; ----------------------------------------------------------------------------
+(defun in-order-p (&rest args)
+  "Return t if items in list ARGS are in numeric order from lowest to highest"
+  (catch 'bail
+    (let ((a))
+      (setq a (car args))
+      (dolist (b (cdr args))
+        (if (not (numberp b))
+            (setq b (string-to-number b)))
+        (if (< b a)
+            (throw 'bail nil))
+        (setq a b)
+        ))
+      t))
 
 ;; ----------------------------------------------------------------------------
 (defun last-position (target &optional before)
@@ -227,6 +270,28 @@ string-match's return value to align it with buffer values."
         (setq offset 0))
     (setq where (+ 1 offset (string-match needle haystack)))
     where))
+
+;; ----------------------------------------------------------------------------
+(defun make-data-s (str)
+  "Generate data based on contents of STR"
+  (let ((rval "\n\n") (rlist ()) (tcount 1) (content) (mark))
+    (dolist (item (split-string str))
+      (if (string-match-p item "- \\+ < x")
+          (progn (setq content (format "task %d" tcount))
+                 (setq mark (concat " " item " "))
+                 (setq tcount (+ 1 tcount))
+                 (setq chunk (ftask content mark))
+                 (setq rval (concat rval chunk "\n\n"))
+                 )
+        (if (string= "d" item)
+            (setq rval (concat rval g-done-line "\n\n"))
+          (if (string= "n" item)
+              (setq rval (concat rval "\n"))
+            (if (string= "m" item)
+                (setq rval (concat rval "\n\n"))
+              (if (string= "w" item)
+                  (setq rval (concat rval "                    \n\n" ))))))))
+    rval))
 
 ;; ----------------------------------------------------------------------------
 (defun make-data (seq)
