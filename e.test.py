@@ -1,13 +1,45 @@
 """
 Usage:
-    emacs-test go [-d] [-n] [-k WHICH]
+    emacs-test go [-d] [-n] [-p] [-k WHICH]
     emacs-test collect [-d]
+    emacs-test assess [-d]
 """
 from docopt_dispatch import dispatch
 import glob
 import os
 import pdb
 import sys
+
+
+# -----------------------------------------------------------------------------
+@dispatch.on("assess")
+def assess(**kw):
+    """
+    Return a count of '!@!' lines vs 'ert-deftest' lines in collected files
+    """
+    print(assessment())
+
+
+# -----------------------------------------------------------------------------
+def assessment():
+    pending_count = test_count = 0
+    for path in collect_files_r("."):
+        (pending, tests) = count_lines(path)
+        pending_count += pending
+        test_count += tests
+    return("{} / {}".format(pending_count, test_count))
+
+
+# -----------------------------------------------------------------------------
+def count_lines(path):
+    """
+    scan file *path* and count up '!@!' lines and 'ert-deftest' lines
+    """
+    with open(path, 'r') as rbl:
+        text = rbl.read()
+    pending = sum(1 for _ in text.split("\n") if "!@!" in _)
+    tests = sum(1 for _ in text.split("\n") if "ert-deftest" in _)
+    return(pending, tests)
 
 
 # -----------------------------------------------------------------------------
@@ -21,8 +53,9 @@ def collect_and_run(**kw):
     which = kw['WHICH'] or 't'
     dryrun = kw['n']
     for path in collect_files_r("."):
-        run_test_file(path, which, dryrun)
+        run_test_file(path, which, dryrun, pager=kw['p'])
 
+    print(assessment())
 
 # -----------------------------------------------------------------------------
 @dispatch.on("collect")
@@ -51,18 +84,20 @@ def collect_files_r(path):
             rval.append(item)
     return rval
 
-    
+
 # -----------------------------------------------------------------------------
-def run_test_file(path, which, dryrun):
+def run_test_file(path, which, dryrun, pager=False):
     """
     Run tests matching *which* from file *path*
     """
     lisp_cmd = '(ert-run-tests-batch-and-exit \\"{}\\")'.format(which)
     cmd = 'emacs -batch -l ert -l {} --eval "{}"'.format(path, lisp_cmd)
+    if pager:
+        cmd += "| less"
     print(cmd)
     if not dryrun:
         os.system(cmd)
-    
+
 
 # -----------------------------------------------------------------------------
 if __name__ == "__main__":
