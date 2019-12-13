@@ -7,7 +7,16 @@
 (global-set-key "\M-b" 'eval-buffer)
 (global-set-key "\M-\\" 'indent-region)
 (global-set-key "\C-y" 'clipboard-yank)
-(global-set-key "\C-c\C-a" 'indent-pp-sexp)
+;; (global-set-key "\C-c\C-a" 'backward-sexp)
+;; (global-set-key "\C-c\C-f" 'forward-sexp)
+;; (global-set-key "\C-c\C-q" 'indent-sexp)
+;; (global-set-key "" )
+
+(define-key emacs-lisp-mode-map "\C-c\C-a" 'backward-sexp)
+(define-key emacs-lisp-mode-map "\C-c\C-g" 'forward-sexp)
+(define-key emacs-lisp-mode-map "\C-c\C-q" 'indent-sexp)
+
+;; emacs-lisp-mode-syntax-table
 
 (defun clean-buffer ()
   (interactive)
@@ -51,6 +60,13 @@ comment the copy."
       (comment-region end (point)))
     ))
 (global-set-key "\C-c\C-y" 'copy-comment-region)
+
+(defun find-glitch ()
+  "Go to the top of the buffer and check parens"
+  (interactive)
+  (goto-char (point-min))
+  (check-parens)
+  )
 
 (message "buffer mykeys.el loaded")
 ;; available key sequences
