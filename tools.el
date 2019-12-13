@@ -943,3 +943,9 @@
     (setq new (eval-expression mod))
   ))
 
+;; ----------------------------------------------------------------------------
+(defun tos ()
+  "Move the current line to the top of the screen"
+  (interactive)
+  (recenter 0)
+)
