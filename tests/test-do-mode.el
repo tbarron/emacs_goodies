@@ -390,7 +390,7 @@ in the buffer."
   (with-temp-buffer
     (let ((done-pos)
           (ltask-pos))
-      (insert (make-data (list g-h g-h g-n)))
+      (insert (make-data-s "- -"))
       (goto-char (point-min))
       (do-add-done-iff)                 ; payload
       (setq done-pos (do-done-position))
@@ -406,7 +406,7 @@ in the buffer."
   "Verify that do-add-done-iff doesn't add a done line if one is
 already present"
   (with-temp-buffer
-    (insert (make-data (list g-n g-d g-n g-n g-n g-n g-n)))
+    (insert (make-data-s "d n n n n"))
     (goto-char (point-min))
     (should (re-search-forward do-mode-rgx-done))
     (do-add-done-iff)                 ; payload
@@ -502,7 +502,7 @@ already present"
 (ert-deftest test-1100-do-done-position-no-done ()
   "test do-done-position when DONE line is missing"
   (with-temp-buffer
-    (insert (make-data (list g-n g-n g-n g-n g-n g-n)))
+    (insert (make-data-s "n n n n n n"))
     (should (equal nil (do-done-position))) ; payload
     ))
 
@@ -511,7 +511,7 @@ already present"
   "test do-done-position when DONE line is present"
   (with-temp-buffer
     (let ((exp))
-      (insert (make-data (list g-n g-n g-d g-n g-n)))
+      (insert (make-data-s "d"))
       (setq exp (strmatch do-mode-rgx-done (buffer-string)))
       (should (= exp (do-done-position))) ; payload
       )))
@@ -525,9 +525,9 @@ already present"
   "goto-next: no DONE line, two tasks, point well before first task"
   (with-temp-buffer
     (let ((exp) (target))
-      (insert (make-data (list g-h g-h)))
       (setq exp (strmatch g-task-2 (buffer-string) -3))
       (goto-char (strmatch g-task-1 (buffer-string) 3))
+      (insert (make-data-s "- -"))
       (setq target (do-goto-next-task)) ; payload
       (should (= exp target)))))
 
@@ -536,7 +536,7 @@ already present"
   "goto-next: no DONE, two tasks, point just before first task"
   (with-temp-buffer
     (let ((exp))
-      (insert (make-data (list g-h g-h g-n)))
+      (insert (make-data-s "- - n"))
       (goto-char (strmatch g-nn (buffer-string)))
       (setq exp (strmatch g-task-1 (buffer-string) -3))
       (should (string= g-nn-sp (bytes-at (point) 3)))
@@ -548,9 +548,9 @@ already present"
   "goto-next: no DONE, two tasks, point at first task"
   (with-temp-buffer
     (let ((exp))
-      (insert (make-data (list g-h g-h)))
       (goto-char (strmatch g-task-1 (buffer-string) -3))
       (setq exp (strmatch g-task-2 (buffer-string) -3))
+      (insert (make-data-s "- -"))
       (should (string= g-sp-dash-sp (bytes-at (point) 3)))
       (should (= exp (do-goto-next-task))) ; payload
       )))
@@ -560,8 +560,8 @@ already present"
   "goto-next: no DONE, two tasks, point just inside first task"
   (with-temp-buffer
     (let ((exp))
-      (insert (make-data (list g-h g-h)))
       (goto-char (strmatch g-task-1 (buffer-string) -2))
+      (insert (make-data-s "- -"))
       (should (string= g-dash-sp-t (bytes-at (point) 3)))
       (setq exp (strmatch g-task-2 (buffer-string) -3))
       (should (= exp (do-goto-next-task))) ; payload
@@ -572,9 +572,9 @@ already present"
   "goto-next: no DONE, two tasks, point two bytes into first task"
   (with-temp-buffer
     (let ((exp) (loc))
-      (insert (make-data (list g-h g-h)))
       (goto-char (strmatch g-task-1 (buffer-string) -1))
       (setq exp (strmatch g-task-2 (buffer-string) -3))
+      (insert (make-data-s "- -"))
       (should (string= g-sp-task (bytes-at (point) 5)))
       (should (= exp (do-goto-next-task))) ; payload
       )))
@@ -584,8 +584,8 @@ already present"
   "goto-next: no DONE, two tasks, point in middle of first task"
   (with-temp-buffer
     (let ((exp))
-      (insert (make-data (list g-h g-h)))
       (goto-char (strmatch g-task-1 (buffer-string)))
+      (insert (make-data-s "- -"))
       (should (string= g-tas (bytes-at (point) 3)))
       (should (= (point) (strmatch g-tas (buffer-string))))
       (setq exp (strmatch g-task-2 (buffer-string) -3))
@@ -597,8 +597,8 @@ already present"
   "goto-next: no DONE, two tasks, point at end of first task"
   (with-temp-buffer
     (let ((exp) (loc))
-      (insert (make-data (list g-h g-h)))
       (goto-char (setq loc (strmatch g-task-2 (buffer-string) -4)))
+      (insert (make-data-s "- -"))
       (setq exp (+ 1 loc))
       (should (string= g-new-sp-dash (bytes-at (point) 3)))
       (should (= exp (do-goto-next-task))) ; payload
@@ -609,8 +609,8 @@ already present"
   "goto-next: no DONE, two tasks, point at second task"
   (with-temp-buffer
     (let ((exp))
-      (insert (make-data (list g-h g-h)))
       (goto-char (setq exp (strmatch g-task-2 (buffer-string) -3)))
+      (insert (make-data-s "- -"))
       (should (string= g-sp-dash-sp (bytes-at (point) 3)))
       (should (= exp (do-goto-next-task))) ; payload
       )))
@@ -620,8 +620,8 @@ already present"
   "goto-next: no DONE, two tasks, point just inside second task"
   (with-temp-buffer
     (let ((exp))
-      (insert (make-data (list g-h g-h)))
       (goto-char (setq exp (strmatch g-task-2 (buffer-string) -2)))
+      (insert (make-data-s "- -"))
       (should (string= g-dash-sp-t (bytes-at (point) 3)))
       (should (= exp (do-goto-next-task))) ; payload
       )))
@@ -631,8 +631,8 @@ already present"
   "goto-next: no DONE, two tasks, point two bytes into second task"
   (with-temp-buffer
     (let ((exp))
-      (insert (make-data (list g-h g-h)))
       (goto-char (setq exp (strmatch g-task-2 (buffer-string) -1)))
+      (insert (make-data-s "- -"))
       (should (string= g-sp-task (bytes-at (point) (length g-sp-task))))
       (should (= (point) (do-goto-next-task))) ; payload
       )))
@@ -641,7 +641,7 @@ already present"
 (ert-deftest test-1290-next-no-done ()
   "goto-next: no DONE, two tasks, point near end of second task"
   (with-temp-buffer
-    (insert (make-data (list g-h g-h)))
+    (insert (make-data-s "- -"))
     (goto-char (point-max))
     (should (= (strmatch g-task-2 (buffer-string) 6) (point)))
     (should (= (point-max) (do-goto-next-task))) ; payload
@@ -652,7 +652,7 @@ already present"
   "goto-next: with DONE, four tasks, point at start of buffer"
   (with-temp-buffer
     (let ((exp))
-      (insert (make-data (list g-h g-h g-h g-d g-p g-p g-n)))
+      (insert (make-data-s "- - - d + +"))
       (goto-char (point-min))
       (should (string= g-nn-sp (bytes-at (point) 3)))
       (setq exp (strmatch g-task-1 (buffer-string) -3))
@@ -664,7 +664,7 @@ already present"
   "goto-next: with DONE, four tasks, point just before 1st task"
   (with-temp-buffer
     (let ((exp))
-      (insert (make-data (list g-h g-h g-h g-d g-p g-p g-n)))
+      (insert (make-data-s "- - - d + +"))
       (goto-char (strmatch g-new-sp-dash (buffer-string)))
       (setq exp (+ 1 (point)))
       (should (string= g-new-sp-dash (bytes-at (point) 3)))
@@ -676,7 +676,7 @@ already present"
   "goto-next: with DONE, four tasks, point at 1st task"
   (with-temp-buffer
     (let ((exp))
-      (insert (make-data (list g-h g-h g-h g-d g-p g-p g-n)))
+      (insert (make-data-s "- - - d + +"))
       (goto-char (strmatch g-sp-dash-sp (buffer-string)))
       (setq exp (strmatch g-task-2 (buffer-string) -3))
       (should (string= g-sp-dash-sp (bytes-at (point) 3)))
@@ -688,9 +688,9 @@ already present"
   "goto-next: with DONE, four tasks, point one byte into 1st task"
   (with-temp-buffer
     (let ((exp))
-      (insert (make-data (list g-h g-h g-h g-d g-p g-p g-n)))
       (goto-char (strmatch g-task-1 (buffer-string) -2))
       (setq exp (strmatch g-task-2 (buffer-string) -3))
+      (insert (make-data-s "- - - d + +"))
       (should (string= g-dash-sp-t (bytes-at (point) 3)))
       (should (= exp (do-goto-next-task))) ; payload
       )))
@@ -700,9 +700,9 @@ already present"
   "goto-next: with DONE, four tasks, point two bytes into 1st task"
   (with-temp-buffer
     (let ((exp))
-      (insert (make-data (list g-h g-h g-h g-d g-p g-p g-n)))
       (goto-char (strmatch g-task-1 (buffer-string) -1))
       (setq exp (strmatch g-task-2 (buffer-string) -3))
+      (insert (make-data-s "- - - d + +"))
       (should (string= g-sp-t-a (bytes-at (point) 3)))
       (should (= exp (do-goto-next-task))) ; payload
       )))
@@ -712,10 +712,10 @@ already present"
   "goto-next:  with DONE, four tasks, point in middle of 1st task"
   (with-temp-buffer
     (let ((exp))
-      (insert (make-data (list g-h g-h g-h g-d g-p g-p g-n)))
       (goto-char (strmatch g-task-1 (buffer-string) 3))
       (setq exp (strmatch g-task-2 (buffer-string) -3))
       (should (string= g-task-1 (bytes-at (- (point) 3) 6)))
+      (insert (make-data-s "- - - d + +"))
       (should (= exp (do-goto-next-task))) ; payload
       )))
 
@@ -724,9 +724,9 @@ already present"
   "goto-next:  with DONE, four tasks, point just before 2nd task"
   (with-temp-buffer
     (let ((exp))
-      (insert (make-data (list g-h g-h g-h g-d g-p g-p g-n)))
       (goto-char (strmatch g-task-2 (buffer-string) -4))
       (setq exp (strmatch g-task-2 (buffer-string) -3))
+      (insert (make-data-s "- - - d + +"))
       (should (string= g-new-sp-dash (bytes-at (point) 3)))
       (should (= exp (do-goto-next-task))) ; payload
       )))
@@ -736,9 +736,9 @@ already present"
   "goto-next:  with DONE, four tasks, point at 2nd task"
   (with-temp-buffer
     (let ((exp))
-      (insert (make-data (list g-h g-h g-h g-d g-p g-p g-n)))
       (goto-char (strmatch g-task-2 (buffer-string) -3))
       (setq exp (strmatch g-task-3 (buffer-string) -3))
+      (insert (make-data-s "- - - d + +"))
       (should (string= g-sp-dash-sp (bytes-at (point) 3)))
       (should (= exp (do-goto-next-task))) ; payload
       )))
@@ -748,10 +748,10 @@ already present"
   "goto-next:  with DONE, four tasks, point a couple bytes into 2nd task"
   (with-temp-buffer
     (let ((exp))
-      (insert (make-data (list g-h g-h g-h g-d g-p g-p g-n)))
       (goto-char (strmatch g-task-2 (buffer-string)))
       (setq exp (strmatch g-task-3 (buffer-string) -3))
       (should (string= g-task-2 (bytes-at (point) 6)))
+      (insert (make-data-s "- - - d + +"))
       (should (= exp (do-goto-next-task))) ; payload
       )))
 
@@ -760,9 +760,9 @@ already present"
   "goto-next:  with DONE, four tasks, point just before 3rd task"
   (with-temp-buffer
     (let ((exp))
-      (insert (make-data (list g-h g-h g-h g-d g-p g-p g-n)))
       (goto-char (strmatch g-task-2 (buffer-string) 6))
       (setq exp (strmatch g-task-3 (buffer-string) -3))
+      (insert (make-data-s "- - - d + +"))
       (should (string= g-nn-sp (bytes-at (point) 3)))
       (should (= exp (do-goto-next-task))) ; payload
       )))
@@ -772,7 +772,7 @@ already present"
   "goto-next:  with DONE, four tasks, point at 3rd task"
   (with-temp-buffer
     (let ((exp) (fin))
-      (insert (make-data (list g-h g-h g-h g-d g-p g-p g-n)))
+      (insert (make-data-s "- - - d + +"))
       (goto-char (strmatch (task 3) (buffer-string) -4))
       (setq exp (strmatch (task 3) (buffer-string) -3))
       (should (string= g-new-sp-dash (bytes-at (point) 3)))
@@ -786,7 +786,7 @@ already present"
   "goto-next:  with DONE, four tasks, point at end of 3rd task"
   (with-temp-buffer
     (let ((exp) (thr-nn "3\n\n"))
-      (insert (make-data (list g-h g-h g-h g-n g-n g-d g-p g-p g-n)))
+      (insert (make-data-s "- - - d + +"))
       (goto-char (strmatch (task 3) (buffer-string) 5))
       (should (string= thr-nn (bytes-at (point) 3)))
       (setq exp (strmatch (task 4) (buffer-string) -3))
@@ -799,7 +799,7 @@ already present"
   "goto-next:  with DONE, four tasks, point in 4th (completed) task"
   (with-temp-buffer
     (let ((before) (exp) (plus-t "+ t"))
-      (insert (make-data (list g-h g-h g-h g-d g-p g-p g-n)))
+      (insert (make-data-s "- - - d + +"))
       (setq before (strmatch (task 4) (buffer-string) -3))
       (goto-char (+ 1 before))
       (should (string= plus-t (bytes-at (point) 3)))
@@ -823,7 +823,7 @@ already present"
           (t5-str " + task 5")
           (t5-rgx " \\+ task 5")
           (tail "ask 5\n"))
-      (insert (make-data (list g-h g-h g-h g-d g-p g-p g-n)))
+      (insert (make-data-s "- - - d + +"))
       (goto-char (point-max))
       (should (string= tail (bytes-at (point) (length tail))))
       (setq exp (strmatch t5-rgx (buffer-string)))
@@ -838,7 +838,7 @@ already present"
   "goto-prev: with DONE, 5 tasks, point at eobp"
   (with-temp-buffer
     (let ((result) (t5-str " + task 5"))
-      (insert (make-data (list g-h g-h g-h g-d g-p g-p g-n)))
+      (insert (make-data-s "- - - d + +"))
       (goto-char (strmatch (task 5) (buffer-string)))
       (setq exp (- (point) 3))
       (should (string= (task 5) (bytes-at (point) 6)))
@@ -851,7 +851,7 @@ already present"
   "goto-prev: with DONE, 5 tasks, point in last task"
   (with-temp-buffer
     (let ((result) (sp-task-5 " task 5") (plus-task-4 " + task 4"))
-      (insert (make-data (list g-h g-h g-h g-d g-p g-p g-n)))
+      (insert (make-data-s "- - - d + +"))
       (goto-char (strmatch (task 5) (buffer-string) -1))
       (should (string= sp-task-5 (bytes-at (point) (length sp-task-5))))
       (setq exp (strmatch (task 4) (buffer-string) -3))
@@ -869,9 +869,9 @@ already present"
           (pt4-rgx (task 4 g-rsps))
           (pt4-str (task 4 g-sps))
           )
-      (insert (make-data (list g-h g-h g-h g-d g-p g-p g-n)))
       (goto-char (strmatch (task 5) (buffer-string) -2)) ; '+' before 'task 5'
       (should (string= plus-task-5 (bytes-at (point) (length plus-task-5))))
+      (insert (make-data-s "- - - d + +"))
       (setq result (do-goto-prev-task)) ; payload
       (should (= result (strmatch pt4-rgx (buffer-string))))
       (should (string= pt4-str (bytes-at result (length pt4-str))))
@@ -886,7 +886,7 @@ already present"
           (pt5 (task 5 g-sps))
           (pt4 (task 4 g-sps))
           )
-      (insert (make-data (list g-h g-h g-h g-d g-p g-p g-n)))
+      (insert (make-data-s "- - - d + +"))
       (goto-char (strmatch (task 5) (buffer-string) -3))
       (should (string= pt5 (bytes-at (point) (length pt5))))
       (setq result (do-goto-prev-task)) ; payload
@@ -903,7 +903,7 @@ already present"
           (pt4 (task 4 g-sps))
           (ask4 "ask 4")
           )
-      (insert (make-data (list g-h g-h g-h g-d g-p g-p g-n)))
+      (insert (make-data-s "- - - d + +"))
       (goto-char (strmatch ask4 (buffer-string)))
       (setq exp (strmatch (task 4) (buffer-string) -3))
       (setq result (do-goto-prev-task)) ; payload
@@ -916,7 +916,7 @@ already present"
   "goto-prev: with DONE, 5 tasks, point early in penultimate task"
   (with-temp-buffer
     (let ((result) (pt4 (task 4 g-sps)))
-      (insert (make-data (list g-h g-h g-h g-d g-p g-p g-n)))
+      (insert (make-data-s "- - - d + +"))
       (goto-char (strmatch (task 4) (buffer-string)))
       (should (string= (task 4) (bytes-at (point) (length (task 4)))))
       (setq exp (strmatch (task 4) (buffer-string) -3))
@@ -930,7 +930,7 @@ already present"
   "goto-prev: with DONE, 5 tasks, point in penultimate task mark"
   (with-temp-buffer
     (let ((result) (st4 (task 4 " ")) (dt3 (task 3 g-sds)))
-      (insert (make-data (list g-h g-h g-h g-d g-p g-p g-n)))
+      (insert (make-data-s "- - - d + +"))
       (goto-char (strmatch (task 4) (buffer-string) -1))
       (should (string= st4 (bytes-at (point) (length st4))))
       (setq exp (strmatch (task 3) (buffer-string) -3))
@@ -944,10 +944,10 @@ already present"
   "prev task: with DONE, 5 tasks, point before 1st task, land on 1st"
   (with-temp-buffer
     (let ((result))
-      (insert (make-data (list g-n g-h g-h g-h g-d g-p g-p g-n)))
       (goto-char (strmatch (task 1) (buffer-string) -8))
       (should (string= g-new3-dash (bytes-at (point) (length g-new3-dash))))
       (setq exp (strmatch (task 1) (buffer-string) -3))
+      (insert (make-data-s "n - - - d + +"))
       (setq result (do-goto-prev-task)) ; payload
       (should (= exp result))
       (should (string= g-dash-tas (bytes-at result (length g-dash-tas))))
@@ -970,7 +970,7 @@ already present"
   "new entry: no DONE line, one task, before 1st"
   (with-temp-buffer
     (let ((ntask-pos) (otask-pos) (task-1 (task 1)))
-      (insert (make-data (list g-n g-n g-h g-n g-n)))
+      (insert (make-data-s "-"))
       (goto-char (point-min))
       (do-new-task)                     ; payload
       (goto-char (point-min))
@@ -984,7 +984,7 @@ already present"
   "new entry: no DONE line, one task, after 1st"
   (with-temp-buffer
     (let ((ntask-pos) (otask-pos))
-      (insert (make-data (list g-n g-n g-h g-n g-n)))
+      (insert (make-data-s "-"))
       (goto-char (string-match g-task (buffer-string)))
       (do-new-task)                     ; payload
       (should (setq ntask-pos (string-match g-new-task-rgx (buffer-string))))
@@ -997,7 +997,7 @@ already present"
   "new entry: no DONE line, two tasks, before 1st"
   (with-temp-buffer
     (let ((ntask-pos) (first-pos) (second-pos))
-      (insert (make-data (list g-n g-n g-h g-h g-n g-n)))
+      (insert (make-data-s "- -"))
       (goto-char (point-min))
       (do-new-task)                     ; payload
       (should (setq ntask-pos (string-match g-new-task-rgx (buffer-string))))
@@ -1011,7 +1011,7 @@ already present"
   "new entry: no DONE line, two tasks, before 2nd"
   (with-temp-buffer
     (let ((ntask-pos) (first-pos) (second-pos))
-      (insert (make-data (list g-n g-n g-h g-h g-n g-n)))
+      (insert (make-data-s "- -"))
       (goto-char (strmatch (task 2) (buffer-string) -5))
       (do-new-task)                     ; payload
       (should (setq ntask-pos (strmatch g-new-task-rgx (buffer-string) -3)))
@@ -1025,7 +1025,7 @@ already present"
   "new entry: no DONE line, two tasks, after 2nd"
   (with-temp-buffer
     (let ((ntask-pos) (first-pos) (second-pos))
-      (insert (make-data (list g-n g-n g-h g-h g-n g-n)))
+      (insert (make-data-s "- -"))
       (goto-char (- (point-max) 1))
       (do-new-task)                     ; payload
       (should (setq ntask-pos (strmatch g-new-task-rgx (buffer-string) -3)))
@@ -1039,7 +1039,7 @@ already present"
   "new entry: no DONE line, three tasks, before 1st"
   (with-temp-buffer
     (let ((ntask-pos) (first-pos) (second-pos) (third-pos))
-      (insert (make-data (list g-n g-n g-h g-h g-h g-n g-n)))
+      (insert (make-data-s "- - -"))
       (goto-char 2)
       (do-new-task)                     ; payload
       (should (setq ntask-pos (strmatch g-new-task-rgx (buffer-string))))
@@ -1054,7 +1054,7 @@ already present"
   "new entry: no DONE line, three tasks, before 2nd"
   (with-temp-buffer
     (let ((ntask-pos) (first-pos) (second-pos) (third-pos))
-      (insert (make-data (list g-n g-n g-h g-h g-h g-n g-n)))
+      (insert (make-data-s "- - -"))
       (goto-char (strmatch (task 1) (buffer-string)))
       (end-of-line)
       (do-new-task)                     ; payload
@@ -1070,7 +1070,7 @@ already present"
   "new entry: no DONE line, three tasks, before 3rd"
   (with-temp-buffer
     (let ((ntask-pos) (first-pos) (second-pos) (third-pos))
-      (insert (make-data (list g-n g-n g-h g-h g-h g-n g-n)))
+      (insert (make-data-s "- - -"))
       (goto-char (strmatch (task 2) (buffer-string) 5))
       (do-new-task)                     ; payload
       (should (setq ntask-pos (strmatch g-new-task-rgx (buffer-string))))
@@ -1085,7 +1085,7 @@ already present"
   "new entry: no DONE line, three tasks, after 3rd"
   (with-temp-buffer
     (let ((ntask-pos) (first-pos) (second-pos) (third-pos))
-      (insert (make-data (list g-n g-n g-h g-h g-h g-n g-n)))
+      (insert (make-data-s "- - -"))
       (goto-char (strmatch (task 3) (buffer-string) 5))
       (do-new-task)                     ; payload
       (should (setq ntask-pos (strmatch g-new-task-rgx (buffer-string))))
@@ -1100,7 +1100,7 @@ already present"
   "new entry: DONE line present, no tasks"
   (with-temp-buffer
     (let ((ntask-pos) (done-pos))
-      (insert (make-data (list g-d)))
+      (insert (make-data-s "d"))
       (goto-char (point-min))
       (do-new-task)                     ; payload
       (setq done-pos (do-done-position))
@@ -1113,7 +1113,7 @@ already present"
   "new entry: DONE line present, no tasks"
   (with-temp-buffer
     (let ((ntask-pos) (done-pos))
-      (insert (make-data (list g-d)))
+      (insert (make-data-s "d"))
       (goto-char (point-max))
       (do-new-task)                     ; payload
       (setq done-pos (do-done-position))
@@ -1126,7 +1126,7 @@ already present"
   "new entry: DONE line present, one task, before 1st"
   (with-temp-buffer
     (let ((ntask-pos) (done-pos))
-      (insert (make-data (list g-h g-n g-n g-d)))
+      (insert (make-data-s "- d"))
       (goto-char (point-min))
       (do-new-task)                     ; payload
       (setq done-pos (do-done-position))
@@ -1140,7 +1140,7 @@ already present"
   "new entry: DONE line present, one task, after 1st"
   (with-temp-buffer
     (let ((ntask-pos) (done-pos) (first-pos))
-      (insert (make-data (list g-n g-n g-h g-n g-n g-d g-n)))
+      (insert (make-data-s "- d"))
       (goto-char (strmatch g-task (buffer-string)))
       (do-new-task)                     ; payload
       (setq done-pos (do-done-position))
@@ -1154,7 +1154,7 @@ already present"
   "new entry: DONE line present, one task, after done line"
   (with-temp-buffer
     (let ((ntask-pos) (done-pos))
-      (insert (make-data (list g-h g-m g-d g-m)))
+      (insert (make-data-s "- m d m"))
       (goto-char (point-max))
       (do-new-task)                     ; payload
       (setq done-pos (do-done-position))
@@ -1172,7 +1172,7 @@ already present"
   "next-task: no DONE line, two tasks, point well before first task"
   (with-temp-buffer
     (let ((task1-pos) (dt1 (task 1 g-sds)))
-      (insert (make-data (list g-h g-h g-m)))
+      (insert (make-data-s "- - m"))
       (setq task1-pos (strmatch (task 1) (buffer-string) -3))
       (goto-char 2)
       (should (= task1-pos (do-next-task-mark))) ; payload
@@ -1184,7 +1184,7 @@ already present"
   "next-task: no DONE, two tasks, point just before first task"
   (with-temp-buffer
     (let ((result) (exp) (dt1 (task 1 g-sds)))
-      (insert (make-data (list g-h g-h g-m)))
+      (insert (make-data-s "- - m"))
       (goto-char (strmatch (task 1) (buffer-string) -5))
       (should (string= g-nn-sp (bytes-at (point) (length g-nn-sp))))
       (setq exp (strmatch (task 1) (buffer-string) -3))
@@ -1198,7 +1198,7 @@ already present"
   "next-task: no DONE, two tasks, point at first task"
   (with-temp-buffer
     (let ((exp))
-      (insert (make-data (list g-h g-h g-m)))
+      (insert (make-data-s "- - m"))
       (goto-char (strmatch (task 1) (buffer-string) -3))
       (setq exp (strmatch (task 2) (buffer-string) -3))
       (should (string= g-sp-dash-sp (bytes-at (point) 3)))
@@ -1210,7 +1210,7 @@ already present"
   "next-task: no DONE, two tasks, point just inside first task"
   (with-temp-buffer
     (let ((exp))
-      (insert (make-data (list g-h g-h g-m)))
+      (insert (make-data-s "- - m"))
       (goto-char (strmatch (task 1) (buffer-string) -2))
       (setq exp (strmatch (task 2) (buffer-string) -3))
       (should (string= g-dash-sp-t (bytes-at (point) 3)))
@@ -1221,7 +1221,7 @@ already present"
 (ert-deftest test-1712-ntm-no-done ()
   "next-task: no DONE, two tasks, point two bytes into first task"
   (with-temp-buffer
-    (insert (make-data (list g-h g-h g-m)))
+    (insert (make-data-s "- - m"))
     (goto-char (strmatch (task 1) (buffer-string) -1))
     (setq exp (strmatch (task 2) (buffer-string) -3))
     (should (string= g-sp-t-a (bytes-at (point) 3)))
@@ -1233,7 +1233,7 @@ already present"
   "next-task: no DONE, two tasks, point in middle of first task"
   (with-temp-buffer
     (let ((exp) (t1 (task 1)) (k-sp-1 (substring (task 1) 3 6)))
-      (insert (make-data (list g-h g-h g-m)))
+      (insert (make-data-s "- - m"))
       (goto-char (strmatch (task 1) (buffer-string) 3))
       (setq exp (strmatch (task 2) (buffer-string) -3))
       (should (string= k-sp-1 (bytes-at (point) 3)))
@@ -1245,7 +1245,7 @@ already present"
   "next-task: no DONE, two tasks, point at end of first task"
   (with-temp-buffer
     (let ((exp))
-      (insert (make-data (list g-h g-h g-m)))
+      (insert (make-data-s "- - m"))
       (goto-char (strmatch (task 1) (buffer-string) 7))
       (setq exp (strmatch (task 2) (buffer-string) -3))
       (should (string= g-new-sp-dash (bytes-at (point) 3)))
@@ -1256,7 +1256,7 @@ already present"
 (ert-deftest test-1721-ntm-no-done ()
   "next-task: no DONE, two tasks, from '[ ]- task 2', payload returns nil"
   (with-temp-buffer
-    (insert (make-data (list g-h g-h g-m)))
+    (insert (make-data-s "- - m"))
     (goto-char (strmatch (task 2) (buffer-string) -3))
     (should (string= g-sp-dash-sp (bytes-at (point) 3)))
     (should (equal nil (do-next-task-mark))) ; payload
@@ -1266,7 +1266,7 @@ already present"
 (ert-deftest test-1724-ntm-no-done ()
   "next-task: no DONE, two tasks, from ' [-] task 2', payload returns nil"
   (with-temp-buffer
-    (insert (make-data (list g-h g-h g-m)))
+    (insert (make-data-s "- - m"))
     (goto-char (strmatch (task 2) (buffer-string) -2))
     (should (string= g-dash-sp-t (bytes-at (point) 3)))
     (should (equal nil (do-next-task-mark))) ; payload
@@ -1276,7 +1276,7 @@ already present"
 (ert-deftest test-1727-ntm-no-done ()
   "next-task: no DONE, two tasks, from ' -[ ]task 2', payload returns nil"
   (with-temp-buffer
-    (insert (make-data (list g-h g-h g-m)))
+    (insert (make-data-s "- - m"))
     (goto-char (strmatch (task 2) (buffer-string) -1))
     (should (string= g-sp-t-a (bytes-at (point) 3)))
     (should (equal nil (do-next-task-mark))) ; payload
@@ -1286,7 +1286,7 @@ already present"
 (ert-deftest test-1730-ntm-no-done ()
   "next-task: no DONE, two tasks, from ' - tas[k] 2', payload returns nil"
   (with-temp-buffer
-    (insert (make-data (list g-h g-h g-m)))
+    (insert (make-data-s "- - m"))
     (goto-char (strmatch (task 2) (buffer-string) 3))
     (should (equal nil (do-next-task-mark))) ; payload
     ))
@@ -1297,7 +1297,7 @@ already present"
 find 'task 1'"
   (with-temp-buffer
     (let ((exp))
-      (insert (make-data (list g-h g-h g-h g-n g-n g-d g-p g-p)))
+      (insert (make-data-s "- - - n d + +"))
       (goto-char (point-min))
       (setq exp (buffer-pos (task 1) -3))
       (should (string= g-nl (bytes-at (point) 1)))
@@ -1310,7 +1310,7 @@ find 'task 1'"
 payload finds 'task 1'"
   (with-temp-buffer
     (let ((exp))
-      (insert (make-data (list g-h g-h g-h g-n g-n g-d g-p g-p)))
+      (insert (make-data-s "- - - n d + +"))
       (goto-char (buffer-pos (task 1) -4))
       (should (string= g-new-sp-dash (bytes-at (point) 3)))
       (setq exp (buffer-pos (task 1) -3))
@@ -1323,7 +1323,7 @@ payload finds 'task 1'"
 payload finds 'task 2'"
   (with-temp-buffer
     (let ((exp))
-      (insert (make-data (list g-h g-h g-h g-n g-n g-d g-p g-p)))
+      (insert (make-data-s "- - - n d + +"))
       (goto-char (buffer-pos (task 1) -3))
       (should (string= g-sp-dash-sp (bytes-at (point) 3)))
       (setq exp (buffer-pos (task 2) -3))
@@ -1336,7 +1336,7 @@ payload finds 'task 2'"
 payload finds ' - task 2'"
   (with-temp-buffer
     (let ((exp))
-      (insert (make-data (list g-h g-h g-h g-n g-n g-d g-p g-p)))
+      (insert (make-data-s "- - - n d + +"))
       (goto-char (buffer-pos (task 1) -2))
       (setq exp (buffer-pos (task 2) -3))
       (should (string= g-dash-sp-t (bytes-at (point) 3)))
@@ -1349,7 +1349,7 @@ payload finds ' - task 2'"
 payload finds ' - task 2'"
   (with-temp-buffer
     (let ((exp))
-      (insert (make-data (list g-h g-h g-h g-n g-n g-d g-p g-p)))
+      (insert (make-data-s "- - - n d + +"))
       (goto-char (buffer-pos (task 1) -1))
       (setq exp (buffer-pos (task 2) -3))
       (should (string= g-sp-t-a (bytes-at (point) 3)))
@@ -1362,7 +1362,7 @@ payload finds ' - task 2'"
 finds ' - task 2'"
   (with-temp-buffer
     (let ((exp))
-      (insert (make-data (list g-h g-h g-h g-n g-n g-d g-p g-p)))
+      (insert (make-data-s "- - - n d + +"))
       (goto-char (buffer-pos (task 1) 3))
       (setq exp (buffer-pos (task 2) -3))
       (should (= exp (do-next-task-mark))) ; payload
@@ -1374,7 +1374,7 @@ finds ' - task 2'"
 payload finds ' - task 2'"
   (with-temp-buffer
     (let ((exp))
-      (insert (make-data (list g-h g-h g-h g-n g-n g-d g-p g-p)))
+      (insert (make-data-s "- - - n d + +"))
       (goto-char (buffer-pos (task 2) -4))
       (setq exp (buffer-pos (task 2) -3))
       (should (string= g-new-sp-dash (bytes-at (point) 3)))
@@ -1387,7 +1387,7 @@ payload finds ' - task 2'"
 payload finds ' - task 3'"
   (with-temp-buffer
     (let ((exp))
-      (insert (make-data (list g-h g-h g-h g-n g-n g-d g-p g-p)))
+      (insert (make-data-s "- - - n d + +"))
       (goto-char (buffer-pos (task 2) -3))
       (setq exp (buffer-pos (task 3) -3))
       (should (string= g-sp-dash-sp (bytes-at (point) 3)))
@@ -1400,7 +1400,7 @@ payload finds ' - task 3'"
 payload finds ' - task 3'"
   (with-temp-buffer
     (let ((exp))
-      (insert (make-data (list g-h g-h g-h g-n g-n g-d g-p g-p)))
+      (insert (make-data-s "- - - n d + +"))
       (goto-char (buffer-pos (task 2)))
       (setq exp (buffer-pos (task 3) -3))
       (should (string= g-t-a-s (bytes-at (point) 3)))
@@ -1413,7 +1413,7 @@ payload finds ' - task 3'"
 3', payload finds ' - task 3'"
   (with-temp-buffer
     (let ((exp))
-      (insert (make-data (list g-h g-h g-h g-n g-n g-d g-p g-p)))
+      (insert (make-data-s "- - - n d + +"))
       (setq exp (buffer-pos (task 3) -3))
       (goto-char (- exp 2))
       (should (string= "\n\n " (bytes-at (point) 3)))
@@ -1426,7 +1426,7 @@ payload finds ' - task 3'"
 payload finds ' - task 3'"
   (with-temp-buffer
     (let ((exp))
-      (insert (make-data (list g-h g-h g-h g-n g-n g-d g-p g-p)))
+      (insert (make-data-s "- - - n d + +"))
       (setq exp (buffer-pos (task 3) -3))
       (goto-char (- exp 1))
       (should (string= g-new-sp-dash (bytes-at (point) 3)))
@@ -1439,7 +1439,7 @@ payload finds ' - task 3'"
 payload finds ' + task 4'"
   (with-temp-buffer
     (let ((exp) (t3-tail "3\n\n"))
-      (insert (make-data (list g-h g-h g-h g-n g-n g-d g-p g-p)))
+      (insert (make-data-s "- - - n d + +"))
       (setq exp (buffer-pos (task 4) -3))
       (goto-char (buffer-pos (task 3) 5))
       (should (string= t3-tail (bytes-at (point) 3)))
@@ -1452,7 +1452,7 @@ payload finds ' + task 4'"
 payload finds ' + task 5'"
   (with-temp-buffer
     (let ((exp) (plus-sp-t "+ t"))
-      (insert (make-data (list g-h g-h g-h g-n g-n g-d g-p g-p)))
+      (insert (make-data-s "- - - n d + +"))
       (goto-char (buffer-pos (task 4) -2))
       (setq exp (buffer-pos (task 5) -3))
       (should (string= plus-sp-t (bytes-at (point) 3)))
@@ -1471,7 +1471,7 @@ payload finds ' + task 5'"
     (let ((result)
           (task-5 (task 5))
           (p-task-5 (concat g-sps (task 5))))
-      (insert (make-data (list g-h g-h g-h g-n g-n g-d g-p g-p)))
+      (insert (make-data-s "- - - n d + +"))
       (setq exp (buffer-pos task-5 -3))
       (goto-char (point-max))
       (should (buffer-match-p task-5 (point)))
@@ -1490,7 +1490,7 @@ finds ' + task 5'"
           (s-task-5 " 5")
           (exp-task-5 (concat g-sps (task 5)))
           )
-      (insert (make-data (list g-h g-h g-h g-n g-n g-d g-p g-p)))
+      (insert (make-data-s "- - - n d + +"))
       (goto-char (buffer-pos (task 5) 4))
       (setq exp (buffer-pos (task 5) -3))
       (should (buffer-equal-p s-task-5 (point)))
@@ -1507,7 +1507,7 @@ finds ' + task 5'"
     (let ((result)
           (ask-5 "ask 5")
           (p-task-5 (concat g-sps (task 5))))
-      (insert (make-data (list g-h g-h g-h g-n g-n g-d g-p g-p)))
+      (insert (make-data-s "- - - n d + +"))
       (goto-char (buffer-pos (task 5) +1))
       (setq exp (buffer-pos (task 5) -3))
       (should (buffer-equal-p ask-5 (point)))
@@ -1523,7 +1523,7 @@ finds ' + task 5'"
     (let ((result)
           (p-task-5 (concat g-sps (task 5)))
           (exp))
-      (insert (make-data (list g-h g-h g-h g-n g-n g-d g-p g-p)))
+      (insert (make-data-s "- - - n d + +"))
       (setq exp (buffer-pos (task 5) -3))
       (goto-char (buffer-pos (task 5)))
       (should (buffer-equal-p (task 5) (point)))
@@ -1540,7 +1540,7 @@ finds ' + task 5'"
           (p-task-4 (concat g-sps (task 4)))
           (p-task-5 (concat g-sps (task 5)))
           )
-      (insert (make-data (list g-h g-h g-h g-n g-n g-d g-p g-p)))
+      (insert (make-data-s "- - - n d + +"))
       (goto-char (buffer-pos (task 5) -3))
       (should (buffer-equal-p p-task-5 (point)))
       (setq exp (buffer-pos (task 4) -3))
@@ -1557,7 +1557,7 @@ finds ' + task 5'"
           (p-task-4 (concat g-sps (task 4)))
           (exp)
           )
-      (insert (make-data (list g-h g-h g-h g-n g-n g-d g-p g-p)))
+      (insert (make-data-s "- - - n d + +"))
       (goto-char (buffer-pos (task 4) 1))
       (setq exp (buffer-pos (task 4) -3))
       (should (buffer-equal-p ask-4 (point)))
@@ -1571,7 +1571,7 @@ finds ' + task 5'"
   "prev-task: with DONE, 5 tasks, from '[t]ask 4', payload finds ' - task 4'"
   (with-temp-buffer
     (let ((result))
-      (insert (make-data (list g-h g-h g-h g-n g-n g-d g-p g-p)))
+      (insert (make-data-s "- - - n d + +"))
       (setq exp (buffer-pos (task 4) -3))
       (goto-char (buffer-pos (task 4)))
       (should (buffer-equal-p (task 4) (point)))
@@ -1586,7 +1586,7 @@ finds ' + task 5'"
   (with-temp-buffer
     (let ((result)
           (exp))
-      (insert (make-data (list g-h g-h g-h g-n g-n g-d g-p g-p)))
+      (insert (make-data-s "- - - n d + +"))
       (setq exp (buffer-pos (task 3 g-sds)))
       (goto-char (buffer-pos (task 4) -1))
       (should (buffer-equal-p (task 4 g-sp) (point)))
@@ -1603,7 +1603,7 @@ finds ' - task 1'"
     (let ((result)
           (nl-d-task-1 (task 1 "\n - "))
           (exp))
-      (insert (make-data (list g-h g-h g-h g-n g-n g-d g-p g-p)))
+      (insert (make-data-s "- - - n d + +"))
       (setq exp (buffer-pos (task 1) -3))
       (goto-char (buffer-pos (task 1) -4))
       (should (buffer-equal-p nl-d-task-1 (point)))
@@ -1632,7 +1632,7 @@ finds ' - task 1'"
     (let ((msg-max (get-message-max))
           (before)
           (pre-point))
-      (insert g-whitespace)
+      (insert (make-data-s "w n w n w n w"))
       (setq before (buffer-string))
       (setq pre-point (point))
       (do-xdone 't)                     ; payload
@@ -1648,7 +1648,7 @@ finds ' - task 1'"
     (let ((msg-max (get-message-max))
           (before)
           (pre-point))
-      (insert (make-data (list g-d g-p g-x)))
+      (insert (make-data-s "d + x"))
       (setq before (buffer-string))
       (goto-char (point-max))
       (setq pre-point (point))
@@ -1664,7 +1664,7 @@ finds ' - task 1'"
   (with-temp-buffer
     (let ((done-pos)
           (task-pos))
-      (insert (make-data (list g-h g-n)))
+      (insert (make-data-s "- n"))
       (goto-char (buffer-pos (task 1)))
       (do-pdone 't)                      ; payload
       (setq done-pos (do-done-position))
@@ -1681,7 +1681,7 @@ finds ' - task 1'"
           (task-1-pos)
           (task-2-pos)
           )
-      (insert (make-data (list g-h g-h g-n)))
+      (insert (make-data-s "- - n"))
       (goto-char (buffer-pos (task 1 g-sp)))
       (do-xdone 't)                      ; payload
       (setq done-pos (do-done-position))
@@ -1698,7 +1698,7 @@ finds ' - task 1'"
     (let ((done-pos)
           (task-1-pos)
           (task-2-pos))
-      (insert (make-data (list g-h g-h g-n)))
+      (insert (make-data-s "- - n"))
       (goto-char (buffer-pos (task 2) -1))
       (do-odone 't)                     ; payload
       (setq done-pos (do-done-position))
@@ -1716,7 +1716,7 @@ finds ' - task 1'"
           (task-2-pos)
           (task-3-pos)
           )
-      (insert (make-data (list g-h g-h g-h g-n)))
+      (insert (make-data-s "- - - n"))
       (goto-char (buffer-pos (task 1) -3))
       (do-pdone 't)                     ; payload
       (setq done-pos (do-done-position))
@@ -1735,7 +1735,7 @@ finds ' - task 1'"
           (task-2-pos)
           (task-3-pos)
           )
-      (insert (make-data (list g-h g-h g-h g-n)))
+      (insert (make-data-s "- - - n"))
       (goto-char (buffer-pos (task 2)))
       (do-xdone 't)                      ; payload
       (setq done-pos (do-done-position))
@@ -1753,7 +1753,7 @@ finds ' - task 1'"
           (task-1-pos)
           (task-2-pos)
           (task-3-pos))
-      (insert (make-data (list g-h g-h g-h g-n)))
+      (insert (make-data-s "- - - n"))
       (goto-char (buffer-pos (task 3)))
       (do-odone 't)                     ; payload
       (setq done-pos (do-done-position))
@@ -1768,7 +1768,7 @@ finds ' - task 1'"
   "one task, with DONE: task moves below"
   (with-temp-buffer
     (let ((done-pos) (task-pos))
-      (insert (make-data (list g-h g-n g-n g-d)))
+      (insert (make-data-s "- n d"))
       (goto-char (buffer-pos (task 1)))
       (do-pdone 't)                     ; payload
       (setq done-pos (do-done-position))
@@ -1782,7 +1782,7 @@ finds ' - task 1'"
   "two tasks, with DONE: first task moves below"
   (with-temp-buffer
     (let ((done-pos) (task-pos))
-      (insert (make-data (list g-h g-h g-n g-n g-d)))
+      (insert (make-data-s "- - n d"))
       (goto-char (buffer-pos (task 1)))
       (do-xdone 't)                     ; payload
       (setq done-pos (do-done-position))
@@ -1797,7 +1797,7 @@ finds ' - task 1'"
   "two tasks, with DONE: second task moves below"
   (with-temp-buffer
     (let ((done-pos) (task-1-pos) (task-2-pos))
-      (insert (make-data (list g-h g-h g-n g-n g-d)))
+      (insert (make-data-s "- - n d"))
       (goto-char (buffer-pos (task 2)))
       (do-odone 't)                     ; payload
       (setq done-pos (do-done-position))
@@ -1812,7 +1812,7 @@ finds ' - task 1'"
   "three tasks, with DONE: 1st task moves below"
   (with-temp-buffer
     (let ((done-pos) (t1-pos) (t2-pos) (t3-pos))
-      (insert (make-data (list g-h g-h g-h g-n g-n g-d)))
+      (insert (make-data-s "- - - n d"))
       (goto-char (buffer-pos (task 1) -1))
       (do-pdone 't)                     ; payload
       (setq done-pos (do-done-position))
@@ -1827,7 +1827,7 @@ finds ' - task 1'"
   "three tasks, with DONE: 2nd task moves below"
   (with-temp-buffer
     (let ((done-pos) (t1-pos) (t2-pos) (t3-pos))
-      (insert (make-data (list g-h g-h g-h g-n g-n g-d)))
+      (insert (make-data-s "- - - n d"))
       (goto-char (buffer-pos (task 2)))
       (do-xdone 't)                     ; payload
       (setq done-pos (do-done-position))
@@ -1842,7 +1842,7 @@ finds ' - task 1'"
   "three tasks, with DONE: 3rd task moves below"
   (with-temp-buffer
     (let ((done-pos) (t1-pos) (t2-pos) (t3-pos))
-      (insert (make-data (list g-h g-h g-h g-n g-n g-d)))
+      (insert (make-data-s "- - - n d"))
       (goto-char (buffer-pos (task 3) -2))
       (do-odone 't)                      ; payload
       (setq done-pos (do-done-position))
@@ -1857,7 +1857,7 @@ finds ' - task 1'"
   "three tasks, with DONE: 2nd, 3rd tasks move below DONE"
   (with-temp-buffer
     (let ((done-pos) (t1-pos) (t2-pos) (t3-pos))
-      (insert (make-data (list g-h g-h g-h g-n g-n g-d)))
+      (insert (make-data-s "- - - n d"))
       (goto-char (buffer-pos (task 2) -2))
       (do-odone 't)                     ; payload
       (do-pdone 't)                     ; payload
@@ -1940,7 +1940,7 @@ finds ' - task 1'"
   "do-task-up: whitespace -- do nothing"
   (with-temp-buffer
     (let ((before))
-      (insert (make-data (list g-w)))
+      (insert (make-data-s "w"))
       (setq before (buffer-string))
       (goto-char (floor (point-max) 2))
       (do-task-up)                      ; payload
@@ -1952,7 +1952,7 @@ finds ' - task 1'"
   "do-task-up: one task, no DONE -- do nothing"
   (with-temp-buffer
     (let ((before))
-      (insert (make-data (list g-h)))
+      (insert (make-data-s "-"))
       (setq before (buffer-string))
       (goto-char (buffer-pos (task 1)))
       (do-task-up)                      ; payload
@@ -1964,7 +1964,7 @@ finds ' - task 1'"
   "do-task-up: one task, above DONE -- do nothing"
   (with-temp-buffer
     (let ((before))
-      (insert (make-data (list g-h g-m g-d)))
+      (insert (make-data-s "- m d"))
       (setq before (buffer-string))
       (goto-char (buffer-pos (task 1)))
       (do-task-up)                      ; payload
@@ -1976,7 +1976,7 @@ finds ' - task 1'"
   "do-task-up: one task, above DONE -- moving DONE doesn't do anything"
   (with-temp-buffer
     (let ((before))
-      (insert (make-data (list g-h g-m g-d)))
+      (insert (make-data-s "- m d"))
       (setq before (buffer-string))
       (goto-char (buffer-pos g-done))
       (do-task-up)                      ; payload
