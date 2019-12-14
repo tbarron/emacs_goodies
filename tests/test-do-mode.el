@@ -966,103 +966,103 @@ already present"
 (ert-deftest test-1615-new-004 ()
   "new entry: no DONE line, two tasks, before 1st"
   (with-temp-buffer
-    (let ((ntask-pos) (first-pos) (second-pos))
+    (let ((ntask-pos) (t1-pos) (t2-pos))
       (insert (make-data-s "- -"))
       (goto-char (point-min))
       (do-new-task)                     ; payload
       (should (setq ntask-pos (buffer-pos g-new-task-rgx)))
-      (should (setq first-pos (buffer-pos (task 1) -3)))
-      (should (setq second-pos (buffer-pos (task 2) -3)))
-      (should (in-order-p ntask-pos first-pos second-pos))
+      (should (setq t1-pos (buffer-pos (task 1) -3)))
+      (should (setq t2-pos (buffer-pos (task 2) -3)))
+      (should (in-order-p ntask-pos t1-pos t2-pos))
       )))
 
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-1620-new-005 ()
   "new entry: no DONE line, two tasks, before 2nd"
   (with-temp-buffer
-    (let ((ntask-pos) (first-pos) (second-pos))
+    (let ((ntask-pos) (t1-pos) (t2-pos))
       (insert (make-data-s "- -"))
       (goto-char (buffer-pos (task 2) -5))
       (do-new-task)                     ; payload
       (should (setq ntask-pos (buffer-pos g-new-task-rgx -3)))
-      (should (setq first-pos (buffer-pos (task 1) -3)))
-      (should (setq second-pos (buffer-pos (task 2) -3)))
-      (should (in-order-p first-pos ntask-pos second-pos))
+      (should (setq t1-pos (buffer-pos (task 1) -3)))
+      (should (setq t2-pos (buffer-pos (task 2) -3)))
+      (should (in-order-p t1-pos ntask-pos t2-pos))
       )))
 
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-1625-new-006 ()
   "new entry: no DONE line, two tasks, after 2nd"
   (with-temp-buffer
-    (let ((ntask-pos) (first-pos) (second-pos))
+    (let ((ntask-pos) (t1-pos) (t2-pos))
       (insert (make-data-s "- -"))
       (goto-char (- (point-max) 1))
       (do-new-task)                     ; payload
       (should (setq ntask-pos (buffer-pos g-new-task-rgx -3)))
-      (should (setq first-pos (buffer-pos (task 1) -3)))
-      (should (setq second-pos (buffer-pos (task 2) -3)))
-      (should (in-order-p first-pos second-pos ntask-pos))
+      (should (setq t1-pos (buffer-pos (task 1) -3)))
+      (should (setq t2-pos (buffer-pos (task 2) -3)))
+      (should (in-order-p t1-pos t2-pos ntask-pos))
       )))
 
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-1630-new-007 ()
   "new entry: no DONE line, three tasks, before 1st"
   (with-temp-buffer
-    (let ((ntask-pos) (first-pos) (second-pos) (third-pos))
+    (let ((ntask-pos) (t1-pos) (t2-pos) (t3-pos))
       (insert (make-data-s "- - -"))
       (goto-char 2)
       (do-new-task)                     ; payload
       (should (setq ntask-pos (buffer-pos g-new-task-rgx)))
-      (should (setq first-pos (buffer-pos (task 1) -3)))
-      (should (setq second-pos (buffer-pos (task 2) -3)))
-      (should (setq third-pos (buffer-pos (task 3) -3)))
-      (should (< ntask-pos first-pos))
+      (should (setq t1-pos (buffer-pos (task 1) -3)))
+      (should (setq t2-pos (buffer-pos (task 2) -3)))
+      (should (setq t3-pos (buffer-pos (task 3) -3)))
+      (should (< ntask-pos t1-pos))
       )))
 
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-1635-new-008 ()
   "new entry: no DONE line, three tasks, before 2nd"
   (with-temp-buffer
-    (let ((ntask-pos) (first-pos) (second-pos) (third-pos))
+    (let ((ntask-pos) (t1-pos) (t2-pos) (t3-pos))
       (insert (make-data-s "- - -"))
       (goto-char (buffer-pos (task 1)))
       (end-of-line)
       (do-new-task)                     ; payload
       (should (setq ntask-pos (buffer-pos g-new-task-rgx)))
-      (should (setq first-pos (buffer-pos (task 1) -3)))
-      (should (setq second-pos (buffer-pos (task 2) -3)))
-      (should (setq third-pos (buffer-pos (task 3) -3)))
-      (should (in-order-p first-pos ntask-pos second-pos))
+      (should (setq t1-pos (buffer-pos (task 1) -3)))
+      (should (setq t2-pos (buffer-pos (task 2) -3)))
+      (should (setq t3-pos (buffer-pos (task 3) -3)))
+      (should (in-order-p t1-pos ntask-pos t2-pos))
       )))
 
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-1640-new-009 ()
   "new entry: no DONE line, three tasks, before 3rd"
   (with-temp-buffer
-    (let ((ntask-pos) (first-pos) (second-pos) (third-pos))
+    (let ((ntask-pos) (t1-pos) (t2-pos) (t3-pos))
       (insert (make-data-s "- - -"))
       (goto-char (buffer-pos (task 2) 5))
       (do-new-task)                     ; payload
       (should (setq ntask-pos (buffer-pos g-new-task-rgx)))
-      (should (setq first-pos (buffer-pos (task 1) -3)))
-      (should (setq second-pos (buffer-pos (task 2) -3)))
-      (should (setq third-pos (buffer-pos (task 3) -3)))
-      (should (in-order-p second-pos ntask-pos third-pos))
+      (should (setq t1-pos (buffer-pos (task 1) -3)))
+      (should (setq t2-pos (buffer-pos (task 2) -3)))
+      (should (setq t3-pos (buffer-pos (task 3) -3)))
+      (should (in-order-p t2-pos ntask-pos t3-pos))
       )))
 
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-1645-new-010 ()
   "new entry: no DONE line, three tasks, after 3rd"
   (with-temp-buffer
-    (let ((ntask-pos) (first-pos) (second-pos) (third-pos))
+    (let ((ntask-pos) (t1-pos) (t2-pos) (t3-pos))
       (insert (make-data-s "- - -"))
       (goto-char (buffer-pos (task 3) 5))
       (do-new-task)                     ; payload
       (should (setq ntask-pos (buffer-pos g-new-task-rgx)))
-      (should (setq first-pos (buffer-pos (task 1) -3)))
-      (should (setq second-pos (buffer-pos (task 2) -3)))
-      (should (setq third-pos (buffer-pos (task 3) -3)))
-      (should (< third-pos ntask-pos))
+      (should (setq t1-pos (buffer-pos (task 1) -3)))
+      (should (setq t2-pos (buffer-pos (task 2) -3)))
+      (should (setq t3-pos (buffer-pos (task 3) -3)))
+      (should (< t3-pos ntask-pos))
       )))
 
 ;; ----------------------------------------------------------------------------
@@ -1101,22 +1101,22 @@ already present"
       (do-new-task)                     ; payload
       (setq done-pos (do-done-position))
       (setq ntask-pos (buffer-pos g-new-task-rgx))
-      (setq first-pos (buffer-pos (task 1) -3))
-      (should (in-order-p ntask-pos first-pos done-pos))
+      (setq t1-pos (buffer-pos (task 1) -3))
+      (should (in-order-p ntask-pos t1-pos done-pos))
       )))
 
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-1665-new-012 ()
   "new entry: DONE line present, one task, after 1st"
   (with-temp-buffer
-    (let ((ntask-pos) (done-pos) (first-pos))
+    (let ((ntask-pos) (done-pos) (t1-pos))
       (insert (make-data-s "- d"))
       (goto-char (buffer-pos g-task))
       (do-new-task)                     ; payload
       (setq done-pos (do-done-position))
       (setq ntask-pos (buffer-pos g-new-task-rgx))
-      (setq first-pos (buffer-pos g-task -3))
-      (should (in-order-p first-pos ntask-pos done-pos))
+      (setq t1-pos (buffer-pos g-task -3))
+      (should (in-order-p t1-pos ntask-pos done-pos))
       )))
 
 ;; ----------------------------------------------------------------------------
@@ -1129,8 +1129,8 @@ already present"
       (do-new-task)                     ; payload
       (setq done-pos (do-done-position))
       (setq ntask-pos (buffer-pos g-new-task-rgx))
-      (setq first-pos (buffer-pos (task 1) -3))
-      (should (in-order-p first-pos ntask-pos done-pos))
+      (setq t1-pos (buffer-pos (task 1) -3))
+      (should (in-order-p t1-pos ntask-pos done-pos))
       )))
 
 ;; ============================================================================
