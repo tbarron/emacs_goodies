@@ -2011,7 +2011,7 @@ finds ' - task 1'"
 (ert-deftest test-2135-do-task-up ()
   "do-task-up: two tasks, no DONE -- bottom moves past top"
   (with-temp-buffer
-    (let ((before) (t1-pos) (t2-pos))
+    (let ((t1-pos) (t2-pos))
       (insert (make-data-s "- - m"))
       (goto-char (buffer-pos (task 2)))
       (do-task-up)                      ; payload
@@ -2081,7 +2081,7 @@ finds ' - task 1'"
   "do-task-up: three tasks, DONE after 2 -- upping 2nd should not
 take DONE with it"
   (with-temp-buffer
-    (let ((first-pos) (second-pos) (done-pos) (post-pos))
+    (let ((t1-pos) (t2-pos) (t3-pos) (done-pos))
       (insert (make-data-s "- - m d + n"))
       (goto-char (buffer-pos (task 2) 3))
       (do-task-up)                      ; payload
@@ -2225,7 +2225,7 @@ the task after it"
 (ert-deftest test-2250-do-task-down ()
   "do-task-down: two tasks, below DONE -- top moves past bottom"
   (with-temp-buffer
-    (let ((before) (first-pos) (second-pos))
+    (let ((before) (t1-pos) (t2-pos))
       (insert (make-data-s "d + + m"))
       (setq before (buffer-string))
       (goto-char (buffer-pos (task 1)))
@@ -2378,7 +2378,7 @@ will not move the top task (no changes)."
   "do-task-to-top: In a file with no DONE line and two tasks, this
 will move the bottom task to top."
   (with-temp-buffer
-    (let ((first-pos) (second-pos))
+    (let ((t1-pos) (t2-pos))
       (insert (make-data-s "- -"))
       (goto-char (buffer-pos (task 2)))
       (do-task-to-top)
@@ -2437,7 +2437,7 @@ will not move the top task (no changes)."
   "do-task-to-top: In a file with a DONE line and two tasks below, this
 will move the bottom task to just below DONE line."
   (with-temp-buffer
-    (let ((done-pos) (t1-pos) (t2-pos) (first-pos) (second-pos))
+    (let ((done-pos) (t1-pos) (t2-pos))
       (insert (make-data-s "d + +"))
       (goto-char (buffer-pos (task 2)))
       (do-task-to-top)
@@ -2632,7 +2632,7 @@ will not move the bottom task (no changes)."
   "do-task-to-end: In a file with no DONE line and two tasks, this
 will move the top task to the end."
   (with-temp-buffer
-    (let ((first-pos) (second-pos))
+    (let ((t1-pos) (t2-pos))
       (insert (make-data-s "- -"))
       (goto-char (buffer-pos (task 1)))
       (do-task-to-end)
