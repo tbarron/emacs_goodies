@@ -8,6 +8,7 @@ from docopt_dispatch import dispatch
 import glob
 import os
 import pdb
+import re
 import sys
 
 
@@ -23,23 +24,32 @@ def assess(**kw):
 # -----------------------------------------------------------------------------
 def assessment():
     pending_count = test_count = 0
+    counts = [{'name': '!@!',
+               'rgx': "!@!",
+               'count': 0},
+              {'name': 'tests',
+               'rgx': "ert-deftest",
+               'count': 0},
+              ]
+
     for path in collect_files_r("."):
-        (pending, tests) = count_lines(path)
-        pending_count += pending
-        test_count += tests
-    return("{} / {}".format(pending_count, test_count))
+        count_lines(path, counts)
+    rval = ""
+    for nub in counts:
+        rval += "{:>15s}: {:10d}\n".format(nub['name'], nub['count'])
+    return rval
 
 
 # -----------------------------------------------------------------------------
-def count_lines(path):
+def count_lines(path, counts):
     """
     scan file *path* and count up '!@!' lines and 'ert-deftest' lines
     """
     with open(path, 'r') as rbl:
         text = rbl.read()
-    pending = sum(1 for _ in text.split("\n") if "!@!" in _)
-    tests = sum(1 for _ in text.split("\n") if "ert-deftest" in _)
-    return(pending, tests)
+    for nub in counts:
+        nub['count'] = sum(1 for _ in text.split("\n")
+                           if re.search(nub['rgx'], _))
 
 
 # -----------------------------------------------------------------------------
