@@ -3,6 +3,6 @@
 ;;
 (defun emacs-goodies-version ()
   (interactive)
-  (message "emacs goodies 1.0.1")
+  (message "emacs goodies 1.0.2")
   )
 (global-set-key "\M-v" 'emacs-goodies-version)
