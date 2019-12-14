@@ -247,29 +247,6 @@ beginning at AFTER. If NEEDLE is not found, return nil."
   (ert-run-tests-batch-and-exit selector))
 
 ;; ----------------------------------------------------------------------------
-(defun string-match-end (needle haystack)
-  "If NEEDLE occurs in HAYSTACK, return the end of the match"
-  (let ((where))
-    (setq where (string-match needle haystack))
-    (setq where (+ (length needle) where))
-    ))
-
-;; ----------------------------------------------------------------------------
-(defun strmatch (needle haystack &optional offset)
-  "Return (+ (string-match NEEDLE HAYSTACK) OFFSET).
-
-If OFFSET is negative, the result will be before NEEDLE in
-HAYSTACK. Note that string-match values are 0 based
-while (buffer-string) and (buffer-substring ...) values are 1
-based. Because of this, we add and extra 1 to adjust
-string-match's return value to align it with buffer values."
-  (let ((where))
-    (if (equal offset nil)
-        (setq offset 0))
-    (setq where (+ 1 offset (string-match needle haystack)))
-    where))
-
-;; ----------------------------------------------------------------------------
 (defun make-data-s (str)
   "Generate data based on contents of STR"
   (let ((rval "\n\n") (rlist ()) (tcount 1) (content) (mark))
