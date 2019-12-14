@@ -161,26 +161,6 @@ beginning at AFTER. If NEEDLE is not found, return nil."
     rval))
 
 ;; ----------------------------------------------------------------------------
-(defun make-data (seq)
-  "Generate data based on contents of SEQ"
-  (let ((rval "") (tcount 1) (content) (mark))
-    (dolist (item seq)
-      (if (string-match-p item "- \\+ < x")
-          (progn (setq content (format "task %d" tcount))
-                 (setq mark (concat " " item " "))
-                 (setq tcount (+ 1 tcount))
-                 (setq rval (concat rval (ftask content mark 't))))
-        (if (string= "d" item)
-            (setq rval (concat rval g-done-line))
-          (if (string= "n" item)
-              (setq rval (concat rval "\n"))
-            (if (string= "m" item)
-                (setq rval (concat rval "\n\n"))
-              (if (string= "w" item)
-                  (setq rval (concat rval "                    "))))))))
-    rval))
-
-;; ----------------------------------------------------------------------------
 (defun task (num &optional pfx)
   "Return the string 'task NUM'"
   (let ((ipfx "") (rval ""))
