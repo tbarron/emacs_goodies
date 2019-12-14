@@ -304,9 +304,13 @@ string-match's return value to align it with buffer values."
                  (setq tcount (+ 1 tcount))
                  (setq rval (concat rval (ftask content mark 't))))
         (if (string= "d" item)
-            (setq rval (concat rval "\n\n" g-done-line))
+            (setq rval (concat rval g-done-line))
           (if (string= "n" item)
-              (setq rval (concat rval "\n"))))))
+              (setq rval (concat rval "\n"))
+            (if (string= "m" item)
+                (setq rval (concat rval "\n\n"))
+              (if (string= "w" item)
+                  (setq rval (concat rval "                    "))))))))
     rval))
 
 ;; ----------------------------------------------------------------------------
