@@ -932,7 +932,7 @@ already present"
   "new entry: empty file"
   (with-temp-buffer
     (do-new-task)                       ; payload
-    (should (string-match g-new-task-rgx (buffer-string)))
+    (should (buffer-pos g-new-task-rgx))
     ))
 
 ;; ----------------------------------------------------------------------------
@@ -955,10 +955,10 @@ already present"
   (with-temp-buffer
     (let ((ntask-pos) (otask-pos))
       (insert (make-data-s "-"))
-      (goto-char (string-match g-task (buffer-string)))
+      (goto-char (buffer-pos g-task))
       (do-new-task)                     ; payload
-      (should (setq ntask-pos (string-match g-new-task-rgx (buffer-string))))
-      (should (setq otask-pos (string-match (task 1) (buffer-string))))
+      (should (setq ntask-pos (buffer-pos g-new-task-rgx)))
+      (should (setq otask-pos (buffer-pos (task 1))))
       (should (< otask-pos ntask-pos))
       )))
 
@@ -970,7 +970,7 @@ already present"
       (insert (make-data-s "- -"))
       (goto-char (point-min))
       (do-new-task)                     ; payload
-      (should (setq ntask-pos (string-match g-new-task-rgx (buffer-string))))
+      (should (setq ntask-pos (buffer-pos g-new-task-rgx)))
       (should (setq first-pos (buffer-pos (task 1) -3)))
       (should (setq second-pos (buffer-pos (task 2) -3)))
       (should (in-order-p ntask-pos first-pos second-pos))
@@ -1074,7 +1074,7 @@ already present"
       (goto-char (point-min))
       (do-new-task)                     ; payload
       (setq done-pos (do-done-position))
-      (setq ntask-pos (string-match g-new-task-rgx (buffer-string)))
+      (setq ntask-pos (buffer-pos g-new-task-rgx))
       (should (< ntask-pos done-pos))
       )))
 
@@ -1087,7 +1087,7 @@ already present"
       (goto-char (point-max))
       (do-new-task)                     ; payload
       (setq done-pos (do-done-position))
-      (setq ntask-pos (string-match g-new-task-rgx (buffer-string)))
+      (setq ntask-pos (buffer-pos g-new-task-rgx))
       (should (< ntask-pos done-pos))
       )))
 
