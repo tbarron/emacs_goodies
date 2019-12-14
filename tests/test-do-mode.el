@@ -1886,7 +1886,7 @@ finds ' - task 1'"
   "other buffer is not a do-buffer"
   (let ((bufname g-artemis))
     (create-file-buffer bufname)
-    (should (not (do-buffer-p bufname)))
+    (should (not (do-buffer-p bufname))) ; payload
     (kill-buffer bufname)))
 
 ;; ----------------------------------------------------------------------------
@@ -1896,7 +1896,7 @@ finds ' - task 1'"
     (create-file-buffer bufname)
     (with-current-buffer bufname
       (do-mode))
-    (should (do-buffer-p bufname))
+    (should (do-buffer-p bufname))      ; payload
     (kill-buffer bufname)))
 
 ;; ----------------------------------------------------------------------------
@@ -1904,7 +1904,7 @@ finds ' - task 1'"
   "other buffer is a do-buffer by name"
   (let ((bufname g-xyz-do))
     (create-file-buffer bufname)
-    (should (do-buffer-p bufname))
+    (should (do-buffer-p bufname))      ; payload
     (kill-buffer bufname)
     ))
 
