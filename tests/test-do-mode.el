@@ -2467,17 +2467,16 @@ changes)."
 above and three below, this will move the middle task above the
 DONE line to the beginning of the file."
   (with-temp-buffer
-    (let ((t1-pos) (t2-pos) (t3-pos) (t4-pos) (t5-pos) (t6-pos)
-          (done-pos)
-          (vname))
+    (let ((tpos-l) (done-pos))
       (insert (make-data-s "- - - d + < x"))
       (goto-char (buffer-pos (task 2) 3))
       (do-task-to-top)
       (setq done-pos (do-done-position))
-      (dolist (vdx (list 1 2 3 4 5 6))
-        (setq vname (format "t%d-pos" vdx))
-        (set (intern vname) (buffer-pos (task vdx))))
-      (should (in-order-p t2-pos t1-pos t3-pos done-pos t4-pos t5-pos t6-pos))
+      (dolist (vdx (list 2 1 3 4 5 6))
+        (setq tpos-l (cl-list* (buffer-pos (task vdx)) tpos-l)))
+      (setq tpos-l (reverse tpos-l))
+      (should (apply #'in-order-p tpos-l))
+      (should (in-order-p (nth 2 tpos-l) done-pos (nth 3 tpos-l)))
       )))
 
 ;; ----------------------------------------------------------------------------
@@ -2486,14 +2485,16 @@ DONE line to the beginning of the file."
 above and three below, this will move the bottom task above the
 DONE line to the top of the file."
   (with-temp-buffer
-    (let ((done-pos) (t1-pos) (t2g-pos) (t3-pos) (t4-pos) (t5-pos) (t6-pos))
+    (let ((done-pos) (tpos-l))
       (insert (make-data-s "- - - d < x +"))
       (goto-char (buffer-pos (task 3) +5))
       (do-task-to-top)
       (setq done-pos (do-done-position))
-      (dolist (vdx '(1 2 3 4 5 6))
-        (set (intern (format "t%d-pos" vdx)) (buffer-pos (task vdx))))
-      (should (in-order-p t3-pos t1-pos t2-pos done-pos t4-pos t5-pos t6-pos))
+      (dolist (vdx '(3 1 2 4 5 6))
+        (setq tpos-l (cl-list* (buffer-pos (task vdx)) tpos-l)))
+      (setq tpos-l (reverse tpos-l))
+      (should (apply #'in-order-p tpos-l))
+      (should (in-order-p (nth 2 tpos-l) done-pos (nth 3 tpos-l)))
       )))
 
 ;; ----------------------------------------------------------------------------
