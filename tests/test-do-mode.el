@@ -536,7 +536,7 @@ already present"
       (insert (make-data-s "- - n"))
       (goto-char (buffer-pos g-nn))
       (setq exp (buffer-pos (task 1) -3))
-      (should (string= g-nn-sp (bytes-at (point) 3)))
+      (should (buffer-eq g-nn-sp (point)))
       (should (= exp (do-goto-next-task))) ; payload
       )))
 
@@ -548,7 +548,7 @@ already present"
       (insert (make-data-s "- -"))
       (goto-char (buffer-pos (task 1) -3))
       (setq exp (buffer-pos (task 2) -3))
-      (should (string= g-sp-dash-sp (bytes-at (point) 3)))
+      (should (buffer-eq g-sp-dash-sp (point)))
       (should (= exp (do-goto-next-task))) ; payload
       )))
 
@@ -559,7 +559,7 @@ already present"
     (let ((exp))
       (insert (make-data-s "- -"))
       (goto-char (buffer-pos (task 1) -2))
-      (should (string= g-dash-sp-t (bytes-at (point) 3)))
+      (should (buffer-eq g-dash-sp-t (point)))
       (setq exp (buffer-pos (task 2) -3))
       (should (= exp (do-goto-next-task))) ; payload
       )))
@@ -572,7 +572,7 @@ already present"
       (insert (make-data-s "- -"))
       (goto-char (buffer-pos (task 1) -1))
       (setq exp (buffer-pos (task 2) -3))
-      (should (string= g-sp-task (bytes-at (point) 5)))
+      (should (buffer-eq g-sp-task (point)))
       (should (= exp (do-goto-next-task))) ; payload
       )))
 
@@ -583,7 +583,7 @@ already present"
     (let ((exp))
       (insert (make-data-s "- -"))
       (goto-char (buffer-pos (task 1)))
-      (should (string= g-tas (bytes-at (point) 3)))
+      (should (buffer-eq g-tas (point)))
       (should (= (point) (buffer-pos g-tas)))
       (setq exp (buffer-pos (task 2) -3))
       (should (= exp (do-goto-next-task))) ; payload
@@ -597,7 +597,7 @@ already present"
       (insert (make-data-s "- -"))
       (goto-char (setq loc (buffer-pos (task 2) -4)))
       (setq exp (+ 1 loc))
-      (should (string= g-new-sp-dash (bytes-at (point) 3)))
+      (should (buffer-eq g-new-sp-dash (point)))
       (should (= exp (do-goto-next-task))) ; payload
       )))
 
@@ -608,7 +608,7 @@ already present"
     (let ((exp))
       (insert (make-data-s "- -"))
       (goto-char (setq exp (buffer-pos (task 2) -3)))
-      (should (string= g-sp-dash-sp (bytes-at (point) 3)))
+      (should (buffer-eq g-sp-dash-sp (point)))
       (should (= exp (do-goto-next-task))) ; payload
       )))
 
@@ -619,7 +619,7 @@ already present"
     (let ((exp))
       (insert (make-data-s "- -"))
       (goto-char (setq exp (buffer-pos (task 2) -2)))
-      (should (string= g-dash-sp-t (bytes-at (point) 3)))
+      (should (buffer-eq g-dash-sp-t (point)))
       (should (= exp (do-goto-next-task))) ; payload
       )))
 
@@ -630,7 +630,7 @@ already present"
     (let ((exp))
       (insert (make-data-s "- -"))
       (goto-char (setq exp (buffer-pos (task 2) -1)))
-      (should (string= g-sp-task (bytes-at (point) (length g-sp-task))))
+      (should (buffer-eq g-sp-task (point)))
       (should (= (point) (do-goto-next-task))) ; payload
       )))
 
@@ -640,7 +640,7 @@ already present"
   (with-temp-buffer
     (insert (make-data-s "- -"))
     (goto-char (point-max))
-    (should (buffer-match-p (concat (task 2) "\n\n") (point)))
+    (should (buffer-eq (concat (task 2) "\n\n") (point) 't))
     (should (= (point-max) (do-goto-next-task))) ; payload
     ))
 
@@ -651,7 +651,7 @@ already present"
     (let ((exp))
       (insert (make-data-s "- - - d + +"))
       (goto-char (point-min))
-      (should (string= g-nn-sp (bytes-at (point) 3)))
+      (should (buffer-eq g-nn-sp (point)))
       (setq exp (buffer-pos (task 1) -3))
       (should (= exp (do-goto-next-task))) ; payload
       )))
@@ -664,7 +664,7 @@ already present"
       (insert (make-data-s "- - - d + +"))
       (goto-char (buffer-pos g-new-sp-dash))
       (setq exp (+ 1 (point)))
-      (should (string= g-new-sp-dash (bytes-at (point) 3)))
+      (should (buffer-eq g-new-sp-dash (point)))
       (should (= exp (do-goto-next-task))) ; payload
       )))
 
@@ -676,7 +676,7 @@ already present"
       (insert (make-data-s "- - - d + +"))
       (goto-char (buffer-pos g-sp-dash-sp))
       (setq exp (buffer-pos (task 2) -3))
-      (should (string= g-sp-dash-sp (bytes-at (point) 3)))
+      (should (buffer-eq g-sp-dash-sp (point)))
       (should (= exp (do-goto-next-task))) ; payload
       )))
 
@@ -688,7 +688,7 @@ already present"
       (insert (make-data-s "- - - d + +"))
       (goto-char (buffer-pos (task 1) -2))
       (setq exp (buffer-pos (task 2) -3))
-      (should (string= g-dash-sp-t (bytes-at (point) 3)))
+      (should (buffer-eq g-dash-sp-t (point)))
       (should (= exp (do-goto-next-task))) ; payload
       )))
 
@@ -700,7 +700,7 @@ already present"
       (insert (make-data-s "- - - d + +"))
       (goto-char (buffer-pos (task 1) -1))
       (setq exp (buffer-pos (task 2) -3))
-      (should (string= g-sp-t-a (bytes-at (point) 3)))
+      (should (buffer-eq g-sp-t-a (point)))
       (should (= exp (do-goto-next-task))) ; payload
       )))
 
@@ -712,7 +712,7 @@ already present"
       (insert (make-data-s "- - - d + +"))
       (goto-char (buffer-pos (task 1) 3))
       (setq exp (buffer-pos (task 2) -3))
-      (should (string= (task 1) (bytes-at (- (point) 3) 6)))
+      (should (buffer-eq (task 1) (- (point) 3)))
       (should (= exp (do-goto-next-task))) ; payload
       )))
 
@@ -724,7 +724,7 @@ already present"
       (insert (make-data-s "- - - d + +"))
       (goto-char (buffer-pos (task 2) -4))
       (setq exp (buffer-pos (task 2) -3))
-      (should (string= g-new-sp-dash (bytes-at (point) 3)))
+      (should (buffer-eq g-new-sp-dash (point)))
       (should (= exp (do-goto-next-task))) ; payload
       )))
 
@@ -736,7 +736,7 @@ already present"
       (insert (make-data-s "- - - d + +"))
       (goto-char (buffer-pos (task 2) -3))
       (setq exp (buffer-pos (task 3) -3))
-      (should (string= g-sp-dash-sp (bytes-at (point) 3)))
+      (should (buffer-eq g-sp-dash-sp (point)))
       (should (= exp (do-goto-next-task))) ; payload
       )))
 
@@ -748,7 +748,7 @@ already present"
       (insert (make-data-s "- - - d + +"))
       (goto-char (buffer-pos (task 2)))
       (setq exp (buffer-pos (task 3) -3))
-      (should (string= (task 2) (bytes-at (point) 6)))
+      (should (buffer-eq (task 2) (point)))
       (should (= exp (do-goto-next-task))) ; payload
       )))
 
@@ -760,7 +760,7 @@ already present"
       (insert (make-data-s "- - - d + +"))
       (goto-char (buffer-pos (task 2) 6))
       (setq exp (buffer-pos (task 3) -3))
-      (should (string= g-nn-sp (bytes-at (point) 3)))
+      (should (buffer-eq g-nn-sp (point)))
       (should (= exp (do-goto-next-task))) ; payload
       )))
 
@@ -772,10 +772,10 @@ already present"
       (insert (make-data-s "- - - d + +"))
       (goto-char (buffer-pos (task 3) -4))
       (setq exp (buffer-pos (task 3) -3))
-      (should (string= g-new-sp-dash (bytes-at (point) 3)))
+      (should (buffer-eq g-new-sp-dash (point)))
       (should (= exp (do-goto-next-task))) ; payload
       (setq fin (buffer-pos (task 4) -3))
-      (should (string= g-sp-plus-sp (bytes-at fin 3)))
+      (should (buffer-eq g-sp-plus-sp fin))
       )))
 
 ;; ----------------------------------------------------------------------------
@@ -785,10 +785,10 @@ already present"
     (let ((exp) (thr-nn "3\n\n"))
       (insert (make-data-s "- - - d + +"))
       (goto-char (buffer-pos (task 3) 5))
-      (should (string= thr-nn (bytes-at (point) 3)))
+      (should (buffer-eq thr-nn (point)))
       (setq exp (buffer-pos (task 4) -3))
       (should (= exp (do-goto-next-task))) ; payload
-      (should (string= g-sp-plus-sp (bytes-at exp 3)))
+      (should (buffer-eq g-sp-plus-sp exp))
       )))
 
 ;; ----------------------------------------------------------------------------
@@ -799,11 +799,11 @@ already present"
       (insert (make-data-s "- - - d + +"))
       (setq before (buffer-pos (task 4) -3))
       (goto-char (+ 1 before))
-      (should (string= plus-t (bytes-at (point) 3)))
+      (should (buffer-eq plus-t (point)))
       (setq exp (buffer-pos (task 5) -3))
       (should (= exp (do-goto-next-task))) ; payload
-      (should (string= g-sp-plus-sp (bytes-at before 3)))
-      (should (string= g-sp-plus-sp (bytes-at exp 3)))
+      (should (buffer-eq g-sp-plus-sp before))
+      (should (buffer-eq g-sp-plus-sp exp))
       )))
 
 ;; ============================================================================
@@ -822,11 +822,11 @@ already present"
           (tail "ask 5\n\n"))
       (insert (make-data-s "- - - d + +"))
       (goto-char (point-max))
-      (should (string= tail (bytes-at (point) (length tail))))
+      (should (buffer-eq tail (point) 't))
       (setq exp (buffer-pos t5-rgx))
       (setq result (do-goto-prev-task)) ; payload
       (should (= exp result))
-      (should (string= t5-str (bytes-at result (length t5-str))))
+      (should (buffer-eq t5-str result))
       )))
 
 
@@ -838,10 +838,11 @@ already present"
       (insert (make-data-s "- - - d + +"))
       (goto-char (buffer-pos (task 5)))
       (setq exp (- (point) 3))
-      (should (string= (task 5) (bytes-at (point) 6)))
+      (should (buffer-eq (task 5) (point)))
       (setq result (do-goto-prev-task)) ; payload
       (should (= exp result))
-      (should (string= t5-str (bytes-at result (length t5-str)))))))
+      (should (buffer-eq t5-str result))
+      )))
 
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-1410-prev-w-done ()
@@ -850,11 +851,11 @@ already present"
     (let ((result) (sp-task-5 " task 5") (plus-task-4 " + task 4"))
       (insert (make-data-s "- - - d + +"))
       (goto-char (buffer-pos (task 5) -1))
-      (should (string= sp-task-5 (bytes-at (point) (length sp-task-5))))
+      (should (buffer-eq sp-task-5 (point)))
       (setq exp (buffer-pos (task 4) -3))
       (setq result (do-goto-prev-task)) ; payload
       (should (= exp result))
-      (should (string= plus-task-4 (bytes-at result (length plus-task-4))))
+      (should (buffer-eq plus-task-4 result))
       )))
 
 ;; ----------------------------------------------------------------------------
@@ -866,12 +867,12 @@ already present"
           (pt4-rgx (task 4 g-rsps))
           (pt4-str (task 4 g-sps))
           )
-      (should (string= plus-task-5 (bytes-at (point) (length plus-task-5))))
       (insert (make-data-s "- - - d + +"))
       (goto-char (buffer-pos (task 5) -2))
+      (should (buffer-eq plus-task-5 (- (point) 1)))
       (setq result (do-goto-prev-task)) ; payload
       (should (= result (buffer-pos pt4-rgx)))
-      (should (string= pt4-str (bytes-at result (length pt4-str))))
+      (should (buffer-eq pt4-str result))
       )))
 
 ;; ----------------------------------------------------------------------------
@@ -885,11 +886,11 @@ already present"
           )
       (insert (make-data-s "- - - d + +"))
       (goto-char (buffer-pos (task 5) -3))
-      (should (string= pt5 (bytes-at (point) (length pt5))))
+      (should (buffer-eq pt5 (point)))
       (setq result (do-goto-prev-task)) ; payload
       (setq exp (buffer-pos (task 4) -3))
       (should (= exp result))
-      (should (string= pt4 (bytes-at result (length pt4))))
+      (should (buffer-eq pt4 result))
       )))
 
 ;; ----------------------------------------------------------------------------
@@ -905,7 +906,7 @@ already present"
       (setq exp (buffer-pos (task 4) -3))
       (setq result (do-goto-prev-task)) ; payload
       (should (= exp result))
-      (should (string= pt4 (bytes-at result (length pt4))))
+      (should (buffer-eq pt4 result))
       )))
 
 ;; ----------------------------------------------------------------------------
@@ -915,11 +916,11 @@ already present"
     (let ((result) (pt4 (task 4 g-sps)))
       (insert (make-data-s "- - - d + +"))
       (goto-char (buffer-pos (task 4)))
-      (should (string= (task 4) (bytes-at (point) (length (task 4)))))
+      (should (buffer-eq (task 4) (point)))
       (setq exp (buffer-pos (task 4) -3))
       (setq result (do-goto-prev-task)) ; payload
       (should (= exp result))
-      (should (string= pt4 (bytes-at result (length pt4))))
+      (should (buffer-eq pt4 result))
       )))
 
 ;; ----------------------------------------------------------------------------
@@ -929,25 +930,25 @@ already present"
     (let ((result) (st4 (task 4 " ")) (dt3 (task 3 g-sds)))
       (insert (make-data-s "- - - d + +"))
       (goto-char (buffer-pos (task 4) -1))
-      (should (string= st4 (bytes-at (point) (length st4))))
+      (should (buffer-eq st4 (point)))
       (setq exp (buffer-pos (task 3) -3))
       (setq result (do-goto-prev-task)) ; payload
       (should (= exp result))
-      (should (string= dt3 (bytes-at result (length dt3))))
+      (should (buffer-eq dt3 result))
       )))
 
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-1450-prev-w-done ()
   "prev task: with DONE, 5 tasks, point before 1st task, land on 1st"
   (with-temp-buffer
-    (let ((result))
-      (should (string= g-new3-dash (bytes-at (point) (length g-new3-dash))))
+    (let ((result) (exp))
       (insert (make-data-s "n - - - d + +"))
       (goto-char (buffer-pos (task 1) -8))
+      (should (buffer-eq g-new3-dash (point)))
       (setq exp (buffer-pos (task 1) -3))
       (setq result (do-goto-prev-task)) ; payload
       (should (= exp result))
-      (should (string= g-dash-tas (bytes-at result (length g-dash-tas))))
+      (should (buffer-eq g-dash-tas result))
       )))
 
 ;; ============================================================================
@@ -1173,7 +1174,7 @@ already present"
       (setq task1-pos (buffer-pos (task 1) -3))
       (goto-char 2)
       (should (= task1-pos (do-next-task-mark))) ; payload
-      (should (string= dt1 (bytes-at task1-pos (length dt1))))
+      (should (buffer-eq dt1 task1-pos))
       )))
 
 ;; ----------------------------------------------------------------------------
@@ -1183,11 +1184,11 @@ already present"
     (let ((result) (exp) (dt1 (task 1 g-sds)))
       (insert (make-data-s "- - m"))
       (goto-char (buffer-pos (task 1) -5))
-      (should (string= g-nn-sp (bytes-at (point) (length g-nn-sp))))
+      (should (buffer-eq g-nn-sp (point)))
       (setq exp (buffer-pos (task 1) -3))
       (setq result (do-next-task-mark)) ; payload
       (should (= exp result))
-      (should (string= dt1 (bytes-at result (length dt1))))
+      (should (buffer-eq dt1 result))
       )))
 
 ;; ----------------------------------------------------------------------------
@@ -1198,7 +1199,7 @@ already present"
       (insert (make-data-s "- - m"))
       (goto-char (buffer-pos (task 1) -3))
       (setq exp (buffer-pos (task 2) -3))
-      (should (string= g-sp-dash-sp (bytes-at (point) 3)))
+      (should (buffer-eq g-sp-dash-sp (point)))
       (should (= exp (do-next-task-mark))) ; payload
       )))
 
@@ -1210,7 +1211,7 @@ already present"
       (insert (make-data-s "- - m"))
       (goto-char (buffer-pos (task 1) -2))
       (setq exp (buffer-pos (task 2) -3))
-      (should (string= g-dash-sp-t (bytes-at (point) 3)))
+      (should (buffer-eq g-dash-sp-t (point)))
       (should (= exp (do-next-task-mark))) ; payload
       )))
 
@@ -1221,7 +1222,7 @@ already present"
     (insert (make-data-s "- - m"))
     (goto-char (buffer-pos (task 1) -1))
     (setq exp (buffer-pos (task 2) -3))
-    (should (string= g-sp-t-a (bytes-at (point) 3)))
+    (should (buffer-eq g-sp-t-a (point)))
     (should (= exp (do-next-task-mark))) ; payload
     ))
 
@@ -1233,7 +1234,7 @@ already present"
       (insert (make-data-s "- - m"))
       (goto-char (buffer-pos (task 1) 3))
       (setq exp (buffer-pos (task 2) -3))
-      (should (string= k-sp-1 (bytes-at (point) 3)))
+      (should (buffer-eq k-sp-1 (point)))
       (should (= exp (do-next-task-mark))) ; payload
       )))
 
@@ -1245,7 +1246,7 @@ already present"
       (insert (make-data-s "- - m"))
       (goto-char (buffer-pos (task 1) 7))
       (setq exp (buffer-pos (task 2) -3))
-      (should (string= g-new-sp-dash (bytes-at (point) 3)))
+      (should (buffer-eq g-new-sp-dash (point)))
       (should (= exp (do-next-task-mark))) ; payload
       )))
 
@@ -1255,7 +1256,7 @@ already present"
   (with-temp-buffer
     (insert (make-data-s "- - m"))
     (goto-char (buffer-pos (task 2) -3))
-    (should (string= g-sp-dash-sp (bytes-at (point) 3)))
+    (should (buffer-eq g-sp-dash-sp (point)))
     (should (equal nil (do-next-task-mark))) ; payload
     ))
 
@@ -1265,7 +1266,7 @@ already present"
   (with-temp-buffer
     (insert (make-data-s "- - m"))
     (goto-char (buffer-pos (task 2) -2))
-    (should (string= g-dash-sp-t (bytes-at (point) 3)))
+    (should (buffer-eq g-dash-sp-t (point)))
     (should (equal nil (do-next-task-mark))) ; payload
     ))
 
@@ -1275,7 +1276,7 @@ already present"
   (with-temp-buffer
     (insert (make-data-s "- - m"))
     (goto-char (buffer-pos (task 2) -1))
-    (should (string= g-sp-t-a (bytes-at (point) 3)))
+    (should (buffer-eq g-sp-t-a (point)))
     (should (equal nil (do-next-task-mark))) ; payload
     ))
 
@@ -1297,7 +1298,7 @@ find 'task 1'"
       (insert (make-data-s "- - - n d + +"))
       (goto-char (point-min))
       (setq exp (buffer-pos (task 1) -3))
-      (should (string= g-nl (bytes-at (point) 1)))
+      (should (buffer-eq g-nl (point)))
       (should (= exp (do-next-task-mark))) ; payload
       )))
 
@@ -1309,7 +1310,7 @@ payload finds 'task 1'"
     (let ((exp))
       (insert (make-data-s "- - - n d + +"))
       (goto-char (buffer-pos (task 1) -4))
-      (should (string= g-new-sp-dash (bytes-at (point) 3)))
+      (should (buffer-eq g-new-sp-dash (point)))
       (setq exp (buffer-pos (task 1) -3))
       (should (= exp (do-next-task-mark))) ; payload
       )))
@@ -1322,7 +1323,7 @@ payload finds 'task 2'"
     (let ((exp))
       (insert (make-data-s "- - - n d + +"))
       (goto-char (buffer-pos (task 1) -3))
-      (should (string= g-sp-dash-sp (bytes-at (point) 3)))
+      (should (buffer-eq g-sp-dash-sp (point)))
       (setq exp (buffer-pos (task 2) -3))
       (should (= exp (do-next-task-mark))) ; payload
       )))
@@ -1336,7 +1337,7 @@ payload finds ' - task 2'"
       (insert (make-data-s "- - - n d + +"))
       (goto-char (buffer-pos (task 1) -2))
       (setq exp (buffer-pos (task 2) -3))
-      (should (string= g-dash-sp-t (bytes-at (point) 3)))
+      (should (buffer-eq g-dash-sp-t (point)))
       (should (= exp (do-next-task-mark))) ; payload
       )))
 
@@ -1349,7 +1350,7 @@ payload finds ' - task 2'"
       (insert (make-data-s "- - - n d + +"))
       (goto-char (buffer-pos (task 1) -1))
       (setq exp (buffer-pos (task 2) -3))
-      (should (string= g-sp-t-a (bytes-at (point) 3)))
+      (should (buffer-eq g-sp-t-a (point)))
       (should (= exp (do-next-task-mark))) ; payload
       )))
 
@@ -1374,7 +1375,7 @@ payload finds ' - task 2'"
       (insert (make-data-s "- - - n d + +"))
       (goto-char (buffer-pos (task 2) -4))
       (setq exp (buffer-pos (task 2) -3))
-      (should (string= g-new-sp-dash (bytes-at (point) 3)))
+      (should (buffer-eq g-new-sp-dash (point)))
       (should (= exp (do-next-task-mark))) ; payload
       )))
 
@@ -1387,7 +1388,7 @@ payload finds ' - task 3'"
       (insert (make-data-s "- - - n d + +"))
       (goto-char (buffer-pos (task 2) -3))
       (setq exp (buffer-pos (task 3) -3))
-      (should (string= g-sp-dash-sp (bytes-at (point) 3)))
+      (should (buffer-eq g-sp-dash-sp (point)))
       (should (= exp (do-next-task-mark))) ; payload
       )))
 
@@ -1400,7 +1401,7 @@ payload finds ' - task 3'"
       (insert (make-data-s "- - - n d + +"))
       (goto-char (buffer-pos (task 2)))
       (setq exp (buffer-pos (task 3) -3))
-      (should (string= g-t-a-s (bytes-at (point) 3)))
+      (should (buffer-eq g-t-a-s (point)))
       (should (= exp (do-next-task-mark))) ; payload
       )))
 
@@ -1413,7 +1414,7 @@ payload finds ' - task 3'"
       (insert (make-data-s "- - - n d + +"))
       (setq exp (buffer-pos (task 3) -3))
       (goto-char (- exp 2))
-      (should (string= "\n\n " (bytes-at (point) 3)))
+      (should (buffer-eq "\n\n " (point)))
       (should (= exp (do-next-task-mark))) ; payload
       )))
 
@@ -1426,7 +1427,7 @@ payload finds ' - task 3'"
       (insert (make-data-s "- - - n d + +"))
       (setq exp (buffer-pos (task 3) -3))
       (goto-char (- exp 1))
-      (should (string= g-new-sp-dash (bytes-at (point) 3)))
+      (should (buffer-eq g-new-sp-dash (point)))
       (should (= exp (do-next-task-mark))) ; payload
       )))
 
@@ -1439,7 +1440,7 @@ payload finds ' + task 4'"
       (insert (make-data-s "- - - n d + +"))
       (setq exp (buffer-pos (task 4) -3))
       (goto-char (buffer-pos (task 3) 5))
-      (should (string= t3-tail (bytes-at (point) 3)))
+      (should (buffer-eq t3-tail (point)))
       (should (= exp (do-next-task-mark))) ; payload
       )))
 
@@ -1452,7 +1453,7 @@ payload finds ' + task 5'"
       (insert (make-data-s "- - - n d + +"))
       (goto-char (buffer-pos (task 4) -2))
       (setq exp (buffer-pos (task 5) -3))
-      (should (string= plus-sp-t (bytes-at (point) 3)))
+      (should (buffer-eq plus-sp-t (point)))
       (should (= exp (do-next-task-mark))) ; payload
       )))
 
@@ -1471,10 +1472,10 @@ payload finds ' + task 5'"
       (insert (make-data-s "- - - n d + +"))
       (setq exp (buffer-pos task-5 -3))
       (goto-char (point-max))
-      (should (buffer-match-p task-5 (point)))
+      (should (buffer-eq task-5 (point) 't))
       (setq result (do-prev-task-mark)) ; payload
       (should (= result exp))
-      (should (buffer-equal-p p-task-5 result))
+      (should (buffer-eq p-task-5 result))
       )))
 
 ;; ----------------------------------------------------------------------------
@@ -1490,10 +1491,10 @@ finds ' + task 5'"
       (insert (make-data-s "- - - n d + +"))
       (goto-char (buffer-pos (task 5) 4))
       (setq exp (buffer-pos (task 5) -3))
-      (should (buffer-equal-p s-task-5 (point)))
+      (should (buffer-eq s-task-5 (point)))
       (setq result (do-prev-task-mark)) ; payload
       (should (= result exp))
-      (should (buffer-equal-p exp-task-5 result))
+      (should (buffer-eq exp-task-5 result))
       )))
 
 ;; ----------------------------------------------------------------------------
@@ -1507,10 +1508,10 @@ finds ' + task 5'"
       (insert (make-data-s "- - - n d + +"))
       (goto-char (buffer-pos (task 5) +1))
       (setq exp (buffer-pos (task 5) -3))
-      (should (buffer-equal-p ask-5 (point)))
+      (should (buffer-eq ask-5 (point)))
       (setq result (do-prev-task-mark)) ; payload
       (should (= exp result))
-      (should (buffer-equal-p p-task-5 result))
+      (should (buffer-eq p-task-5 result))
       )))
 
 ;; ----------------------------------------------------------------------------
@@ -1523,10 +1524,10 @@ finds ' + task 5'"
       (insert (make-data-s "- - - n d + +"))
       (setq exp (buffer-pos (task 5) -3))
       (goto-char (buffer-pos (task 5)))
-      (should (buffer-equal-p (task 5) (point)))
+      (should (buffer-eq (task 5) (point)))
       (setq result (do-prev-task-mark)) ; payload
       (should (= exp result))
-      (should (buffer-equal-p p-task-5 result))
+      (should (buffer-eq p-task-5 result))
       )))
 
 ;; ----------------------------------------------------------------------------
@@ -1539,11 +1540,11 @@ finds ' + task 5'"
           )
       (insert (make-data-s "- - - n d + +"))
       (goto-char (buffer-pos (task 5) -3))
-      (should (buffer-equal-p p-task-5 (point)))
+      (should (buffer-eq p-task-5 (point)))
       (setq exp (buffer-pos (task 4) -3))
       (setq result (do-prev-task-mark)) ; payload
       (should (= exp result))
-      (should (buffer-equal-p p-task-4 result)))))
+      (should (buffer-eq p-task-4 result)))))
 
 ;; ----------------------------------------------------------------------------
 (ert-deftest test-1825-ptm-w-done ()
@@ -1557,10 +1558,10 @@ finds ' + task 5'"
       (insert (make-data-s "- - - n d + +"))
       (goto-char (buffer-pos (task 4) 1))
       (setq exp (buffer-pos (task 4) -3))
-      (should (buffer-equal-p ask-4 (point)))
+      (should (buffer-eq ask-4 (point)))
       (setq result (do-prev-task-mark)) ; payload
       (should (= result exp))
-      (should (buffer-equal-p p-task-4 result))
+      (should (buffer-eq p-task-4 result))
       )))
 
 ;; ----------------------------------------------------------------------------
@@ -1571,10 +1572,10 @@ finds ' + task 5'"
       (insert (make-data-s "- - - n d + +"))
       (setq exp (buffer-pos (task 4) -3))
       (goto-char (buffer-pos (task 4)))
-      (should (buffer-equal-p (task 4) (point)))
+      (should (buffer-eq (task 4) (point)))
       (setq result (do-prev-task-mark)) ; payload
       (should (= result exp))
-      (should (buffer-equal-p (task 4 g-sps) result))
+      (should (buffer-eq (task 4 g-sps) result))
       )))
 
 ;; ----------------------------------------------------------------------------
@@ -1586,10 +1587,10 @@ finds ' + task 5'"
       (insert (make-data-s "- - - n d + +"))
       (setq exp (buffer-pos (task 3 g-sds)))
       (goto-char (buffer-pos (task 4) -1))
-      (should (buffer-equal-p (task 4 g-sp) (point)))
+      (should (buffer-eq (task 4 g-sp) (point)))
       (setq result (do-prev-task-mark)) ; payload
       (should (= result exp))
-      (should (buffer-equal-p (task 3 g-sds) result))
+      (should (buffer-eq (task 3 g-sds) result))
       )))
 
 ;; ----------------------------------------------------------------------------
@@ -1603,10 +1604,10 @@ finds ' - task 1'"
       (insert (make-data-s "- - - n d + +"))
       (setq exp (buffer-pos (task 1) -3))
       (goto-char (buffer-pos (task 1) -4))
-      (should (buffer-equal-p nl-d-task-1 (point)))
+      (should (buffer-eq nl-d-task-1 (point)))
       (setq result (do-prev-task-mark)) ; payload
       (should (= result exp))
-      (should (buffer-equal-p (task 1 g-sds) result))
+      (should (buffer-eq (task 1 g-sds) result))
       )))
 
 ;; ============================================================================
@@ -1634,7 +1635,7 @@ finds ' - task 1'"
       (setq pre-point (point))
       (do-xdone 't)                     ; payload
       (should (in-messages-p msg-max g-no-tasks))
-      (should (string= before (buffer-string)))
+      (should (buffer-eq before (point-min)))
       (should (= pre-point (point)))
       )))
 
@@ -1651,7 +1652,7 @@ finds ' - task 1'"
       (setq pre-point (point))
       (do-odone 't)                     ; payload
       (should (in-messages-p msg-max g-no-active-tasks))
-      (should (string= before (buffer-string)))
+      (should (buffer-eq before (point-min)))
       (should (= pre-point (point)))
       )))
 
@@ -1771,7 +1772,7 @@ finds ' - task 1'"
       (setq done-pos (do-done-position))
       (setq task-pos (buffer-pos (task 1) -3))
       (should (< done-pos task-pos))
-      (should (buffer-equal-p (task 1 g-sps) task-pos))
+      (should (buffer-eq (task 1 g-sps) task-pos))
       )))
 
 ;; ----------------------------------------------------------------------------
@@ -1786,7 +1787,7 @@ finds ' - task 1'"
       (setq task-1-pos (buffer-pos (task 1) -3))
       (setq task-2-pos (buffer-pos (task 2) -3))
       (should (in-order-p task-2-pos done-pos task-1-pos))
-      (should (buffer-equal-p (task 1 g-sxs) task-1-pos))
+      (should (buffer-eq (task 1 g-sxs) task-1-pos))
       )))
 
 ;; ----------------------------------------------------------------------------
@@ -1801,7 +1802,7 @@ finds ' - task 1'"
       (setq task-1-pos (buffer-pos (task 1) -3))
       (setq task-2-pos (buffer-pos (task 2) -3))
       (should (in-order-p task-1-pos done-pos task-2-pos))
-      (should (buffer-equal-p (task 2 g-sls) task-2-pos))
+      (should (buffer-eq (task 2 g-sls) task-2-pos))
       )))
 
 ;; ----------------------------------------------------------------------------
@@ -1929,7 +1930,7 @@ finds ' - task 1'"
     (let ((before))
       (setq before (buffer-string))
       (do-task-up)                      ; payload
-      (should (buffer-equal-p before (point-min)))
+      (should (buffer-eq before (point-min)))
       )))
 
 ;; ----------------------------------------------------------------------------
@@ -1941,7 +1942,7 @@ finds ' - task 1'"
       (setq before (buffer-string))
       (goto-char (floor (point-max) 2))
       (do-task-up)                      ; payload
-      (should (buffer-equal-p before (point-min)))
+      (should (buffer-eq before (point-min)))
       )))
 
 ;; ----------------------------------------------------------------------------
@@ -1953,7 +1954,7 @@ finds ' - task 1'"
       (setq before (buffer-string))
       (goto-char (buffer-pos (task 1)))
       (do-task-up)                      ; payload
-      (should (buffer-equal-p before (point-min)))
+      (should (buffer-eq before (point-min)))
       )))
 
 ;; ----------------------------------------------------------------------------
@@ -1965,7 +1966,7 @@ finds ' - task 1'"
       (setq before (buffer-string))
       (goto-char (buffer-pos (task 1)))
       (do-task-up)                      ; payload
-      (should (buffer-equal-p before (point-min)))
+      (should (buffer-eq before (point-min)))
       )))
 
 ;; ----------------------------------------------------------------------------
@@ -1977,7 +1978,7 @@ finds ' - task 1'"
       (setq before (buffer-string))
       (goto-char (buffer-pos g-done))
       (do-task-up)                      ; payload
-      (should (buffer-equal-p before (point-min)))
+      (should (buffer-eq before (point-min)))
       )))
 
 ;; ----------------------------------------------------------------------------
@@ -1989,7 +1990,7 @@ finds ' - task 1'"
       (setq before (buffer-string))
       (goto-char (buffer-pos (task 1)))
       (do-task-up)                      ; payload
-      (should (buffer-equal-p before (point-min)))
+      (should (buffer-eq before (point-min)))
       )))
 
 ;; ----------------------------------------------------------------------------
@@ -2001,7 +2002,7 @@ finds ' - task 1'"
       (setq before (buffer-string))
       (goto-char (buffer-pos (task 1)))
       (do-task-up)                      ; payload
-      (should (string= before (buffer-string)))
+      (should (buffer-eq before (point-min)))
       )))
 
 ;; ----------------------------------------------------------------------------
@@ -2043,7 +2044,7 @@ finds ' - task 1'"
       (setq before (buffer-string))
       (goto-char (+ 5 (do-done-position)))
       (do-task-up)                      ; payload
-      (should (string= before (buffer-string)))
+      (should (buffer-eq before (point-min)))
       )))
 
 ;; ----------------------------------------------------------------------------
@@ -2070,7 +2071,7 @@ finds ' - task 1'"
       (setq before (buffer-string))
       (goto-char (buffer-pos (task 1) 3))
       (do-task-up)                      ; payload
-      (should (string= before (buffer-string)))
+      (should (buffer-eq before (point-min)))
       )))
 
 ;; ----------------------------------------------------------------------------
@@ -2100,7 +2101,7 @@ take DONE with it"
     (let ((before))
       (setq before (buffer-string))
       (do-task-down)                    ; payload
-      (should (string= before (buffer-string)))
+      (should (buffer-eq before (point-min)))
       )))
 
 ;; ----------------------------------------------------------------------------
@@ -2112,7 +2113,7 @@ take DONE with it"
       (setq before (buffer-string))
       (goto-char (floor (point-max) 2))
       (do-task-down)                    ; payload
-      (should (string= before (buffer-string)))
+      (should (buffer-eq before (point-min)))
       )))
 
 ;; ----------------------------------------------------------------------------
@@ -2124,7 +2125,7 @@ take DONE with it"
       (setq before (buffer-string))
       (goto-char (buffer-pos (task 1) -3))
       (do-task-down)                    ; payload
-      (should (string= before (buffer-string)))
+      (should (buffer-eq before (point-min)))
       )))
 
 ;; ----------------------------------------------------------------------------
@@ -2136,7 +2137,7 @@ take DONE with it"
       (setq before (buffer-string))
       (goto-char (buffer-pos (task 1)))
       (do-task-down)                    ; payload
-      (should (string= before (buffer-string)))
+      (should (buffer-eq before (point-min)))
       )))
 
 ;; ----------------------------------------------------------------------------
@@ -2148,7 +2149,7 @@ take DONE with it"
       (setq before (buffer-string))
       (goto-char (buffer-pos g-done))
       (do-task-down)                    ; payload
-      (should (string= before (buffer-string)))
+      (should (buffer-eq before (point-min)))
       )))
 
 ;; ----------------------------------------------------------------------------
@@ -2160,7 +2161,7 @@ take DONE with it"
       (setq before (buffer-string))
       (goto-char (buffer-pos (task 1)))
       (do-task-down)                    ; payload
-      (should (string= before (buffer-string)))
+      (should (buffer-eq before (point-min)))
       )))
 
 ;; ----------------------------------------------------------------------------
@@ -2172,7 +2173,7 @@ take DONE with it"
       (setq before (buffer-string))
       (goto-char (buffer-pos (task 2)))
       (do-task-down)                    ; payload
-      (should (string= before (buffer-string)))
+      (should (buffer-eq before (point-min)))
       )))
 
 ;; ----------------------------------------------------------------------------
@@ -2215,7 +2216,7 @@ the task after it"
       (setq before (buffer-string))
       (goto-char (+ 5 (do-done-position)))
       (do-task-down)                    ; payload
-      (should (string= before (buffer-string)))
+      (should (buffer-eq before (point-min)))
       )))
 
 ;; ----------------------------------------------------------------------------
@@ -2242,7 +2243,7 @@ the task after it"
       (setq before (buffer-string))
       (goto-char (buffer-pos (task 2)))
       (do-task-down)                    ; payload
-      (should (string= before (buffer-string)))
+      (should (buffer-eq before (point-min)))
       )))
 
 ;; ----------------------------------------------------------------------------
@@ -2303,7 +2304,7 @@ not take DONE with it"
     (let ((before))
       (setq before (buffer-string))
       (do-task-to-top)
-      (should (string= before (buffer-string)))
+      (should (buffer-eq before (point-min)))
       )))
 
 ;; ----------------------------------------------------------------------------
@@ -2315,7 +2316,7 @@ not take DONE with it"
       (goto-char (floor (point-max) 2))
       (setq before (buffer-string))
       (do-task-to-top)
-      (should (string= before (buffer-string)))
+      (should (buffer-eq before (point-min)))
       )))
 
 ;; ----------------------------------------------------------------------------
@@ -2328,7 +2329,7 @@ will make no changes."
       (goto-char (buffer-pos (task 1)))
       (setq before (buffer-string))
       (do-task-to-top)
-      (should (string= before (buffer-string)))
+      (should (buffer-eq before (point-min)))
       )))
 
 ;; ----------------------------------------------------------------------------
@@ -2341,7 +2342,7 @@ will make no changes."
       (goto-char (buffer-pos (task 1)))
       (setq before (buffer-string))
       (do-task-to-top)
-      (should (string= before (buffer-string)))
+      (should (buffer-eq before (point-min)))
       )))
 
 ;; ----------------------------------------------------------------------------
@@ -2354,7 +2355,7 @@ will make no changes."
       (setq before (buffer-string))
       (goto-char (buffer-pos (task 1)))
       (do-task-to-top)
-      (should (string= before (buffer-string)))
+      (should (buffer-eq before (point-min)))
       )))
 
 ;; ----------------------------------------------------------------------------
@@ -2367,7 +2368,7 @@ will not move the top task (no changes)."
       (setq before (buffer-string))
       (goto-char (buffer-pos (task 1)))
       (do-task-to-top)
-      (should (string= before (buffer-string)))
+      (should (buffer-eq before (point-min)))
       )))
 
 ;; ----------------------------------------------------------------------------
@@ -2394,7 +2395,7 @@ will not move the top task (no changes)."
       (setq before (buffer-string))
       (goto-char (buffer-pos (task 1)))
       (do-task-to-top)
-      (should (string= before (buffer-string)))
+      (should (buffer-eq before (point-min)))
       )))
 
 ;; ----------------------------------------------------------------------------
@@ -2425,7 +2426,7 @@ will not move the top task (no changes)."
       (setq t1-pos (buffer-pos (task 1)))
       (setq t2-pos (buffer-pos (task 2)))
       (setq done-pos (do-done-position))
-      (should (string= before (buffer-string)))
+      (should (buffer-eq before (point-min)))
       (should (in-order-p done-pos t1-pos t2-pos))
       )))
 
@@ -2455,7 +2456,7 @@ changes)."
       (setq before (buffer-string))
       (goto-char (buffer-pos (task 1)))
       (do-task-to-top)
-      (should (buffer-equal-p before (point-min)))
+      (should (buffer-eq before (point-min)))
       )))
 
 ;; ----------------------------------------------------------------------------
@@ -2505,7 +2506,7 @@ DONE line (no changes)."
       (goto-char (buffer-pos (task 4) 5))
       (setq before (buffer-string))
       (do-task-to-top)
-      (should (string= before (buffer-string)))
+      (should (buffer-eq before (point-min)))
       )))
 
 ;; ----------------------------------------------------------------------------
@@ -2557,7 +2558,7 @@ make no changes."
     (let ((before))
       (setq before (buffer-string))
       (do-task-to-end)                  ; payload
-      (should (string= before (buffer-string)))
+      (should (buffer-eq before (point-min)))
       )))
 
 ;; ----------------------------------------------------------------------------
@@ -2570,7 +2571,7 @@ make no changes."
       (goto-char (floor (point-max) 2))
       (setq before (buffer-string))
       (do-task-to-end)                  ; payload
-      (should (string= before (buffer-string)))
+      (should (buffer-eq before (point-min)))
       )))
 
 ;; ----------------------------------------------------------------------------
@@ -2583,7 +2584,7 @@ will make no changes."
       (goto-char (buffer-pos (task 1)))
       (setq before (buffer-string))
       (do-task-to-end)                  ; payload
-      (should (string= before (buffer-string)))
+      (should (buffer-eq before (point-min)))
       )))
 
 ;; ----------------------------------------------------------------------------
@@ -2596,7 +2597,7 @@ will make no changes."
       (goto-char (buffer-pos (task 1)))
       (setq before (buffer-string))
       (do-task-to-end)                  ; payload
-      (should (string= before (buffer-string)))
+      (should (buffer-eq before (point-min)))
       )))
 
 ;; ----------------------------------------------------------------------------
@@ -2609,7 +2610,7 @@ will make no changes."
       (goto-char (buffer-pos (task 1)))
       (setq before (buffer-string))
       (do-task-to-end)                  ; payload
-      (should (string= before (buffer-string)))
+      (should (buffer-eq before (point-min)))
       )))
 
 ;; ----------------------------------------------------------------------------
@@ -2622,7 +2623,7 @@ will not move the bottom task (no changes)."
       (setq before (buffer-string))
       (goto-char (buffer-pos (task 2)))
       (do-task-to-end)
-      (should (string= before (buffer-string)))
+      (should (buffer-eq before (point-min)))
       )))
 
 ;; ----------------------------------------------------------------------------
@@ -2649,7 +2650,7 @@ will not move the bottom task (no changes)."
       (setq before (buffer-string))
       (goto-char (buffer-pos (task 2)))
       (do-task-to-end)
-      (should (string= before (buffer-string)))
+      (should (buffer-eq before (point-min)))
       )))
 
 ;; ----------------------------------------------------------------------------
@@ -2677,7 +2678,7 @@ will not move the bottom task (no changes)."
       (setq before (buffer-string))
       (goto-char (buffer-pos (task 2)))
       (do-task-to-end)
-      (should (string= before (buffer-string)))
+      (should (buffer-eq before (point-min)))
       )))
 
 ;; ----------------------------------------------------------------------------
@@ -2706,7 +2707,7 @@ changes)."
       (goto-char (buffer-pos (task 3)))
       (setq before (buffer-string))
       (do-task-to-end)
-      (should (string= before (buffer-string)))
+      (should (buffer-eq before (point-min)))
       )))
 
 ;; ----------------------------------------------------------------------------
@@ -2756,7 +2757,7 @@ DONE line (no changes)."
       (setq before (buffer-string))
       (goto-char (buffer-pos (task 6)))
       (do-task-to-end)
-      (should (string= before (buffer-string)))
+      (should (buffer-eq before (point-min)))
       )))
 
 ;; ----------------------------------------------------------------------------
