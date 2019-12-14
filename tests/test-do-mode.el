@@ -819,7 +819,7 @@ already present"
     (let ((result) (exp)
           (t5-str " + task 5")
           (t5-rgx " \\+ task 5")
-          (tail "ask 5\n"))
+          (tail "ask 5\n\n"))
       (insert (make-data-s "- - - d + +"))
       (goto-char (point-max))
       (should (string= tail (bytes-at (point) (length tail))))
@@ -1466,7 +1466,7 @@ payload finds ' + task 5'"
 payload finds ' + task 5'"
   (with-temp-buffer
     (let ((result)
-          (task-5 (task 5))
+          (task-5 (concat (task 5) "\n\n"))
           (p-task-5 (concat g-sps (task 5))))
       (insert (make-data-s "- - - n d + +"))
       (setq exp (buffer-pos task-5 -3))
