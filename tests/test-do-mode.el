@@ -178,26 +178,21 @@
 ;; helper functions
 
 ;; ----------------------------------------------------------------------------
-(defun buffer-equal-p (str bufpos)
-  "Return t if STR strictly matches (buffer-string) at BUFPOS,
-otherwise nil. If STR extends past (point-max), the comparison
-fails."
+(defun buffer-eq (str bufpos &optional soft)
+  "Return t if STR matches buffer contents at BUFPOS. If SOFT is
+nil, STR must match the buffer contents exactly beginning at
+BUFPOS. If SOFT is t, and STR would extend outside the buffer,
+BUFPOS will be adjusted to allow STR to match buffer contents, if
+the characters match."
   (let ((result)
-        (bufend (+ bufpos (length str)))
-        )
-    (if (< (point-max) bufend)
-        (setq result nil)
-      (setq result (string= str (buffer-substring bufpos bufend))))
+        (bufend (+ bufpos (length str))))
+    (if soft
+        (setq result (string= str (bytes-at bufpos (length str))))
+      (if (< (point-max) bufend)
+          (setq result nil)
+        (setq result (string= str (buffer-substring bufpos bufend)))))
     result
     ))
-
-;; ----------------------------------------------------------------------------
-(defun buffer-match-p (str bufpos)
-  "Return t if STR matches (buffer-string) around BUFPOS,
-otherwise nil. If str would extend past (point-max), it is
-adjusted backward to attempt to match the end of the buffer."
-  (string= str (bytes-at bufpos (length str)))
-  )
 
 ;; ----------------------------------------------------------------------------
 (defun buffer-pos (needle &optional offset)
